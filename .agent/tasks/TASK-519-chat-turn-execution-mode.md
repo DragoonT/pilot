@@ -1,6 +1,6 @@
 # feat(executor): read-only chat-turn execution mode with session resume, progress events and a Navigator chat prompt
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-09 → [#5632](https://github.com/qf-studio/pilot/issues/5632) (leg 1 of TASK-518; labels `pilot` + `no-decompose`)
+**Status**: ✅ MERGED + REVIEWED 2026-10-09 — [#5632](https://github.com/qf-studio/pilot/issues/5632) → PR#5633 merged by autopilot 15:17Z (c818cfa21, +657/-0, three new files). Post-merge review **APPROVE-w-notes** on the PR: all 6 mutation pins run by the reviewer and kill; 13/13 tests. Notes: `SessionReset` is dead on the Claude Code backend (internal retry) → leg 2 detects reset by `SessionID` change; max-turns = substring on raw result line.
 **Created**: 2026-10-09
 **Repo**: qf-studio/pilot
 
@@ -65,6 +65,7 @@ Do not change `internal/executor/prompt_builder.go`, `internal/executor/runner.g
 ## Refs
 
 - Pilot issue: https://github.com/qf-studio/pilot/issues/5632
+- PR: https://github.com/qf-studio/pilot/pull/5633 (merged, reviewed APPROVE-w-notes)
 
 - Plan: TASK-518 in this repo (.agent/tasks/TASK-518-side-chat-navigator-research-and-issue-filing.md), leg 1 of 5
 - Backend options: `internal/executor/backend.go` (ExecuteOptions: ResumeSessionID, AllowedTools, MaxTurns, EventHandler)

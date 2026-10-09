@@ -1,6 +1,6 @@
 # TASK-518: Side chat as a Navigator — agentic research turns + Pilot issue filing
 
-**Status**: 🚀 Leg 1 DISPATCHED 2026-10-09 → [#5632](https://github.com/qf-studio/pilot/issues/5632) (TASK-519). Founder confirmed all 3 defaults ("go"). Legs 2–5 queued; leg 2 doc authored after #5632 merges.
+**Status**: ✅ Leg 1 MERGED + REVIEWED 2026-10-09 — [#5632](https://github.com/qf-studio/pilot/issues/5632) → PR#5633 (c818cfa21), APPROVE-w-notes (6/6 pins kill, 13/13 tests). Founder confirmed all 3 defaults ("go"). **Next: leg 2 (web handler agentic path + confirmed filing) — doc TASK-520 to author + dispatch.** Leg 2 must detect a session reset by `result.SessionID != turn.ResumeSessionID` (the Claude Code backend retries internally, so `SessionReset` never fires there).
 **Created**: 2026-10-09
 **Assignee**: Navigator (plan, review) · Pilot (legs 1–5) · founder (decisions, prod smoke)
 
@@ -168,7 +168,7 @@ go build ./... && go test ./internal/executor/ ./internal/comms/ ./internal/adap
 - Research: navigator-research agent 2026-10-09 (daemon map; in-session).
 - Prior: TASK-463 (gateway chat API), TASK-464 (console proxy), TASK-469 (latestSeq), TASK-514 (chat enablement).
 - Contracts: `internal/adapters/github/issue_create.go` (`CreatePilotIssue`), `.agent/sops/onboarding/new-project-issue-authoring.md` (issue body shape).
-- Pilot issues: leg 1 → [#5632](https://github.com/qf-studio/pilot/issues/5632) (TASK-519)
+- Pilot issues: leg 1 → [#5632](https://github.com/qf-studio/pilot/issues/5632) → PR#5633 merged + reviewed (TASK-519)
 
 ---
 
