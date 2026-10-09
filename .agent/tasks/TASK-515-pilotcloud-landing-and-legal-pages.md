@@ -1,6 +1,6 @@
 # TASK-515: pilotcloud.dev landing page + legal pages (Terminal + Console, console-styled)
 
-**Status**: 📋 Planned 2026-10-09 — awaiting founder confirmation of legal entity facts, then dispatch S0
+**Status**: 🚀 S0 + S1 DISPATCHED 2026-10-09 ~14:30Z — site#1 (scaffold, TASK-516) and site#2 (landing, TASK-517, blocked by #1). Repo `qf-studio/pilotcloud-site` created (private), registered on the box (config entry + clone; daemon restart pending the 14:24Z release run). I1 posted to Nelya in #infrastructure (ts 1791555910.941859). S2 legal pages PARKED until the founder supplies legal name, address and contact email. U1 and S3 not yet filed.
 **Created**: 2026-10-09
 **Assignee**: Navigator (plan, infra request, Paddle resubmit) · Pilot (S0–S3 on the new repo, U1 on console-ui) · Nelya (I1) · founder (legal facts, Paddle verification)
 
@@ -150,6 +150,9 @@ curl -s https://pilotcloud.dev/terms | grep -c '{{' # expect 0
 - Deploy template: pilot-console-ui `.github/workflows/deploy-quantflow-aws.yml` (bucket `pilot-fleet-s3-console-ui`, distribution `E6U3NSSVQ0PTQ`)
 - Theme tokens: pilot-console-ui `src/design-system/theme.css`
 - Founder screenshot (layout reference): console Usage page, 2026-10-09
+- Slice docs: TASK-516 (S0 → site#1), TASK-517 (S1 → site#2)
+- Infra request to Nelya: #infrastructure message ts 1791555910.941859 (2026-10-09)
+- Box registration: projects entry `pilotcloud-site` inserted before `pointer`; backup `config.yaml.bak-20261009-site`
 
 ---
 

@@ -2801,6 +2801,34 @@
           "markers",
           "testing"
         ]
+      },
+      "TASK-516": {
+        "path": ".agent/tasks/TASK-516-site-scaffold.md",
+        "title": "Task 516 Site Scaffold",
+        "status": "dispatched",
+        "concepts": [
+          "testing",
+          "skills",
+          "context",
+          "database",
+          "theory of mind",
+          "frontend",
+          "deployment"
+        ]
+      },
+      "TASK-517": {
+        "path": ".agent/tasks/TASK-517-site-landing-page.md",
+        "title": "Task 517 Site Landing Page",
+        "status": "dispatched",
+        "concepts": [
+          "api",
+          "authentication",
+          "context",
+          "deployment",
+          "testing",
+          "frontend",
+          "knowledge"
+        ]
       }
     },
     "memories": {
@@ -10633,6 +10661,71 @@
       "from": "TASK-515",
       "to": "authentication",
       "type": "implements"
+    },
+    {
+      "from": "TASK-516",
+      "to": "context",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-516",
+      "to": "frontend",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-516",
+      "to": "skills",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-516",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-516",
+      "to": "deployment",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-516",
+      "to": "database",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-517",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-517",
+      "to": "authentication",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-517",
+      "to": "knowledge",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-517",
+      "to": "frontend",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-517",
+      "to": "api",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-517",
+      "to": "context",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-517",
+      "to": "deployment",
+      "type": "implements"
     }
   ],
   "concept_index": {
@@ -10812,7 +10905,8 @@
       "TASK-509",
       "TASK-508",
       "TASK-511",
-      "TASK-515"
+      "TASK-515",
+      "TASK-517"
     ],
     "approval": [
       "approvals-off-stage-auto-merge",
@@ -10917,7 +11011,8 @@
       "TASK-505",
       "TASK-510",
       "TASK-509",
-      "TASK-515"
+      "TASK-515",
+      "TASK-517"
     ],
     "auto-merge": [
       "mem-103"
@@ -11219,7 +11314,9 @@
       "TASK-510",
       "TASK-511",
       "mem-218",
-      "TASK-515"
+      "TASK-515",
+      "TASK-516",
+      "TASK-517"
     ],
     "conversational-bot": [
       "mem-036",
@@ -11344,7 +11441,8 @@
       "TASK-498",
       "TASK-502",
       "TASK-509",
-      "TASK-515"
+      "TASK-515",
+      "TASK-516"
     ],
     "decomposition": [
       "decomposer-narrative-bullets-as-subtask-boundaries",
@@ -11535,7 +11633,9 @@
       "mem-216",
       "mem-217",
       "TASK-512",
-      "TASK-515"
+      "TASK-515",
+      "TASK-516",
+      "TASK-517"
     ],
     "dispatch": [
       "auto-preserved-wip-recover-by-cherry-pick-continuation",
@@ -11769,7 +11869,9 @@
       "mem-194",
       "TASK-509",
       "TASK-511",
-      "TASK-515"
+      "TASK-515",
+      "TASK-516",
+      "TASK-517"
     ],
     "gateway": [
       "TASK-01",
@@ -11998,7 +12100,8 @@
       "mem-194",
       "TASK-505",
       "TASK-508",
-      "TASK-515"
+      "TASK-515",
+      "TASK-517"
     ],
     "labels": [
       "mem-100",
@@ -12333,7 +12436,8 @@
       "mem-169",
       "mem-170",
       "TASK-497",
-      "TASK-505"
+      "TASK-505",
+      "TASK-516"
     ],
     "social-engineering": [
       "mem-125"
@@ -12546,7 +12650,9 @@
       "TASK-511",
       "mem-214",
       "mem-219",
-      "TASK-515"
+      "TASK-515",
+      "TASK-516",
+      "TASK-517"
     ],
     "testing-quality": [
       "TASK-384",
@@ -12788,7 +12894,8 @@
       "TASK-498",
       "TASK-502",
       "TASK-511",
-      "TASK-515"
+      "TASK-515",
+      "TASK-516"
     ],
     "stage-semantics": [
       "stagefailed-conflates-healthy-handoff-with-terminal-failure"
@@ -13072,10 +13179,10 @@
       "mem-221"
     ]
   },
-  "last_updated": "2026-10-09T13:37:58.840814+00:00",
+  "last_updated": "2026-10-09T14:25:39.700335+00:00",
   "stats": {
-    "total_nodes": 653,
-    "total_edges": 579,
+    "total_nodes": 655,
+    "total_edges": 592,
     "memory_count": 355
   },
   "metadata": {}
