@@ -2829,6 +2829,21 @@
           "frontend",
           "knowledge"
         ]
+      },
+      "TASK-518": {
+        "path": ".agent/tasks/TASK-518-side-chat-navigator-research-and-issue-filing.md",
+        "title": "Side chat as a Navigator \u2014 agentic research turns + Pilot issue filing",
+        "status": "backlog",
+        "concepts": [
+          "knowledge",
+          "workflow",
+          "skills",
+          "api",
+          "testing",
+          "deployment",
+          "context",
+          "authentication"
+        ]
       }
     },
     "memories": {
@@ -10726,6 +10741,46 @@
       "from": "TASK-517",
       "to": "deployment",
       "type": "implements"
+    },
+    {
+      "from": "TASK-518",
+      "to": "authentication",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-518",
+      "to": "skills",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-518",
+      "to": "api",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-518",
+      "to": "deployment",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-518",
+      "to": "knowledge",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-518",
+      "to": "workflow",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-518",
+      "to": "context",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-518",
+      "to": "testing",
+      "type": "implements"
     }
   ],
   "concept_index": {
@@ -10906,7 +10961,8 @@
       "TASK-508",
       "TASK-511",
       "TASK-515",
-      "TASK-517"
+      "TASK-517",
+      "TASK-518"
     ],
     "approval": [
       "approvals-off-stage-auto-merge",
@@ -11012,7 +11068,8 @@
       "TASK-510",
       "TASK-509",
       "TASK-515",
-      "TASK-517"
+      "TASK-517",
+      "TASK-518"
     ],
     "auto-merge": [
       "mem-103"
@@ -11316,7 +11373,8 @@
       "mem-218",
       "TASK-515",
       "TASK-516",
-      "TASK-517"
+      "TASK-517",
+      "TASK-518"
     ],
     "conversational-bot": [
       "mem-036",
@@ -11635,7 +11693,8 @@
       "TASK-512",
       "TASK-515",
       "TASK-516",
-      "TASK-517"
+      "TASK-517",
+      "TASK-518"
     ],
     "dispatch": [
       "auto-preserved-wip-recover-by-cherry-pick-continuation",
@@ -12101,7 +12160,8 @@
       "TASK-505",
       "TASK-508",
       "TASK-515",
-      "TASK-517"
+      "TASK-517",
+      "TASK-518"
     ],
     "labels": [
       "mem-100",
@@ -12437,7 +12497,8 @@
       "mem-170",
       "TASK-497",
       "TASK-505",
-      "TASK-516"
+      "TASK-516",
+      "TASK-518"
     ],
     "social-engineering": [
       "mem-125"
@@ -12652,7 +12713,8 @@
       "mem-219",
       "TASK-515",
       "TASK-516",
-      "TASK-517"
+      "TASK-517",
+      "TASK-518"
     ],
     "testing-quality": [
       "TASK-384",
@@ -12811,7 +12873,8 @@
       "TASK-493",
       "TASK-495",
       "TASK-510",
-      "TASK-508"
+      "TASK-508",
+      "TASK-518"
     ],
     "workflow-discipline": [
       "TASK-359",
@@ -13179,10 +13242,10 @@
       "mem-221"
     ]
   },
-  "last_updated": "2026-10-09T14:25:39.700335+00:00",
+  "last_updated": "2026-10-09T14:45:26.552332+00:00",
   "stats": {
-    "total_nodes": 655,
-    "total_edges": 592,
+    "total_nodes": 656,
+    "total_edges": 600,
     "memory_count": 355
   },
   "metadata": {}
