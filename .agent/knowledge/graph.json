@@ -2817,17 +2817,17 @@
         ]
       },
       "TASK-517": {
-        "path": ".agent/tasks/TASK-517-site-landing-page.md",
+        "path": "/Users/aleks.petrov/Projects/startups/pilot/.agent/tasks/TASK-517-site-landing-page.md",
         "title": "Task 517 Site Landing Page",
         "status": "dispatched",
         "concepts": [
-          "api",
           "authentication",
-          "context",
           "deployment",
-          "testing",
+          "api",
+          "theory of mind",
           "frontend",
-          "knowledge"
+          "testing",
+          "context"
         ]
       },
       "TASK-518": {
@@ -2843,6 +2843,20 @@
           "deployment",
           "context",
           "authentication"
+        ]
+      },
+      "TASK-519": {
+        "path": ".agent/tasks/TASK-519-chat-turn-execution-mode.md",
+        "title": "Task 519 Chat Turn Execution Mode",
+        "status": "dispatched",
+        "concepts": [
+          "skills",
+          "knowledge",
+          "database",
+          "testing",
+          "deployment",
+          "authentication",
+          "context"
         ]
       }
     },
@@ -10781,6 +10795,41 @@
       "from": "TASK-518",
       "to": "testing",
       "type": "implements"
+    },
+    {
+      "from": "TASK-519",
+      "to": "skills",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-519",
+      "to": "authentication",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-519",
+      "to": "knowledge",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-519",
+      "to": "database",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-519",
+      "to": "deployment",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-519",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-519",
+      "to": "context",
+      "type": "implements"
     }
   ],
   "concept_index": {
@@ -11069,7 +11118,8 @@
       "TASK-509",
       "TASK-515",
       "TASK-517",
-      "TASK-518"
+      "TASK-518",
+      "TASK-519"
     ],
     "auto-merge": [
       "mem-103"
@@ -11374,7 +11424,8 @@
       "TASK-515",
       "TASK-516",
       "TASK-517",
-      "TASK-518"
+      "TASK-518",
+      "TASK-519"
     ],
     "conversational-bot": [
       "mem-036",
@@ -11500,7 +11551,8 @@
       "TASK-502",
       "TASK-509",
       "TASK-515",
-      "TASK-516"
+      "TASK-516",
+      "TASK-519"
     ],
     "decomposition": [
       "decomposer-narrative-bullets-as-subtask-boundaries",
@@ -11694,7 +11746,8 @@
       "TASK-515",
       "TASK-516",
       "TASK-517",
-      "TASK-518"
+      "TASK-518",
+      "TASK-519"
     ],
     "dispatch": [
       "auto-preserved-wip-recover-by-cherry-pick-continuation",
@@ -12161,7 +12214,8 @@
       "TASK-508",
       "TASK-515",
       "TASK-517",
-      "TASK-518"
+      "TASK-518",
+      "TASK-519"
     ],
     "labels": [
       "mem-100",
@@ -12498,7 +12552,8 @@
       "TASK-497",
       "TASK-505",
       "TASK-516",
-      "TASK-518"
+      "TASK-518",
+      "TASK-519"
     ],
     "social-engineering": [
       "mem-125"
@@ -12714,7 +12769,8 @@
       "TASK-515",
       "TASK-516",
       "TASK-517",
-      "TASK-518"
+      "TASK-518",
+      "TASK-519"
     ],
     "testing-quality": [
       "TASK-384",
@@ -12958,7 +13014,8 @@
       "TASK-502",
       "TASK-511",
       "TASK-515",
-      "TASK-516"
+      "TASK-516",
+      "TASK-517"
     ],
     "stage-semantics": [
       "stagefailed-conflates-healthy-handoff-with-terminal-failure"
@@ -13242,10 +13299,10 @@
       "mem-221"
     ]
   },
-  "last_updated": "2026-10-09T14:45:26.552332+00:00",
+  "last_updated": "2026-10-09T14:59:22.677226+00:00",
   "stats": {
-    "total_nodes": 656,
-    "total_edges": 600,
+    "total_nodes": 657,
+    "total_edges": 607,
     "memory_count": 355
   },
   "metadata": {}

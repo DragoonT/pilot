@@ -1,6 +1,6 @@
 # TASK-518: Side chat as a Navigator — agentic research turns + Pilot issue filing
 
-**Status**: 📋 Planned 2026-10-09 — awaiting founder confirmation of the 3 decisions below, then leg 1 dispatch via nav-pilot
+**Status**: 🚀 Leg 1 DISPATCHED 2026-10-09 → [#5632](https://github.com/qf-studio/pilot/issues/5632) (TASK-519). Founder confirmed all 3 defaults ("go"). Legs 2–5 queued; leg 2 doc authored after #5632 merges.
 **Created**: 2026-10-09
 **Assignee**: Navigator (plan, review) · Pilot (legs 1–5) · founder (decisions, prod smoke)
 
@@ -168,7 +168,7 @@ go build ./... && go test ./internal/executor/ ./internal/comms/ ./internal/adap
 - Research: navigator-research agent 2026-10-09 (daemon map; in-session).
 - Prior: TASK-463 (gateway chat API), TASK-464 (console proxy), TASK-469 (latestSeq), TASK-514 (chat enablement).
 - Contracts: `internal/adapters/github/issue_create.go` (`CreatePilotIssue`), `.agent/sops/onboarding/new-project-issue-authoring.md` (issue body shape).
-- Pilot issues: (filled by nav-pilot per leg)
+- Pilot issues: leg 1 → [#5632](https://github.com/qf-studio/pilot/issues/5632) (TASK-519)
 
 ---
 
