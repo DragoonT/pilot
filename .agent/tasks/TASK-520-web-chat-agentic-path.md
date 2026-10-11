@@ -1,6 +1,6 @@
 # feat(comms): route web chat turns through ExecuteChatTurn with progress events and a confirmed pilot-issue card
 
-**Status**: 🔁 RE-ARMED 2026-10-11 ~10:55Z → [#5635](https://github.com/qf-studio/pilot/issues/5635), PR#5637 open (+496). First run failed CI: `TestChatAPI_Composed` (gateway) encoded the old web task flow; spec amended (operational queries keep the old path; composed test rewritten to the chat-turn + pilot-issue flow). Autopilot size guard (231 prod additions > 200) refused an auto-fix → `pilot-needs-human` → body edited + label cycled. (leg 2a of TASK-518; labels `pilot` + `no-decompose`)
+**Status**: 🔁 RE-ARMED 2026-10-11 ~10:55Z → [#5635](https://github.com/qf-studio/pilot/issues/5635), PR#5637 open (+496). First run failed CI: `TestChatAPI_Composed` (gateway) encoded the old web task flow; spec amended (operational queries keep the old path; composed test rewritten to the chat-turn + pilot-issue flow). Autopilot size guard (231 prod additions > 200) refused an auto-fix → `pilot-needs-human` → body edited + label cycled — but the label cycle does NOT re-arm a `failed` row (the GH-5212 sweep covers stalled rows with pilot-blocked/retry-ready labels only). Continuation filed as autopilot would have: [#5638](https://github.com/qf-studio/pilot/issues/5638) (TASK-522, `autopilot-fix` + autopilot-meta footer → adopts branch pilot/GH-5635, pushes to PR#5637). (leg 2a of TASK-518; labels `pilot` + `no-decompose`)
 **Created**: 2026-10-11
 **Repo**: qf-studio/pilot
 
