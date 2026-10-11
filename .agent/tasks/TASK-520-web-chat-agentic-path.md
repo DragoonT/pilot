@@ -1,6 +1,6 @@
 # feat(comms): route web chat turns through ExecuteChatTurn with progress events and a confirmed pilot-issue card
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-11 → [#5635](https://github.com/qf-studio/pilot/issues/5635) (leg 2a of TASK-518; labels `pilot` + `no-decompose`)
+**Status**: 🔁 RE-ARMED 2026-10-11 ~10:55Z → [#5635](https://github.com/qf-studio/pilot/issues/5635), PR#5637 open (+496). First run failed CI: `TestChatAPI_Composed` (gateway) encoded the old web task flow; spec amended (operational queries keep the old path; composed test rewritten to the chat-turn + pilot-issue flow). Autopilot size guard (231 prod additions > 200) refused an auto-fix → `pilot-needs-human` → body edited + label cycled. (leg 2a of TASK-518; labels `pilot` + `no-decompose`)
 **Created**: 2026-10-11
 **Repo**: qf-studio/pilot
 
@@ -17,7 +17,7 @@ Facts to rely on. The web adapter builds IncomingMessage with Platform "web" and
 In `internal/comms/handler.go`:
 
 - Add two per-conversation maps under h.mu: chatSessions (contextID to Claude session id) and pendingIssueCards (contextID to a pendingIssueCard value with fields Draft IssueDraft, CardID string, ProjectPath string, CreatedAt time.Time). Initialize them in the constructor. Clear the chatSessions entry in SetActiveProject.
-- In HandleMessage, after the rate limit check and before the callback switch, add the web routing: when msg.Platform equals "web" and msg.IsCallback is true and a pendingIssueCard exists for the context, route execute, confirm, yes and file to handleIssueCardDecision with confirmed true, and cancel, no and discard with confirmed false, then return. When msg.Platform equals "web", msg.IsCallback is false, and the text is a yes or no shortcut while a pendingIssueCard exists, route the same way. When msg.Platform equals "web", the text does not start with a slash, and it is not a confirmation shortcut, call handleChatTurn and return. Everything else keeps the current flow.
+- In HandleMessage, after the rate limit check and before the callback switch, add the web routing: when msg.Platform equals "web" and msg.IsCallback is true and a pendingIssueCard exists for the context, route execute, confirm, yes and file to handleIssueCardDecision with confirmed true, and cancel, no and discard with confirmed false, then return. When msg.Platform equals "web", msg.IsCallback is false, and the text is a yes or no shortcut while a pendingIssueCard exists, route the same way. When msg.Platform equals "web", the text does not start with a slash, it is not a confirmation shortcut, and intent.IsOperationalQuery(text) is false, call handleChatTurn and return. Operational queries on web (for example "queue status") keep the existing handleOperational path. Everything else keeps the current flow.
 - Add handleChatTurn(ctx, contextID, threadID, text). It resolves the project path with getActiveProjectPath, reads the resume id from chatSessions, and calls h.runner.ExecuteChatTurn with ChatTurn fields ConversationID equal to contextID, ProjectPath, Text and ResumeSessionID. The onProgress callback calls h.messenger.SendProgress with messageRef empty, taskID equal to "chat-" plus the contextID without the "web:" prefix, phase "research", progress 0 and detail equal to the line. After the turn: store result.SessionID in chatSessions when non-empty; if the runner is nil send the text "Chat is not available: no runner configured" and return; on error send "Chat turn failed: " plus the error text and return. Split the reply with extractPilotIssueBlock (below). Send the remaining text with SendChunked, prefix empty. When result.Partial is true, append the line "(Stopped early: turn limit or timeout.)" to the text. When a block was present, call presentIssueCard.
 - Add presentIssueCard(ctx, contextID, threadID, draft IssueDraft, projectPath). When h.issueCreator is nil, send the text "GitHub is not configured for this project, so the issue cannot be filed. Here is the draft:" followed by the title and body, and return. Otherwise build CardID as "issue-" plus eight hex characters from crypto/rand, store the pendingIssueCard (replacing any older one), and call SendConfirmation with taskID equal to CardID, desc equal to "File Pilot issue: " plus the title, a blank line, and the first 400 characters of the body, and project equal to the project name from h.projects.GetProjectByPath when known.
 - Add handleIssueCardDecision(ctx, contextID, threadID, confirmed bool). Pop the pendingIssueCard under h.mu. When none exists send "No pending issue card." and return. When confirmed is false send "Issue draft discarded." and return. When the card is older than 30 minutes send "Issue card expired. Ask again to draft it." and return. Otherwise append the Refs line (below) to the body, ensure the label pilot is present, call h.issueCreator.CreateIssue(ctx, card.ProjectPath, draft), and send "Filed " plus the URL on success or "Issue filing failed: " plus the error on failure.
@@ -44,9 +44,12 @@ Tests in a new file internal/comms/chat_turn_handler_test.go (plain name) using 
 - TestWebChat_MalformedBlockSendsError: a block with a title "add stuff" (not conventional-commit) produces a text that starts with "The issue draft was not valid" and no SendConfirmation.
 - TestWebChat_NoIssueCreatorShowsDraft: with IssueCreator nil, a valid block produces the "GitHub is not configured" text and no SendConfirmation.
 - TestWebChat_PartialAppendsNote: when the fake backend marks the turn partial via an error_max_turns result event, the SendChunked text ends with "(Stopped early: turn limit or timeout.)".
+- TestWebChat_OperationalQueryKeepsOldPath: the web text "queue status" makes zero chat-turn backend calls and the messenger receives the operational reply text.
 - TestExtractPilotIssueBlock covers: no block; valid block; block with missing body; title without type prefix; labels without pilot get pilot appended.
 
-Do not change `internal/gateway/chat.go`, `internal/adapters/web/api.go`, `internal/adapters/web/messenger.go`, `cmd/pilot/main.go`, `internal/pilot/pilot.go`, or anything under internal/executor. Keep the diff under 500 changed lines.
+Update the composed gateway test in `internal/gateway/chat_test.go` (TestChatAPI_Composed), which today encodes the old web flow and fails against this change (first run, PR #5637: "chat_test.go:512: event type = \"text\", want confirmation"). Keep steps 1 (auth), 2 (operational query) and 4 (approval-shaped callback rejected) as they are. Rewrite step 3: the task-shaped text "build the project" now yields a text event whose text equals the fake backend output. Rewrite step 5 as the pilot-issue flow: extend chatTestBackend so that, when the prompt contains "file an issue", it first calls opts.EventHandler with one EventTypeToolUse event (ToolName Read, ToolInput file_path README.md) and then returns an Output that ends with a valid pilot-issue block (title "feat(chat): composed test issue", labels pilot, body with the five H2 sections); add a stub IssueCreator to the HandlerDeps in the test that records the call and returns the URL https://github.com/qf-studio/pilot/issues/1. Then assert, in order: a progress event whose TaskID is "chat-task-conv"; a confirmation event whose TaskID starts with "issue-" and whose MessageRef equals its TaskID; after an execute callback (202) a text event that contains that URL; and the stub recorded exactly one CreateIssue call whose labels contain pilot.
+
+Do not change `internal/gateway/chat.go`, `internal/adapters/web/api.go`, `internal/adapters/web/messenger.go`, `cmd/pilot/main.go`, `internal/pilot/pilot.go`, or anything under internal/executor. The only file under internal/gateway that may change is `internal/gateway/chat_test.go`. Keep the diff under 560 changed lines.
 
 ## Acceptance
 
@@ -55,6 +58,9 @@ Do not change `internal/gateway/chat.go`, `internal/adapters/web/api.go`, `inter
 - `go test ./internal/comms/ -run TestExtractPilotIssueBlock -count=1` passes; paste the output into the PR body.
 - `go test ./internal/comms/ -count=1` passes; paste the output into the PR body.
 - `go vet ./internal/comms/` passes; paste the output into the PR body.
+- `go test ./internal/gateway/ -run TestChatAPI_Composed -count=1` passes; paste the output into the PR body.
+- `go test ./internal/gateway/ -count=1` passes; paste the output into the PR body.
+- route a web operational query such as "queue status" into handleChatTurn -> TestWebChat_OperationalQueryKeepsOldPath fails
 - route web text through detectIntent instead of handleChatTurn -> TestWebChat_PlainTextRunsChatTurn fails
 - drop the Platform check so telegram text also calls handleChatTurn -> TestWebChat_NonWebPlatformUnchanged fails
 - stop storing result.SessionID in chatSessions -> TestWebChat_SecondTurnResumes fails
@@ -62,7 +68,7 @@ Do not change `internal/gateway/chat.go`, `internal/adapters/web/api.go`, `inter
 - skip the Refs bullet append in handleIssueCardDecision -> TestWebChat_FileCallbackCreatesIssue fails
 - treat discard as confirmed -> TestWebChat_DiscardCallbackCreatesNothing fails
 - accept any title in extractPilotIssueBlock -> TestWebChat_MalformedBlockSendsError fails
-- The PR touches no file under internal/executor, internal/gateway, internal/adapters or cmd.
+- The PR touches no file under internal/executor, internal/adapters or cmd, and under internal/gateway only the composed chat test file.
 
 ## Refs
 
