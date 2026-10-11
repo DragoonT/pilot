@@ -1120,6 +1120,11 @@
         "name": "Nelya",
         "aliases": [],
         "domain": "general"
+      },
+      "chat": {
+        "name": "Chat",
+        "aliases": [],
+        "domain": "general"
       }
     },
     "tasks": {
@@ -7815,6 +7820,22 @@
           "navigator-research"
         ],
         "created": "2026-10-08"
+      },
+      "spec-rerouting-a-platform-must-rewrite-composed-tests-of-the-old-flow": {
+        "type": "pitfall",
+        "summary": "A spec that reroutes a whole platform (e.g. all web chat turns) must name the composed/integration tests that encode the old flow (internal/gateway TestChatAPI_Composed) and add paste-output bullets for their packages; otherwise Pilot runs only the named package tests, CI fails, and the autopilot size guard (>200 prod additions) refuses an auto-fix -> pilot-needs-human (TASK-520/#5635, 2026-10-11). Before dispatch: git grep the platform string in *_test.go outside the changed package.",
+        "path": "memories/pitfalls/spec-rerouting-a-platform-must-rewrite-composed-tests-of-the-old-flow.md",
+        "confidence": 0.9,
+        "concepts": [
+          "issue-authoring",
+          "testing",
+          "adapters",
+          "gateway",
+          "pilot-dispatch",
+          "chat"
+        ],
+        "created": "2026-10-11",
+        "last_validated": "2026-10-11"
       }
     }
   },
@@ -10898,6 +10919,11 @@
       "from": "TASK-521",
       "to": "workflow",
       "type": "implements"
+    },
+    {
+      "from": "spec-rerouting-a-platform-must-rewrite-composed-tests-of-the-old-flow",
+      "to": "TASK-520",
+      "type": "learned-from"
     }
   ],
   "concept_index": {
@@ -10912,7 +10938,8 @@
       "mem-149",
       "slack-approval-socket-mode-unroutable",
       "slack-routing-three-keys-alerts-vs-approvals-vs-chat",
-      "mem-213"
+      "mem-213",
+      "spec-rerouting-a-platform-must-rewrite-composed-tests-of-the-old-flow"
     ],
     "alerts": [
       "TASK-379",
@@ -12063,7 +12090,8 @@
       "TASK-01",
       "mem-056",
       "ready-gate-couples-credential-validity",
-      "unwired-config-field-validated-but-dead"
+      "unwired-config-field-validated-but-dead",
+      "spec-rerouting-a-platform-must-rewrite-composed-tests-of-the-old-flow"
     ],
     "git": [
       "apply-script-silent-rollback-causes",
@@ -12183,7 +12211,8 @@
       "mem-203",
       "mem-211",
       "mem-220",
-      "mem-221"
+      "mem-221",
+      "spec-rerouting-a-platform-must-rewrite-composed-tests-of-the-old-flow"
     ],
     "knowledge": [
       "TASK-368",
@@ -12846,7 +12875,8 @@
       "TASK-518",
       "TASK-519",
       "TASK-520",
-      "TASK-521"
+      "TASK-521",
+      "spec-rerouting-a-platform-must-rewrite-composed-tests-of-the-old-flow"
     ],
     "testing-quality": [
       "TASK-384",
@@ -13218,7 +13248,8 @@
     ],
     "pilot-dispatch": [
       "mem-203",
-      "mem-204"
+      "mem-204",
+      "spec-rerouting-a-platform-must-rewrite-composed-tests-of-the-old-flow"
     ],
     "acceptance-evidence": [
       "mem-203",
@@ -13374,13 +13405,16 @@
     ],
     "navigator-research": [
       "mem-221"
+    ],
+    "chat": [
+      "spec-rerouting-a-platform-must-rewrite-composed-tests-of-the-old-flow"
     ]
   },
-  "last_updated": "2026-10-11T09:52:46.471846+00:00",
+  "last_updated": "2026-10-11T10:52:20.074928+00:00",
   "stats": {
-    "total_nodes": 659,
-    "total_edges": 616,
-    "memory_count": 355
+    "total_nodes": 661,
+    "total_edges": 617,
+    "memory_count": 356
   },
   "metadata": {}
 }
