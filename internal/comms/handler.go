@@ -67,6 +67,9 @@ type Handler struct {
 	runningTasks  map[string]*RunningTask // contextID -> running task
 	lastSender    map[string]string       // contextID -> senderID
 	mu            sync.Mutex
+
+	chatSessions      map[string]string            // contextID -> Claude chat session id
+	pendingIssueCards map[string]*pendingIssueCard // contextID -> issue card awaiting a decision
 }
 
 // NewHandler creates a shared Handler from the given config.
@@ -107,6 +110,9 @@ func NewHandler(cfg *HandlerConfig) *Handler {
 		pendingIssues:  make(map[string]*IssueDraft),
 		runningTasks:   make(map[string]*RunningTask),
 		lastSender:     make(map[string]string),
+
+		chatSessions:      make(map[string]string),
+		pendingIssueCards: make(map[string]*pendingIssueCard),
 	}
 
 	// Wire command handler — must be built after h exists so callbacks can close over h.
@@ -197,6 +203,35 @@ func (h *Handler) HandleMessage(ctx context.Context, msg *IncomingMessage) {
 		h.log.Warn("Message rate limit exceeded", slog.String("context_id", contextID))
 		_ = h.messenger.SendText(ctx, contextID, msg.ThreadID, "⚠️ Rate limit exceeded. Please wait before sending more messages.")
 		return
+	}
+
+	// Web console: agentic chat turns and the pilot-issue confirmation card.
+	if msg.Platform == "web" {
+		lowerText := strings.ToLower(strings.TrimSpace(text))
+		yes := lowerText == "yes" || lowerText == "y" || lowerText == "confirm" || lowerText == "ok"
+		no := lowerText == "no" || lowerText == "n" || lowerText == "cancel" || lowerText == "nope"
+		h.mu.Lock()
+		_, hasCard := h.pendingIssueCards[contextID]
+		h.mu.Unlock()
+		switch {
+		case msg.IsCallback && hasCard:
+			switch msg.ActionID {
+			case "execute", "confirm", "yes", "file":
+				_ = h.messenger.AcknowledgeCallback(ctx, msg.CallbackID)
+				h.handleIssueCardDecision(ctx, contextID, msg.ThreadID, true)
+				return
+			case "cancel", "no", "discard":
+				_ = h.messenger.AcknowledgeCallback(ctx, msg.CallbackID)
+				h.handleIssueCardDecision(ctx, contextID, msg.ThreadID, false)
+				return
+			}
+		case !msg.IsCallback && hasCard && (yes || no):
+			h.handleIssueCardDecision(ctx, contextID, msg.ThreadID, yes)
+			return
+		case !msg.IsCallback && !yes && !no && lowerText != "" && !strings.HasPrefix(lowerText, "/") && !intent.IsOperationalQuery(text):
+			h.handleChatTurn(ctx, contextID, msg.ThreadID, text)
+			return
+		}
 	}
 
 	// Handle callback (button press) — check pending confirmation
@@ -931,6 +966,7 @@ func (h *Handler) SetActiveProject(contextID, projectName string) error {
 	}
 	h.mu.Lock()
 	h.activeProject[contextID] = proj.Path
+	delete(h.chatSessions, contextID)
 	h.mu.Unlock()
 	return nil
 }
