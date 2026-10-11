@@ -2898,6 +2898,18 @@
           "deployment",
           "testing"
         ]
+      },
+      "TASK-523": {
+        "path": ".agent/tasks/TASK-523-chat-project-selection-wire.md",
+        "title": "Task 523 Chat Project Selection Wire",
+        "status": "dispatched",
+        "concepts": [
+          "context",
+          "api",
+          "authentication",
+          "testing",
+          "deployment"
+        ]
       }
     },
     "memories": {
@@ -10961,6 +10973,31 @@
       "from": "TASK-522",
       "to": "deployment",
       "type": "implements"
+    },
+    {
+      "from": "TASK-523",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-523",
+      "to": "context",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-523",
+      "to": "deployment",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-523",
+      "to": "authentication",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-523",
+      "to": "api",
+      "type": "implements"
     }
   ],
   "concept_index": {
@@ -11146,7 +11183,8 @@
       "TASK-518",
       "TASK-520",
       "TASK-521",
-      "TASK-522"
+      "TASK-522",
+      "TASK-523"
     ],
     "approval": [
       "approvals-off-stage-auto-merge",
@@ -11256,7 +11294,8 @@
       "TASK-518",
       "TASK-519",
       "TASK-520",
-      "TASK-522"
+      "TASK-522",
+      "TASK-523"
     ],
     "auto-merge": [
       "mem-103"
@@ -11565,7 +11604,8 @@
       "TASK-519",
       "TASK-520",
       "TASK-521",
-      "TASK-522"
+      "TASK-522",
+      "TASK-523"
     ],
     "conversational-bot": [
       "mem-036",
@@ -11889,7 +11929,8 @@
       "TASK-518",
       "TASK-519",
       "TASK-520",
-      "TASK-522"
+      "TASK-522",
+      "TASK-523"
     ],
     "dispatch": [
       "auto-preserved-wip-recover-by-cherry-pick-continuation",
@@ -12918,7 +12959,8 @@
       "TASK-520",
       "TASK-521",
       "spec-rerouting-a-platform-must-rewrite-composed-tests-of-the-old-flow",
-      "TASK-522"
+      "TASK-522",
+      "TASK-523"
     ],
     "testing-quality": [
       "TASK-384",
@@ -13452,10 +13494,10 @@
       "spec-rerouting-a-platform-must-rewrite-composed-tests-of-the-old-flow"
     ]
   },
-  "last_updated": "2026-10-11T11:08:48.635681+00:00",
+  "last_updated": "2026-10-11T14:35:26.849060+00:00",
   "stats": {
-    "total_nodes": 662,
-    "total_edges": 622,
+    "total_nodes": 663,
+    "total_edges": 627,
     "memory_count": 356
   },
   "metadata": {}
