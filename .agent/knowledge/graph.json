@@ -2858,6 +2858,29 @@
           "authentication",
           "context"
         ]
+      },
+      "TASK-520": {
+        "path": ".agent/tasks/TASK-520-web-chat-agentic-path.md",
+        "title": "Task 520 Web Chat Agentic Path",
+        "status": "dispatched",
+        "concepts": [
+          "api",
+          "authentication",
+          "context",
+          "testing",
+          "deployment"
+        ]
+      },
+      "TASK-521": {
+        "path": ".agent/tasks/TASK-521-web-chat-issue-creator-wiring.md",
+        "title": "Task 521 Web Chat Issue Creator Wiring",
+        "status": "dispatched",
+        "concepts": [
+          "api",
+          "workflow",
+          "testing",
+          "context"
+        ]
       }
     },
     "memories": {
@@ -10830,6 +10853,51 @@
       "from": "TASK-519",
       "to": "context",
       "type": "implements"
+    },
+    {
+      "from": "TASK-520",
+      "to": "deployment",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-520",
+      "to": "authentication",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-520",
+      "to": "api",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-520",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-520",
+      "to": "context",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-521",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-521",
+      "to": "api",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-521",
+      "to": "context",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-521",
+      "to": "workflow",
+      "type": "implements"
     }
   ],
   "concept_index": {
@@ -11011,7 +11079,9 @@
       "TASK-511",
       "TASK-515",
       "TASK-517",
-      "TASK-518"
+      "TASK-518",
+      "TASK-520",
+      "TASK-521"
     ],
     "approval": [
       "approvals-off-stage-auto-merge",
@@ -11119,7 +11189,8 @@
       "TASK-515",
       "TASK-517",
       "TASK-518",
-      "TASK-519"
+      "TASK-519",
+      "TASK-520"
     ],
     "auto-merge": [
       "mem-103"
@@ -11425,7 +11496,9 @@
       "TASK-516",
       "TASK-517",
       "TASK-518",
-      "TASK-519"
+      "TASK-519",
+      "TASK-520",
+      "TASK-521"
     ],
     "conversational-bot": [
       "mem-036",
@@ -11747,7 +11820,8 @@
       "TASK-516",
       "TASK-517",
       "TASK-518",
-      "TASK-519"
+      "TASK-519",
+      "TASK-520"
     ],
     "dispatch": [
       "auto-preserved-wip-recover-by-cherry-pick-continuation",
@@ -12770,7 +12844,9 @@
       "TASK-516",
       "TASK-517",
       "TASK-518",
-      "TASK-519"
+      "TASK-519",
+      "TASK-520",
+      "TASK-521"
     ],
     "testing-quality": [
       "TASK-384",
@@ -12930,7 +13006,8 @@
       "TASK-495",
       "TASK-510",
       "TASK-508",
-      "TASK-518"
+      "TASK-518",
+      "TASK-521"
     ],
     "workflow-discipline": [
       "TASK-359",
@@ -13299,10 +13376,10 @@
       "mem-221"
     ]
   },
-  "last_updated": "2026-10-09T14:59:22.677226+00:00",
+  "last_updated": "2026-10-11T09:52:46.471846+00:00",
   "stats": {
-    "total_nodes": 657,
-    "total_edges": 607,
+    "total_nodes": 659,
+    "total_edges": 616,
     "memory_count": 355
   },
   "metadata": {}

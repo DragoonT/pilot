@@ -1,6 +1,6 @@
 # TASK-518: Side chat as a Navigator — agentic research turns + Pilot issue filing
 
-**Status**: ✅ Leg 1 MERGED + REVIEWED 2026-10-09 — [#5632](https://github.com/qf-studio/pilot/issues/5632) → PR#5633 (c818cfa21), APPROVE-w-notes (6/6 pins kill, 13/13 tests). Founder confirmed all 3 defaults ("go"). **Next: leg 2 (web handler agentic path + confirmed filing) — doc TASK-520 to author + dispatch.** Leg 2 must detect a session reset by `result.SessionID != turn.ResumeSessionID` (the Claude Code backend retries internally, so `SessionReset` never fires there).
+**Status**: ✅ Leg 1 MERGED + REVIEWED 2026-10-09 — [#5632](https://github.com/qf-studio/pilot/issues/5632) → PR#5633 (c818cfa21), APPROVE-w-notes (6/6 pins kill, 13/13 tests). Founder confirmed all 3 defaults ("go"). **Leg 2 DISPATCHED 2026-10-11 as two issues: 2a [#5635](https://github.com/qf-studio/pilot/issues/5635) (TASK-520, comms handler path + card + callback) → 2b [#5636](https://github.com/qf-studio/pilot/issues/5636) (TASK-521, per-project IssueCreator wiring, blocked by #5635).** Finding 10-11: the console UI renders neither `confirmation` nor `progress` chat events and never posts callbacks, so leg 5 must add all three. Leg 2 must detect a session reset by `result.SessionID != turn.ResumeSessionID` (the Claude Code backend retries internally, so `SessionReset` never fires there).
 **Created**: 2026-10-09
 **Assignee**: Navigator (plan, review) · Pilot (legs 1–5) · founder (decisions, prod smoke)
 
@@ -168,7 +168,7 @@ go build ./... && go test ./internal/executor/ ./internal/comms/ ./internal/adap
 - Research: navigator-research agent 2026-10-09 (daemon map; in-session).
 - Prior: TASK-463 (gateway chat API), TASK-464 (console proxy), TASK-469 (latestSeq), TASK-514 (chat enablement).
 - Contracts: `internal/adapters/github/issue_create.go` (`CreatePilotIssue`), `.agent/sops/onboarding/new-project-issue-authoring.md` (issue body shape).
-- Pilot issues: leg 1 → [#5632](https://github.com/qf-studio/pilot/issues/5632) → PR#5633 merged + reviewed (TASK-519)
+- Pilot issues: leg 1 → [#5632](https://github.com/qf-studio/pilot/issues/5632) → PR#5633 merged + reviewed (TASK-519) · leg 2a → [#5635](https://github.com/qf-studio/pilot/issues/5635) (TASK-520) · leg 2b → [#5636](https://github.com/qf-studio/pilot/issues/5636) (TASK-521)
 
 ---
 
