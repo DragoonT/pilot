@@ -1,6 +1,6 @@
 # feat(chat): project selection on the chat wire, a projects route, a per-conversation turn lock and a fence-safe issue body
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-11 → [#5640](https://github.com/qf-studio/pilot/issues/5640) (leg 3 of TASK-518; labels `pilot` + `no-decompose`)
+**Status**: ✅ MERGED + REVIEWED 2026-10-11 — [#5640](https://github.com/qf-studio/pilot/issues/5640) → PR#5642 merged 15:14Z (2226a3264, +493/-2, 14 files); post-merge review **APPROVE-w-notes** (7/7 pins kill). Not in v2.280.0 (cut 14:55Z) → rides the next train. Deviation kept: session dropped only when the project path changes. (leg 3 of TASK-518; labels `pilot` + `no-decompose`)
 **Created**: 2026-10-11
 **Repo**: qf-studio/pilot
 
