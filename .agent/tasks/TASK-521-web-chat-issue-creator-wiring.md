@@ -1,6 +1,6 @@
 # feat(chat): wire a per-project IssueCreator into the web chat handler in both daemon modes
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-11 → [#5636](https://github.com/qf-studio/pilot/issues/5636), blocked by #5635 (leg 2b of TASK-518; labels `pilot` + `no-decompose`)
+**Status**: ✅ MERGED + REVIEWED 2026-10-11 — [#5636](https://github.com/qf-studio/pilot/issues/5636) → PR#5639 merged 11:50Z (7087bac38, +234/-32); post-merge review **APPROVE-w-notes** (3/3 pins kill). Was blocked by #5635 (leg 2b of TASK-518; labels `pilot` + `no-decompose`)
 **Created**: 2026-10-11
 **Repo**: qf-studio/pilot
 

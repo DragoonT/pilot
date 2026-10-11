@@ -1,6 +1,6 @@
 # fix(comms): continue PR #5637 — keep web operational queries on the old path and rewrite TestChatAPI_Composed for the chat-turn flow
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-11 → [#5638](https://github.com/qf-studio/pilot/issues/5638) (CI-fix continuation of #5635 / PR#5637; labels `pilot` + `autopilot-fix` + `no-decompose`)
+**Status**: ✅ DONE 2026-10-11 — [#5638](https://github.com/qf-studio/pilot/issues/5638) picked 11:09Z, commits landed on pilot/GH-5635, PR#5637 green + merged 11:22Z; issue closed by hand (autopilot closer did not fire for a hand-filed fix issue). (CI-fix continuation of #5635 / PR#5637; labels `pilot` + `autopilot-fix` + `no-decompose`)
 **Created**: 2026-10-11
 **Repo**: qf-studio/pilot
 
