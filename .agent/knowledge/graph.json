@@ -2938,6 +2938,29 @@
           "context",
           "deployment"
         ]
+      },
+      "TASK-526": {
+        "path": ".agent/tasks/TASK-526-ui-chat-projects-progress.md",
+        "title": "Task 526 Ui Chat Projects Progress",
+        "status": "dispatched",
+        "concepts": [
+          "context",
+          "api",
+          "frontend",
+          "testing"
+        ]
+      },
+      "TASK-527": {
+        "path": ".agent/tasks/TASK-527-ui-chat-issue-card.md",
+        "title": "Task 527 Ui Chat Issue Card",
+        "status": "dispatched",
+        "concepts": [
+          "api",
+          "context",
+          "frontend",
+          "deployment",
+          "testing"
+        ]
       }
     },
     "memories": {
@@ -11091,6 +11114,51 @@
       "from": "console-wire-contract-gate-needs-raw-body-strings-contains-test",
       "to": "TASK-524",
       "type": "learned-from"
+    },
+    {
+      "from": "TASK-526",
+      "to": "api",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-526",
+      "to": "context",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-526",
+      "to": "frontend",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-526",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-527",
+      "to": "context",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-527",
+      "to": "api",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-527",
+      "to": "deployment",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-527",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-527",
+      "to": "frontend",
+      "type": "implements"
     }
   ],
   "concept_index": {
@@ -11279,7 +11347,9 @@
       "TASK-522",
       "TASK-523",
       "TASK-524",
-      "TASK-525"
+      "TASK-525",
+      "TASK-526",
+      "TASK-527"
     ],
     "approval": [
       "approvals-off-stage-auto-merge",
@@ -11704,7 +11774,9 @@
       "TASK-522",
       "TASK-523",
       "TASK-524",
-      "TASK-525"
+      "TASK-525",
+      "TASK-526",
+      "TASK-527"
     ],
     "conversational-bot": [
       "mem-036",
@@ -12031,7 +12103,8 @@
       "TASK-522",
       "TASK-523",
       "TASK-524",
-      "TASK-525"
+      "TASK-525",
+      "TASK-527"
     ],
     "dispatch": [
       "auto-preserved-wip-recover-by-cherry-pick-continuation",
@@ -12267,7 +12340,9 @@
       "TASK-511",
       "TASK-515",
       "TASK-516",
-      "TASK-517"
+      "TASK-517",
+      "TASK-526",
+      "TASK-527"
     ],
     "gateway": [
       "TASK-01",
@@ -13066,7 +13141,9 @@
       "TASK-523",
       "TASK-524",
       "TASK-525",
-      "console-wire-contract-gate-needs-raw-body-strings-contains-test"
+      "console-wire-contract-gate-needs-raw-body-strings-contains-test",
+      "TASK-526",
+      "TASK-527"
     ],
     "testing-quality": [
       "TASK-384",
@@ -13603,10 +13680,10 @@
       "console-wire-contract-gate-needs-raw-body-strings-contains-test"
     ]
   },
-  "last_updated": "2026-10-12T08:28:29.460507+00:00",
+  "last_updated": "2026-10-12T08:32:09.688408+00:00",
   "stats": {
-    "total_nodes": 667,
-    "total_edges": 637,
+    "total_nodes": 669,
+    "total_edges": 646,
     "memory_count": 357
   },
   "metadata": {}
