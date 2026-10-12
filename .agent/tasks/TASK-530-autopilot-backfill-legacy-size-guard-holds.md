@@ -1,6 +1,6 @@
 # fix(autopilot): backfill legacy size-guard holds into the generic hold fields
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-12 → [#5647](https://github.com/qf-studio/pilot/issues/5647) (labels `pilot` + `no-decompose`)
+**Status**: ✅ REVIEWED 2026-10-12 — [#5647](https://github.com/qf-studio/pilot/issues/5647) → PR#5648 (b134a8dcb, +48/-0, autopilot-merged 11:25Z), review **APPROVE** (2/2 pins kill: drop the migration → `legacy row: active=false head=""`; drop `hold_active = 0` → `generic row: head="other", want keep`). Notes-only: backfilled rows carry empty `hold_labels`, harmless because the legacy size guard only added `needs-human`, which `redriveHeldPR` strips unconditionally; the migrate loop aborts on any non-duplicate-column error, so a broken UPDATE cannot pass silently. Closes the autopilot redrive chain (TASK-528 → 529 → 530).
 **Created**: 2026-10-12
 **Repo**: qf-studio/pilot
 
