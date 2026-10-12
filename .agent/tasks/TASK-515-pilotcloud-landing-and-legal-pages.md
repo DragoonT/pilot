@@ -1,6 +1,6 @@
 # TASK-515: pilotcloud.dev landing page + legal pages (Terminal + Console, console-styled)
 
-**Status**: 🚀 S0 + S1 DISPATCHED 2026-10-09 ~14:30Z — site#1 (scaffold, TASK-516) and site#2 (landing, TASK-517, blocked by #1). Repo `qf-studio/pilotcloud-site` created (private), registered on the box (config entry + clone; daemon restart pending the 14:24Z release run). I1 posted to Nelya in #infrastructure (ts 1791555910.941859). S2 legal pages PARKED until the founder supplies legal name, address and contact email. U1 and S3 not yet filed.
+**Status**: 🚧 10-12 — scaffold MERGED (site#1 → PR#3). Landing BUILT LOCALLY by Navigator on branch `feat/landing-story` (6 commits, head b8a2fea, pushed, no PR yet; site#2 held with `pilot` label off, stays as spec of record). Style pass 1 (console-native depth) done; three real PM-readable vendor-free tickets with ledger figures. Next: open PR closing #2, then style pass 2. S2 legal PARKED (founder facts), S3 deploy waits on Nelya I1 (posted 10-09, no reply), U1 after S2. See marker 2026-10-12_landing-story-local-build.md.
 **Created**: 2026-10-09
 **Assignee**: Navigator (plan, infra request, Paddle resubmit) · Pilot (S0–S3 on the new repo, U1 on console-ui) · Nelya (I1) · founder (legal facts, Paddle verification)
 
