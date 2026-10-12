@@ -1130,6 +1130,31 @@
         "name": "Wire-Contract",
         "aliases": [],
         "domain": "general"
+      },
+      "escalateandhold": {
+        "name": "Escalateandhold",
+        "aliases": [],
+        "domain": "general"
+      },
+      "redrive": {
+        "name": "Redrive",
+        "aliases": [],
+        "domain": "general"
+      },
+      "hold": {
+        "name": "Hold",
+        "aliases": [],
+        "domain": "general"
+      },
+      "restart": {
+        "name": "Restart",
+        "aliases": [],
+        "domain": "general"
+      },
+      "state-store": {
+        "name": "State-Store",
+        "aliases": [],
+        "domain": "general"
       }
     },
     "tasks": {
@@ -2960,6 +2985,30 @@
           "frontend",
           "deployment",
           "testing"
+        ]
+      },
+      "TASK-528": {
+        "path": ".agent/tasks/TASK-528-autopilot-redrive-any-held-pr-on-new-head.md",
+        "title": "Task 528 Autopilot Redrive Any Held Pr On New Head",
+        "status": "dispatched",
+        "concepts": [
+          "api",
+          "theory of mind",
+          "database",
+          "context",
+          "testing",
+          "deployment"
+        ]
+      },
+      "TASK-529": {
+        "path": ".agent/tasks/TASK-529-autopilot-restore-held-prs-after-restart.md",
+        "title": "Task 529 Autopilot Restore Held Prs After Restart",
+        "status": "dispatched",
+        "concepts": [
+          "deployment",
+          "context",
+          "testing",
+          "api"
         ]
       }
     },
@@ -7926,6 +7975,35 @@
         ],
         "created": "2026-10-12",
         "last_validated": "2026-10-12"
+      },
+      "autopilot-held-prs-redrive-only-for-size-guard-holds": {
+        "type": "pitfall",
+        "summary": "escalateAndHold (internal/autopilot/controller.go) has 11 call sites but only 2 revival paths: redriveSizeGuardHeldPR (gated on SizeGuardHoldActive, set only at the 'CI fix size guard fired' site) and reAdoptHeldRebasePR (RebaseHoldActive). A PR held for 'CI failure with zero gathered evidence' or a declined continuation stays in StageFailed forever even after a fix issue pushes a green head, because ProcessPR treats StageFailed as terminal and registerPR is a no-op for an already-tracked PR. Incident: pilot-console PR#388 2026-10-12 (custom CI gate, unparseable log \u2192 zero evidence \u2192 hold \u2192 continuation green \u2192 hand merge). Fix: TASK-528 generalizes the hold triple.",
+        "path": "memories/pitfalls/autopilot-held-prs-redrive-only-for-size-guard-holds.md",
+        "confidence": 0.9,
+        "concepts": [
+          "autopilot",
+          "ci",
+          "escalateandhold",
+          "redrive",
+          "hold"
+        ],
+        "created": "2026-10-12",
+        "last_validated": "2026-10-12"
+      },
+      "autopilot-restorestate-drops-held-failed-prs-on-restart": {
+        "type": "pitfall",
+        "summary": "RestoreState (internal/autopilot/controller.go ~2713) skips every persisted StageFailed row except BreakerHoldActive, so size-guard holds and rebase holds are untracked after a daemon restart (every daily train) and their redrive/re-adopt paths never run; the 'persisted so the hold survives restart' comments are true only on paper. Fix: TASK-529 extends the exception to HoldActive and RebaseHoldActive.",
+        "path": "memories/pitfalls/autopilot-restorestate-drops-held-failed-prs-on-restart.md",
+        "confidence": 0.85,
+        "concepts": [
+          "autopilot",
+          "hold",
+          "restart",
+          "state-store"
+        ],
+        "created": "2026-10-12",
+        "last_validated": "2026-10-12"
       }
     }
   },
@@ -11159,6 +11237,61 @@
       "from": "TASK-527",
       "to": "frontend",
       "type": "implements"
+    },
+    {
+      "from": "TASK-528",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-528",
+      "to": "api",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-528",
+      "to": "database",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-528",
+      "to": "context",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-528",
+      "to": "deployment",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-529",
+      "to": "deployment",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-529",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-529",
+      "to": "context",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-529",
+      "to": "api",
+      "type": "implements"
+    },
+    {
+      "from": "autopilot-held-prs-redrive-only-for-size-guard-holds",
+      "to": "TASK-528",
+      "type": "learned-from"
+    },
+    {
+      "from": "autopilot-restorestate-drops-held-failed-prs-on-restart",
+      "to": "TASK-529",
+      "type": "learned-from"
     }
   ],
   "concept_index": {
@@ -11349,7 +11482,9 @@
       "TASK-524",
       "TASK-525",
       "TASK-526",
-      "TASK-527"
+      "TASK-527",
+      "TASK-528",
+      "TASK-529"
     ],
     "approval": [
       "approvals-off-stage-auto-merge",
@@ -11529,7 +11664,9 @@
       "terminal-status-without-rearm-probe-kills-operator-recovery",
       "deadlock-alert-idle-refire-mark-sent-asymmetry",
       "ci-post-merge-fix-issue-borrows-merged-branch-short-circuits",
-      "mem-221"
+      "mem-221",
+      "autopilot-held-prs-redrive-only-for-size-guard-holds",
+      "autopilot-restorestate-drops-held-failed-prs-on-restart"
     ],
     "aws": [
       "absolute-state-paths-bypass-cutover-shim",
@@ -11583,7 +11720,8 @@
       "outage-shape-is-jobs-never-run-not-jobs-fail",
       "required-checks-allowlist-makes-other-gates-decorative",
       "mem-214",
-      "console-wire-contract-gate-needs-raw-body-strings-contains-test"
+      "console-wire-contract-gate-needs-raw-body-strings-contains-test",
+      "autopilot-held-prs-redrive-only-for-size-guard-holds"
     ],
     "ci-gates": [
       "bake-workflow-tee-masked-failure-promoted-source-ami"
@@ -11776,7 +11914,9 @@
       "TASK-524",
       "TASK-525",
       "TASK-526",
-      "TASK-527"
+      "TASK-527",
+      "TASK-528",
+      "TASK-529"
     ],
     "conversational-bot": [
       "mem-036",
@@ -11903,7 +12043,8 @@
       "TASK-509",
       "TASK-515",
       "TASK-516",
-      "TASK-519"
+      "TASK-519",
+      "TASK-528"
     ],
     "decomposition": [
       "decomposer-narrative-bullets-as-subtask-boundaries",
@@ -12104,7 +12245,9 @@
       "TASK-523",
       "TASK-524",
       "TASK-525",
-      "TASK-527"
+      "TASK-527",
+      "TASK-528",
+      "TASK-529"
     ],
     "dispatch": [
       "auto-preserved-wip-recover-by-cherry-pick-continuation",
@@ -13143,7 +13286,9 @@
       "TASK-525",
       "console-wire-contract-gate-needs-raw-body-strings-contains-test",
       "TASK-526",
-      "TASK-527"
+      "TASK-527",
+      "TASK-528",
+      "TASK-529"
     ],
     "testing-quality": [
       "TASK-384",
@@ -13389,7 +13534,8 @@
       "TASK-511",
       "TASK-515",
       "TASK-516",
-      "TASK-517"
+      "TASK-517",
+      "TASK-528"
     ],
     "stage-semantics": [
       "stagefailed-conflates-healthy-handoff-with-terminal-failure"
@@ -13570,7 +13716,8 @@
       "completed-row-without-live-execution-polled-forever-as-stalled"
     ],
     "restart": [
-      "box-start-script-exec-kills-tmux-on-stop"
+      "box-start-script-exec-kills-tmux-on-stop",
+      "autopilot-restorestate-drops-held-failed-prs-on-restart"
     ],
     "tmux": [
       "box-start-script-exec-kills-tmux-on-stop"
@@ -13678,13 +13825,26 @@
     ],
     "wire-contract": [
       "console-wire-contract-gate-needs-raw-body-strings-contains-test"
+    ],
+    "escalateandhold": [
+      "autopilot-held-prs-redrive-only-for-size-guard-holds"
+    ],
+    "redrive": [
+      "autopilot-held-prs-redrive-only-for-size-guard-holds"
+    ],
+    "hold": [
+      "autopilot-held-prs-redrive-only-for-size-guard-holds",
+      "autopilot-restorestate-drops-held-failed-prs-on-restart"
+    ],
+    "state-store": [
+      "autopilot-restorestate-drops-held-failed-prs-on-restart"
     ]
   },
-  "last_updated": "2026-10-12T08:32:09.688408+00:00",
+  "last_updated": "2026-10-12T09:56:18.075741+00:00",
   "stats": {
-    "total_nodes": 669,
-    "total_edges": 646,
-    "memory_count": 357
+    "total_nodes": 678,
+    "total_edges": 657,
+    "memory_count": 359
   },
   "metadata": {}
 }
