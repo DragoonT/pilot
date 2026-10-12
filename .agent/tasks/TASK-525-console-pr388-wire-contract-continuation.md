@@ -1,6 +1,6 @@
 # fix(chatapi): continue PR #388 — add the raw-body wire-contract test for the projectId field
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-12 → [console#389](https://github.com/qf-studio/pilot-console/issues/389) (CI-fix continuation of console#387 / PR#388; repo qf-studio/pilot-console; labels `pilot` + `autopilot-fix` + `no-decompose`)
+**Status**: ✅ DONE 2026-10-12 — [console#389](https://github.com/qf-studio/pilot-console/issues/389) pushed 17ad4dd33 to pilot/GH-387; all five checks on PR#388 green (wire gate passes). Issue still open with pilot-in-progress (hand-close after the PR merges). (CI-fix continuation of console#387 / PR#388; repo qf-studio/pilot-console; labels `pilot` + `autopilot-fix` + `no-decompose`)
 **Created**: 2026-10-12
 **Repo**: qf-studio/pilot-console
 

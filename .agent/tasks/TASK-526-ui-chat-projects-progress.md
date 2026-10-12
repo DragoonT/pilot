@@ -1,6 +1,6 @@
 # feat(chat): project selector, projectId on send, live progress line and typed events in the side chat
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-12 → [ui#223](https://github.com/qf-studio/pilot-console-ui/issues/223) (leg 5a of TASK-518; repo qf-studio/pilot-console-ui; labels `pilot` + `no-decompose`)
+**Status**: ✅ MERGED + REVIEWED 2026-10-12 — [ui#223](https://github.com/qf-studio/pilot-console-ui/issues/223) → PR#225 merged 08:51Z (fda5ae664, +719/-33); post-merge review **APPROVE-w-notes** (4/4 pins kill; 870 tests). (leg 5a of TASK-518; repo qf-studio/pilot-console-ui; labels `pilot` + `no-decompose`)
 **Created**: 2026-10-12
 **Repo**: qf-studio/pilot-console-ui
 

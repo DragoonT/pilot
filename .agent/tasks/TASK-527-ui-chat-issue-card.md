@@ -1,6 +1,6 @@
 # feat(chat): render the pilot-issue confirmation card with File / Discard, send callbacks, and autolink URLs in replies
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-12 → [ui#224](https://github.com/qf-studio/pilot-console-ui/issues/224), blocked by ui#223 (leg 5b of TASK-518; repo qf-studio/pilot-console-ui; labels `pilot` + `no-decompose`)
+**Status**: ✅ MERGED + REVIEWED 2026-10-12 — [ui#224](https://github.com/qf-studio/pilot-console-ui/issues/224) → PR#226 merged 09:09Z (a40038dff, +432/-15); post-merge review **APPROVE-w-notes** (4/4 pins kill). Follow-up candidate: mark cards decided from a later "Filed "/"Issue draft discarded." text event so reloads do not re-arm old cards. (leg 5b of TASK-518; repo qf-studio/pilot-console-ui; labels `pilot` + `no-decompose`)
 **Created**: 2026-10-12
 **Repo**: qf-studio/pilot-console-ui
 
