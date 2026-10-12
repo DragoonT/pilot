@@ -1,6 +1,6 @@
 # fix(autopilot): redrive any human-held PR when its branch gets a new head, not only size-guard holds
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-12 → [#5643](https://github.com/qf-studio/pilot/issues/5643) (labels `pilot` + `no-decompose`)
+**Status**: ✅ REVIEWED 2026-10-12 — [#5643](https://github.com/qf-studio/pilot/issues/5643) → PR#5645 (head e41601373, +651/-246), review **APPROVE-w-notes** posted while autopilot was merging (6/6 pins kill, full package green). Note: legacy size-guard holds need a backfill → folded into TASK-529. (labels `pilot` + `no-decompose`)
 **Created**: 2026-10-12
 **Repo**: qf-studio/pilot
 
