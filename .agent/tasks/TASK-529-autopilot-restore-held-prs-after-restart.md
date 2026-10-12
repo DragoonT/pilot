@@ -1,6 +1,6 @@
 # fix(autopilot): rehydrate human-held PRs on daemon restart so their redrive survives a train
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-12 → [#5644](https://github.com/qf-studio/pilot/issues/5644), blocked by #5643 (labels `pilot` + `no-decompose`)
+**Status**: ✅ REVIEWED 2026-10-12 — [#5644](https://github.com/qf-studio/pilot/issues/5644) → PR#5646 (f5369e08f, +102/-2), review **APPROVE** (3/3 pins kill). The backfill amendment landed after pickup (10:28Z vs 10:35Z) and is missing → split out as [#5647](https://github.com/qf-studio/pilot/issues/5647) (TASK-530). Lesson: amend an issue body only before the daemon picks it up; after pickup, file a follow-up. (labels `pilot` + `no-decompose`)
 **Created**: 2026-10-12
 **Repo**: qf-studio/pilot
 

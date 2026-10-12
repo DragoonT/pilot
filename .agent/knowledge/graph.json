@@ -3010,6 +3010,17 @@
           "testing",
           "api"
         ]
+      },
+      "TASK-530": {
+        "path": ".agent/tasks/TASK-530-autopilot-backfill-legacy-size-guard-holds.md",
+        "title": "Task 530 Autopilot Backfill Legacy Size Guard Holds",
+        "status": "dispatched",
+        "concepts": [
+          "api",
+          "database",
+          "testing",
+          "context"
+        ]
       }
     },
     "memories": {
@@ -11292,6 +11303,26 @@
       "from": "autopilot-restorestate-drops-held-failed-prs-on-restart",
       "to": "TASK-529",
       "type": "learned-from"
+    },
+    {
+      "from": "TASK-530",
+      "to": "api",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-530",
+      "to": "database",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-530",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-530",
+      "to": "context",
+      "type": "implements"
     }
   ],
   "concept_index": {
@@ -11484,7 +11515,8 @@
       "TASK-526",
       "TASK-527",
       "TASK-528",
-      "TASK-529"
+      "TASK-529",
+      "TASK-530"
     ],
     "approval": [
       "approvals-off-stage-auto-merge",
@@ -11916,7 +11948,8 @@
       "TASK-526",
       "TASK-527",
       "TASK-528",
-      "TASK-529"
+      "TASK-529",
+      "TASK-530"
     ],
     "conversational-bot": [
       "mem-036",
@@ -12044,7 +12077,8 @@
       "TASK-515",
       "TASK-516",
       "TASK-519",
-      "TASK-528"
+      "TASK-528",
+      "TASK-530"
     ],
     "decomposition": [
       "decomposer-narrative-bullets-as-subtask-boundaries",
@@ -13288,7 +13322,8 @@
       "TASK-526",
       "TASK-527",
       "TASK-528",
-      "TASK-529"
+      "TASK-529",
+      "TASK-530"
     ],
     "testing-quality": [
       "TASK-384",
@@ -13840,10 +13875,10 @@
       "autopilot-restorestate-drops-held-failed-prs-on-restart"
     ]
   },
-  "last_updated": "2026-10-12T09:56:18.075741+00:00",
+  "last_updated": "2026-10-12T10:59:49.681030+00:00",
   "stats": {
-    "total_nodes": 678,
-    "total_edges": 657,
+    "total_nodes": 679,
+    "total_edges": 661,
     "memory_count": 359
   },
   "metadata": {}
