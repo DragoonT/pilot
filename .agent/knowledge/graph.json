@@ -1125,6 +1125,11 @@
         "name": "Chat",
         "aliases": [],
         "domain": "general"
+      },
+      "wire-contract": {
+        "name": "Wire-Contract",
+        "aliases": [],
+        "domain": "general"
       }
     },
     "tasks": {
@@ -2921,6 +2926,17 @@
           "authentication",
           "testing",
           "context"
+        ]
+      },
+      "TASK-525": {
+        "path": ".agent/tasks/TASK-525-console-pr388-wire-contract-continuation.md",
+        "title": "Task 525 Console Pr388 Wire Contract Continuation",
+        "status": "dispatched",
+        "concepts": [
+          "api",
+          "testing",
+          "context",
+          "deployment"
         ]
       }
     },
@@ -7872,6 +7888,21 @@
         ],
         "created": "2026-10-11",
         "last_validated": "2026-10-11"
+      },
+      "console-wire-contract-gate-needs-raw-body-strings-contains-test": {
+        "type": "pitfall",
+        "summary": "pilot-console CI job 'Check Wire-Contract Tests' (scripts/check-wire-contract-tests.sh) fails any PR that adds or changes a json-tagged field in a handler/DTO struct unless a test in the SAME package reads rec.Body.String() and then asserts strings.Contains(...) naming the field inside one test function; fake-gateway request assertions and bytes.Equal relays do not count. Console PR#388 (TASK-524, 2026-10-12) was held by autopilot for this. Every console spec that adds a JSON field must name a Test<Handler>_<Field>JSON with that exact shape and add 'make check-wire-contract-tests passes; paste the output' as an acceptance bullet.",
+        "path": "memories/pitfalls/console-wire-contract-gate-needs-raw-body-strings-contains-test.md",
+        "confidence": 0.9,
+        "concepts": [
+          "issue-authoring",
+          "testing",
+          "pilot-console",
+          "ci",
+          "wire-contract"
+        ],
+        "created": "2026-10-12",
+        "last_validated": "2026-10-12"
       }
     }
   },
@@ -11035,6 +11066,31 @@
       "from": "TASK-524",
       "to": "authentication",
       "type": "implements"
+    },
+    {
+      "from": "TASK-525",
+      "to": "context",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-525",
+      "to": "deployment",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-525",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-525",
+      "to": "api",
+      "type": "implements"
+    },
+    {
+      "from": "console-wire-contract-gate-needs-raw-body-strings-contains-test",
+      "to": "TASK-524",
+      "type": "learned-from"
     }
   ],
   "concept_index": {
@@ -11222,7 +11278,8 @@
       "TASK-521",
       "TASK-522",
       "TASK-523",
-      "TASK-524"
+      "TASK-524",
+      "TASK-525"
     ],
     "approval": [
       "approvals-off-stage-auto-merge",
@@ -11455,7 +11512,8 @@
       "mem-179",
       "outage-shape-is-jobs-never-run-not-jobs-fail",
       "required-checks-allowlist-makes-other-gates-decorative",
-      "mem-214"
+      "mem-214",
+      "console-wire-contract-gate-needs-raw-body-strings-contains-test"
     ],
     "ci-gates": [
       "bake-workflow-tee-masked-failure-promoted-source-ami"
@@ -11645,7 +11703,8 @@
       "TASK-521",
       "TASK-522",
       "TASK-523",
-      "TASK-524"
+      "TASK-524",
+      "TASK-525"
     ],
     "conversational-bot": [
       "mem-036",
@@ -11971,7 +12030,8 @@
       "TASK-520",
       "TASK-522",
       "TASK-523",
-      "TASK-524"
+      "TASK-524",
+      "TASK-525"
     ],
     "dispatch": [
       "auto-preserved-wip-recover-by-cherry-pick-continuation",
@@ -12335,7 +12395,8 @@
       "mem-211",
       "mem-220",
       "mem-221",
-      "spec-rerouting-a-platform-must-rewrite-composed-tests-of-the-old-flow"
+      "spec-rerouting-a-platform-must-rewrite-composed-tests-of-the-old-flow",
+      "console-wire-contract-gate-needs-raw-body-strings-contains-test"
     ],
     "knowledge": [
       "TASK-368",
@@ -12620,7 +12681,8 @@
       "mem-217",
       "TASK-512",
       "mem-218",
-      "mem-219"
+      "mem-219",
+      "console-wire-contract-gate-needs-raw-body-strings-contains-test"
     ],
     "pilot-task-command": [
       "TASK-03",
@@ -13002,7 +13064,9 @@
       "spec-rerouting-a-platform-must-rewrite-composed-tests-of-the-old-flow",
       "TASK-522",
       "TASK-523",
-      "TASK-524"
+      "TASK-524",
+      "TASK-525",
+      "console-wire-contract-gate-needs-raw-body-strings-contains-test"
     ],
     "testing-quality": [
       "TASK-384",
@@ -13534,13 +13598,16 @@
     ],
     "chat": [
       "spec-rerouting-a-platform-must-rewrite-composed-tests-of-the-old-flow"
+    ],
+    "wire-contract": [
+      "console-wire-contract-gate-needs-raw-body-strings-contains-test"
     ]
   },
-  "last_updated": "2026-10-12T07:33:07.759734+00:00",
+  "last_updated": "2026-10-12T08:28:29.460507+00:00",
   "stats": {
-    "total_nodes": 664,
-    "total_edges": 632,
-    "memory_count": 356
+    "total_nodes": 667,
+    "total_edges": 637,
+    "memory_count": 357
   },
   "metadata": {}
 }

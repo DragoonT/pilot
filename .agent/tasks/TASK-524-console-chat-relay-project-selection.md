@@ -1,6 +1,6 @@
 # feat(chatapi): relay projectId, surface the daemon's unknown-project 400, and proxy GET /api/v1/chat/projects
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-12 → [console#387](https://github.com/qf-studio/pilot-console/issues/387) (leg 4 of TASK-518; repo qf-studio/pilot-console; labels `pilot` + `no-decompose`)
+**Status**: 🔁 CONTINUATION 2026-10-12 — [console#387](https://github.com/qf-studio/pilot-console/issues/387) → PR#388 (+401/-8) held by autopilot: the console wire-contract gate wants a raw-body strings.Contains test for the new `projectId` field (spec gap, memory `console-wire-contract-gate-needs-raw-body-strings-contains-test`). Continuation [console#389](https://github.com/qf-studio/pilot-console/issues/389) (TASK-525) adds the two JSON tests on the PR branch. (leg 4 of TASK-518; repo qf-studio/pilot-console; labels `pilot` + `no-decompose`)
 **Created**: 2026-10-12
 **Repo**: qf-studio/pilot-console
 
