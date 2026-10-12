@@ -1,0 +1,25 @@
+# Side chat as a Navigator — architecture note (TASK-518, shipped 2026-10-09 → 10-12)
+
+One paragraph per layer. Source of truth is the code; this note says where to look and what the contracts are.
+
+## Daemon (pilot)
+
+- **Turn model**: every web chat text (Platform `web`, not a `/command`, not an operational query, not a yes/no shortcut) runs `Runner.ExecuteChatTurn` (`internal/executor/chat_turn.go`): one agentic Claude Code session, **read-only allowlist** `ChatReadOnlyTools` (Read, Grep, Glob, LS, Task, Bash scoped to git log/show/diff/blame/ls-files, rg, ls), `--resume` on the conversation's stored session id, MaxTurns 40, 5 min timeout, no Task/lifecycle/worktree/task-doc side effects. Routed from `internal/comms/handler.go` HandleMessage → `internal/comms/chat_turn_handler.go`. Per-conversation turn lock (`chatTurnBusy`) answers "A turn is already running for this conversation…" as a text event.
+- **Prompt**: `internal/executor/chat_prompt.go` `BuildChatPrompt` embeds the navigator-research method (read `.agent/DEVELOPMENT-README.md`, grep `graph.json` + memories, sample, cite `path:line`) because tenant boxes have no Navigator plugin. Resumed turns send only the user text. Session reset is detected by a changed `SessionID` (the Claude Code backend retries without `--resume` internally; `SessionReset` never fires there).
+- **Issue filing**: the prompt's contract ends a filing reply with one fenced block, info string `pilot-issue`, YAML keys `title` (conventional-commit regex), `labels` (pilot added if missing), `body` (H2 Context/Scope/Acceptance Criteria/Out of scope/Refs; files-to-create in plain text; no triple-backtick fences inside the body). `internal/comms/pilot_issue_block.go` parses the last block; the handler emits a **confirmation** event (`taskId`/`messageRef` = `issue-<8hex>`, text "File Pilot issue: <title>\n\n<400-char preview> (project)"); callback `file`/`execute`/`yes` → `IssueCreator.CreateIssue` on the **active project's repo** with a `## Refs` bullet "Filed from Pilot Console chat <conv>"; `discard`/`cancel`/`no` → "Issue draft discarded." Cards expire after 30 min.
+- **IssueCreator**: `buildCommsIssueCreator` (`cmd/pilot/main.go`) builds one `IssueCreatorEntry` per `projects[].github` (owner/repo keyed by path) plus the `adapters.github.repo` fallback; wired at both construction sites (polling: main.go; gateway: `internal/pilot/pilot.go` `WithChatIssueCreator`).
+- **Wire** (`internal/gateway/chat.go`, `internal/adapters/web/api.go`): `POST /api/v1/chat/messages` accepts optional `projectId` (= config project name; unknown → 400 "unknown project: <id>"); POST 202 and events 200 bodies carry `projectId`; `GET /api/v1/chat/projects` → `{projects:[{id,name,path,repo,default}]}`; all behind the gateway bearer. Event types: `text`, `progress` (one line per tool call, ≤1 per 500 ms, `taskId` "chat-<conv>"), `confirmation`, `result`.
+
+## Console proxy (pilot-console `internal/chatapi`, `internal/chat`)
+
+Byte-faithful relay, no chat state. `projectId` relayed on POST; daemon 400 `unknown project:` → console 400 code `unknown_project` with the daemon text; any other upstream 400 → 400 `bad_request` without the body; daemon 404 → 409 `chat_not_enabled`; else 502. `GET /api/v1/chat/projects` proxied verbatim behind session auth. **CI gate**: `scripts/check-wire-contract-tests.sh` requires a same-package test that reads `rec.Body.String()` and asserts `strings.Contains` naming every new JSON field.
+
+## UI (pilot-console-ui `src/stores/chat.ts`, `src/design-system/components/ChatWindow.vue`)
+
+`ChatEvent` carries `taskId/messageRef/phase/progress/prUrl/success`. Store: `projects`, `selectedProjectId` (persisted per org, default = project flagged default; cleared + reloaded on `unknown_project`), `progressLine` (progress events never enter the transcript), `cardPending`/`cardDecided`, `decideCard(callbackId, actionId)` → `sendChatCallback`. Window: project `<select>` in the header (hidden with <2 projects), progress line replaces the pulse row, confirmation events render as a card (File/Discard for `issue-` ids, Execute/Cancel otherwise; "Sending…"/"Decided" states), https URLs in assistant text autolink. Known gap: decided state is memory-only, a reload re-arms old cards (daemon answers "No pending issue card.").
+
+## Rollout notes
+
+- Legs 1, 2a, 2b are in daemon v2.280.0; leg 3 (`projectId`, projects route, turn lock, fence rule) rides the train after it. Until tenants upgrade, the console's projects call answers 409 and the UI hides the selector.
+- Spec lessons from this program: name the composed/integration tests outside the changed package that encode the old flow (memory `spec-rerouting-a-platform-must-rewrite-composed-tests-of-the-old-flow`); console specs adding JSON fields need the wire-contract test (memory `console-wire-contract-gate-needs-raw-body-strings-contains-test`); amend an issue body only before pickup, else file a follow-up.
+- Autopilot side effect found and fixed: held PRs now redrive on a new head for all CI-side hold reasons (PR#5645), survive restarts (PR#5646), legacy size-guard holds backfilled (#5647).
