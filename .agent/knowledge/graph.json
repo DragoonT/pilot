@@ -2866,9 +2866,9 @@
         ]
       },
       "TASK-518": {
-        "path": ".agent/tasks/TASK-518-side-chat-navigator-research-and-issue-filing.md",
+        "path": ".agent/tasks/archive/TASK-518-side-chat-navigator-research-and-issue-filing.md",
         "title": "Side chat as a Navigator — agentic research turns + Pilot issue filing",
-        "status": "backlog",
+        "status": "archived",
         "concepts": [
           "knowledge",
           "workflow",
@@ -2881,9 +2881,9 @@
         ]
       },
       "TASK-519": {
-        "path": ".agent/tasks/TASK-519-chat-turn-execution-mode.md",
+        "path": ".agent/tasks/archive/TASK-519-chat-turn-execution-mode.md",
         "title": "Task 519 Chat Turn Execution Mode",
-        "status": "dispatched",
+        "status": "archived",
         "concepts": [
           "skills",
           "knowledge",
@@ -2895,9 +2895,9 @@
         ]
       },
       "TASK-520": {
-        "path": ".agent/tasks/TASK-520-web-chat-agentic-path.md",
+        "path": ".agent/tasks/archive/TASK-520-web-chat-agentic-path.md",
         "title": "Task 520 Web Chat Agentic Path",
-        "status": "dispatched",
+        "status": "archived",
         "concepts": [
           "api",
           "authentication",
@@ -2907,9 +2907,9 @@
         ]
       },
       "TASK-521": {
-        "path": ".agent/tasks/TASK-521-web-chat-issue-creator-wiring.md",
+        "path": ".agent/tasks/archive/TASK-521-web-chat-issue-creator-wiring.md",
         "title": "Task 521 Web Chat Issue Creator Wiring",
-        "status": "dispatched",
+        "status": "archived",
         "concepts": [
           "api",
           "workflow",
@@ -2918,9 +2918,9 @@
         ]
       },
       "TASK-522": {
-        "path": ".agent/tasks/TASK-522-pr5637-ci-fix-continuation.md",
+        "path": ".agent/tasks/archive/TASK-522-pr5637-ci-fix-continuation.md",
         "title": "Task 522 Pr5637 Ci Fix Continuation",
-        "status": "dispatched",
+        "status": "archived",
         "concepts": [
           "authentication",
           "context",
@@ -2930,9 +2930,9 @@
         ]
       },
       "TASK-523": {
-        "path": ".agent/tasks/TASK-523-chat-project-selection-wire.md",
+        "path": ".agent/tasks/archive/TASK-523-chat-project-selection-wire.md",
         "title": "Task 523 Chat Project Selection Wire",
-        "status": "dispatched",
+        "status": "archived",
         "concepts": [
           "context",
           "api",
@@ -2942,9 +2942,9 @@
         ]
       },
       "TASK-524": {
-        "path": ".agent/tasks/TASK-524-console-chat-relay-project-selection.md",
+        "path": ".agent/tasks/archive/TASK-524-console-chat-relay-project-selection.md",
         "title": "Task 524 Console Chat Relay Project Selection",
-        "status": "dispatched",
+        "status": "archived",
         "concepts": [
           "api",
           "deployment",
@@ -2954,9 +2954,9 @@
         ]
       },
       "TASK-525": {
-        "path": ".agent/tasks/TASK-525-console-pr388-wire-contract-continuation.md",
+        "path": ".agent/tasks/archive/TASK-525-console-pr388-wire-contract-continuation.md",
         "title": "Task 525 Console Pr388 Wire Contract Continuation",
-        "status": "dispatched",
+        "status": "archived",
         "concepts": [
           "api",
           "testing",
@@ -2965,9 +2965,9 @@
         ]
       },
       "TASK-526": {
-        "path": ".agent/tasks/TASK-526-ui-chat-projects-progress.md",
+        "path": ".agent/tasks/archive/TASK-526-ui-chat-projects-progress.md",
         "title": "Task 526 Ui Chat Projects Progress",
-        "status": "dispatched",
+        "status": "archived",
         "concepts": [
           "context",
           "api",
@@ -2976,9 +2976,9 @@
         ]
       },
       "TASK-527": {
-        "path": ".agent/tasks/TASK-527-ui-chat-issue-card.md",
+        "path": ".agent/tasks/archive/TASK-527-ui-chat-issue-card.md",
         "title": "Task 527 Ui Chat Issue Card",
-        "status": "dispatched",
+        "status": "archived",
         "concepts": [
           "api",
           "context",
@@ -2988,9 +2988,9 @@
         ]
       },
       "TASK-528": {
-        "path": ".agent/tasks/TASK-528-autopilot-redrive-any-held-pr-on-new-head.md",
+        "path": ".agent/tasks/archive/TASK-528-autopilot-redrive-any-held-pr-on-new-head.md",
         "title": "Task 528 Autopilot Redrive Any Held Pr On New Head",
-        "status": "dispatched",
+        "status": "archived",
         "concepts": [
           "api",
           "theory of mind",
@@ -3001,9 +3001,9 @@
         ]
       },
       "TASK-529": {
-        "path": ".agent/tasks/TASK-529-autopilot-restore-held-prs-after-restart.md",
+        "path": ".agent/tasks/archive/TASK-529-autopilot-restore-held-prs-after-restart.md",
         "title": "Task 529 Autopilot Restore Held Prs After Restart",
-        "status": "dispatched",
+        "status": "archived",
         "concepts": [
           "deployment",
           "context",
@@ -3012,9 +3012,9 @@
         ]
       },
       "TASK-530": {
-        "path": ".agent/tasks/TASK-530-autopilot-backfill-legacy-size-guard-holds.md",
+        "path": ".agent/tasks/archive/TASK-530-autopilot-backfill-legacy-size-guard-holds.md",
         "title": "Task 530 Autopilot Backfill Legacy Size Guard Holds",
-        "status": "dispatched",
+        "status": "archived",
         "concepts": [
           "api",
           "database",
