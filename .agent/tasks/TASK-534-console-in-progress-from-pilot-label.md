@@ -1,6 +1,6 @@
 # feat(syncingest): derive In Progress for GitHub-linked cards from the pilot-in-progress label
 
-**Status**: ✅ REVIEWED 2026-10-13 — [#391](https://github.com/qf-studio/pilot-console/issues/391) → PR#392 (75e72df66, +472/-128, autopilot-merged 10:53Z), review **APPROVE-w-notes** (5/5 pins kill). Note: buildShadowSnapshot folds the derived key for non-status ops too, which can swallow a label flip that lands between ingests (card stuck Todo until the next label change) → continuation [#393](https://github.com/qf-studio/pilot-console/issues/393) (fold only in the status-op branch + one pin).
+**Status**: ✅ REVIEWED 2026-10-13 — [#391](https://github.com/qf-studio/pilot-console/issues/391) → PR#392 (75e72df66, +472/-128, autopilot-merged 10:53Z), review **APPROVE-w-notes** (5/5 pins kill). Note: buildShadowSnapshot folds the derived key for non-status ops too, which can swallow a label flip that lands between ingests (card stuck Todo until the next label change) → continuation [#393](https://github.com/qf-studio/pilot-console/issues/393) → PR#394 (12bd6263c, +55/-10, merged 11:23Z) reviewed **APPROVE** (2/2 pins kill); non-status ops now carry the existing shadow ProviderState forward. **TASK-534 complete.**
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot-console
 

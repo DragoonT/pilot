@@ -1,6 +1,6 @@
 # fix(comms): chat-filed issues must not cite untracked paths (base-presence hold)
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-13 → [#5650](https://github.com/qf-studio/pilot/issues/5650) (labels `pilot` + `no-decompose`)
+**Status**: ✅ REVIEWED 2026-10-13 — [#5650](https://github.com/qf-studio/pilot/issues/5650) → PR#5653 (38b993a4e, +194/-0, autopilot-merged 11:13Z), review **APPROVE** (3/3 pins kill; full comms suite ok). Notes-only: the card-step probe fetches origin once per draft (own cache, not the runner's baseRefCache) and fails open on a fetch collision with the executor.
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot
 
