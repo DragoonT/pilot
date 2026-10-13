@@ -43,3 +43,9 @@ Founder box, v2.282.0, 2026-10-13: the 16:00 train moved its carrier PR#5656 to 
 - Tests: `internal/autopilot/gh5541_stage_deadline_test.go` (blocked-handler template), `internal/autopilot/release_backfill_test.go` (releaseBackfillServer, releaseBackfillClock)
 - Precedents: GH-5541 stage deadline, GH-5554 guard ordering, GH-4919 backfill backoff
 - Pilot issue: https://github.com/qf-studio/pilot/issues/5657
+
+## Incident mitigation applied 2026-10-13 (operator, SSM)
+
+- 14:58Z `kill -QUIT` on the wedged daemon (dump in daemon-stderr.log), 15:18Z restart via `tmux new-session -d -s pilot ~/start-pilot.sh`.
+- 15:22Z `UPDATE autopilot_pr_state SET release_backfill_abandoned=1 WHERE repo='qf-studio/pilot' AND pr_number=5656` so the backfill sweep skips the orphaned carrier row; the restarted controller still had to finish one full 903-tag walk first.
+- The scope row train:2026-10-13T14:00:00Z stays `releasing`; it only blocks recovery of that one slot.

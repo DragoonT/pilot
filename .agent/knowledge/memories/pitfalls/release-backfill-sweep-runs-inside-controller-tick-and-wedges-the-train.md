@@ -14,4 +14,6 @@ type: pitfall
 
 **Fix:** TASK-539 — per-pass context deadline and call cap for the epicParent reconcilers (or run them off the tick goroutine), newest-first / binary-search compare in `earliestReleaseTagContaining` with a per-row cap, WARN when a tick exceeds N s.
 
+**Mitigation that works today:** flag the orphaned row `release_backfill_abandoned=1` in autopilot_pr_state (python3 sqlite3 over SSM; sqlite3 CLI is not on the box), then restart; the sweep skips abandoned rows (`reconcileReleaseBackfill`). Note the restarted daemon enters the epicParent branch before the first PR tick, so one full walk still happens if the row is not flagged BEFORE the restart.
+
 **How to apply:** when a repo's autopilot "stops" with no log lines at all, suspect a synchronous reconciler inside the Run tick before suspecting locks. Get a goroutine dump: the box daemon's stderr is a file, `kill -QUIT <pid>` dumps and exits, the operator restarts in tmux (`~/start-pilot.sh`). Never add long GitHub walks to the tick branch without a deadline.
