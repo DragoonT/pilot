@@ -1,6 +1,6 @@
 # fix(comms): chat-filed issues must not cite untracked paths (base-presence hold)
 
-**Status**: 📋 Planned 2026-10-13
+**Status**: 🚀 Dispatched to Pilot 2026-10-13 → [#5650](https://github.com/qf-studio/pilot/issues/5650) (labels `pilot` + `no-decompose`)
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot
 
@@ -43,3 +43,4 @@ Fix at two layers: a prompt rule (cheap, reduces incidence) and a deterministic 
 - `internal/executor/navigator.go` (the .agent scaffold writer)
 - Test fixtures: `internal/comms/chat_turn_handler_test.go` (newWebChat), `internal/executor/base_presence_gh5601_test.go` (newForgeProject)
 - SOP: `.agent/sops/onboarding/new-project-issue-authoring.md` Rule 3b
+- Pilot issue: https://github.com/qf-studio/pilot/issues/5650

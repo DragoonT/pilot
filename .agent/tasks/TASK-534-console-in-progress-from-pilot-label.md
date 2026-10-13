@@ -1,6 +1,6 @@
 # feat(syncingest): derive In Progress for GitHub-linked cards from the pilot-in-progress label
 
-**Status**: 📋 Planned 2026-10-13
+**Status**: 🚀 Dispatched to Pilot 2026-10-13 → [#391](https://github.com/qf-studio/pilot-console/issues/391) (labels `pilot` + `no-decompose`)
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot-console
 
@@ -44,3 +44,4 @@ A GitHub-linked card's status derives only from the issue being open or closed (
 - `internal/statusmap/rules.go`, `internal/syncingest/mapping.go`, `internal/syncingest/worker.go`, `internal/syncoutbound/worker.go`, `internal/boardapi/dispatch.go`, `internal/syncengine/reconcile.go`
 - Tests to extend: `internal/syncingest/mapping_test.go`, `internal/syncingest/worker_test.go`
 - Design: pilot repo .agent/system/saas-kanban-sync-design.md sections 4 to 6 (plain text, lives in another repo)
+- Pilot issue: https://github.com/qf-studio/pilot-console/issues/391

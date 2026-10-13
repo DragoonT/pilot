@@ -4,7 +4,7 @@
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot-console
 
-Blocked by: the In Progress derivation issue (TASK-534) — shared worker.go; independent of TASK-535
+Blocked by: pilot-console#391 (TASK-534, shared worker.go); independent of TASK-535
 
 ## Context
 

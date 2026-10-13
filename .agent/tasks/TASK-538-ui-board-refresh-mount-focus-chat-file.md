@@ -1,6 +1,6 @@
 # fix(board): refresh cards on mount, on tab focus and after a chat File; never stall polling
 
-**Status**: 📋 Planned 2026-10-13
+**Status**: 🚀 Dispatched to Pilot 2026-10-13 → [#227](https://github.com/qf-studio/pilot-console-ui/issues/227) (labels `pilot` + `no-decompose`)
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot-console-ui
 
@@ -35,3 +35,4 @@ Blocked by: none (pilot-console TASK-536 makes the File refresh land faster)
 
 - `src/stores/board.ts`, `src/views/BoardView.vue`, `src/views/BoardCardDrawer.vue`, `src/composables/usePolling.ts`, `src/stores/chat.ts`, `src/stores/auth.ts`, `src/lib/relativeTime.ts`
 - Tests: `src/views/__tests__/BoardView.spec.ts`, `src/stores/__tests__/board.spec.ts`, `src/stores/__tests__/chat.spec.ts`, `src/composables/__tests__/usePolling.spec.ts`
+- Pilot issue: https://github.com/qf-studio/pilot-console-ui/issues/227

@@ -4,7 +4,7 @@
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot-console
 
-Blocked by: pilot TASK-532 and TASK-533 released on a train (a daemon older than that fails boot with auto_hot_upgrade true under PILOT_HOSTED=1)
+Blocked by: pilot#5651 and pilot#5652 (TASK-532, TASK-533) released on a train (a daemon older than that fails boot with auto_hot_upgrade true under PILOT_HOSTED=1)
 
 ## Context
 

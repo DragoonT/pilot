@@ -1,6 +1,6 @@
 # feat(upgrade): verify release asset sha256 against checksums.txt before install
 
-**Status**: 📋 Planned 2026-10-13
+**Status**: 🚀 Dispatched to Pilot 2026-10-13 → [#5652](https://github.com/qf-studio/pilot/issues/5652) (labels `pilot` + `no-decompose`)
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot
 
@@ -33,3 +33,4 @@ Headless tenants will soon exec into whatever downloadAsset in `internal/upgrade
 
 - `internal/upgrade/upgrade.go` (downloadAsset, Upgrade, createBackup), `internal/upgrade/upgrade_test.go`, `internal/upgrade/hot_test.go` (httptest client swap), `internal/upgrade/hot.go`
 - `.goreleaser.yaml` (checksums.txt publication)
+- Pilot issue: https://github.com/qf-studio/pilot/issues/5652

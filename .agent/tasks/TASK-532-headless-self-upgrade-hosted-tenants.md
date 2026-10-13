@@ -1,6 +1,6 @@
 # feat(upgrade): headless self-upgrade so hosted tenants track the release train
 
-**Status**: 📋 Planned 2026-10-13
+**Status**: 🚀 Dispatched to Pilot 2026-10-13 → [#5651](https://github.com/qf-studio/pilot/issues/5651) (labels `pilot` + `no-decompose`)
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot
 
@@ -43,3 +43,4 @@ The founder tenant ran Pilot 2.276.1 while the release train was at v2.281.0; a 
 - `internal/executor/dispatcher.go` (GetRunningTaskIDs), `internal/executor/monitor.go` (WaitForRunningTasks, ErrDrainTimeout)
 - Memories: pitfall self-upgrade requires manual keypress (GH-3790), decision self-upgrade auto trigger and staleness check
 - SOP: `.agent/sops/operations/tenant-binary-upgrade-ssm.md` (the manual path this replaces)
+- Pilot issue: https://github.com/qf-studio/pilot/issues/5651
