@@ -1,6 +1,6 @@
 # fix(board): refresh cards on mount, on tab focus and after a chat File; never stall polling
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-13 → [#227](https://github.com/qf-studio/pilot-console-ui/issues/227) (labels `pilot` + `no-decompose`)
+**Status**: ✅ REVIEWED 2026-10-13 — [ui#227](https://github.com/qf-studio/pilot-console-ui/issues/227) → PR#228 (9b21140ed, +308/-25, autopilot-merged 10:57Z), review **APPROVE** (3/3 pins kill; full suite 880/880). Notes-only: Node 25 webstorage stub breaks local vitest runs unless NODE_OPTIONS=--no-experimental-webstorage (CI unaffected); no in-flight guard on refreshAll (benign duplicate fetch).
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot-console-ui
 

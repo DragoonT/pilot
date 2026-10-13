@@ -1,6 +1,6 @@
 # feat(syncingest): nudge the ingest worker after a chat File callback and after dispatch
 
-**Status**: 📋 Planned 2026-10-13
+**Status**: 🚀 Dispatched to Pilot 2026-10-13 → [#396](https://github.com/qf-studio/pilot-console/issues/396) (labels `pilot` + `no-decompose`)
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot-console
 
@@ -40,3 +40,4 @@ Ingest is ticker-only (Run in `internal/syncingest/worker.go`, 60 second default
 - `internal/chatapi/routes.go`, `internal/chatapi/handlers.go`, `internal/chatapi/handlers_test.go`
 - `internal/boardapi/routes.go`, `internal/boardapi/dispatch.go`, `internal/boardapi/dispatch_test.go`
 - `main.go` (startSyncIngest, registerBoard, registerChat)
+- Pilot issue: https://github.com/qf-studio/pilot-console/issues/396

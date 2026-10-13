@@ -1,6 +1,6 @@
 # feat(board): journal ingest-observed status transitions and merged PRs into activity_journal
 
-**Status**: 📋 Planned 2026-10-13
+**Status**: 🚀 Dispatched to Pilot 2026-10-13 → [#395](https://github.com/qf-studio/pilot-console/issues/395) (labels `pilot` + `no-decompose`)
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot-console
 
@@ -44,3 +44,4 @@ activity_journal is written only by the console verbs (journalActivity in `inter
 - `internal/syncingest/worker.go`, `internal/syncingest/donepr.go`
 - `internal/boardapi/dto.go`, `internal/boardapi/handlers.go`, `internal/boardapi/handlers_test.go`
 - `scripts/check-wire-contract-tests.sh`
+- Pilot issue: https://github.com/qf-studio/pilot-console/issues/395
