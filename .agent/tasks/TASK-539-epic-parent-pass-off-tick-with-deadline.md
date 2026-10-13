@@ -1,6 +1,6 @@
 # fix(autopilot): run the epicParent reconcilers off the controller tick with a deadline and a row cap
 
-**Status**: 📋 Planned 2026-10-13
+**Status**: 🚀 Dispatched to Pilot 2026-10-13 → [#5657](https://github.com/qf-studio/pilot/issues/5657) (labels `pilot` + `no-decompose`)
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot
 
@@ -42,3 +42,4 @@ Founder box, v2.282.0, 2026-10-13: the 16:00 train moved its carrier PR#5656 to 
 - `internal/autopilot/metrics_alerter.go` (tickStaleness)
 - Tests: `internal/autopilot/gh5541_stage_deadline_test.go` (blocked-handler template), `internal/autopilot/release_backfill_test.go` (releaseBackfillServer, releaseBackfillClock)
 - Precedents: GH-5541 stage deadline, GH-5554 guard ordering, GH-4919 backfill backoff
+- Pilot issue: https://github.com/qf-studio/pilot/issues/5657
