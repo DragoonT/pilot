@@ -1,6 +1,6 @@
 # fix(autopilot): find the earliest release tag with a newest-first probe and a binary search, bounded per row
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-13 → [#5658](https://github.com/qf-studio/pilot/issues/5658) (labels `pilot` + `no-decompose`)
+**Status**: ⏸ HELD 2026-10-13 — [#5658](https://github.com/qf-studio/pilot/issues/5658) → PR#5660 (+382/-31) conflicts with main after PR#5659 (TASK-539) merged 15:52Z in the same function; autopilot held it (needs-manual-rebase). Continuation [#5661](https://github.com/qf-studio/pilot/issues/5661) filed with the autopilot-meta footer so the executor adopts pilot/GH-5658, rebases and resolves. Review on the redriven PR#5660.
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot
 
@@ -39,3 +39,4 @@ earliestReleaseTagContaining in `internal/autopilot/release_backfill.go` lists t
 - `internal/autopilot/release_backfill_test.go` (releaseBackfillServer compare keyed base...head)
 - Precedents: GH-4370 introduced the backfill (healing semantics must stay), GH-4919 backoff and abandon
 - Pilot issue: https://github.com/qf-studio/pilot/issues/5658
+- Continuation issue: https://github.com/qf-studio/pilot/issues/5661
