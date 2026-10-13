@@ -1,6 +1,6 @@
 # chore(bootstrap): make the pilot binary writable by the pilot user and render upgrade.auto_hot_upgrade: true
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-13 → [#399](https://github.com/qf-studio/pilot-console/issues/399) (labels `pilot` + `no-decompose`)
+**Status**: ✅ REVIEWED 2026-10-13 — [#399](https://github.com/qf-studio/pilot-console/issues/399) → PR#400 (142e2058c, +67/-24, autopilot-merged 12:45Z), review **APPROVE** (2/2 pins kill; full fleet suite ok; rendered scripts pass bash -n and shellcheck). Deployed in console prod-0.1.29 (13:05Z). Tenant i-0289111000cebcee9: binary converted to a pilot-owned real file 12:33Z, swapped to v2.282.0 by SSM 12:36Z. **Remaining operator step**: one config push (bump via a connection save or secret write in the console) so the rendered `auto_hot_upgrade: true` lands and the daemon restarts; then verify the version checker runs headless.
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot-console
 
