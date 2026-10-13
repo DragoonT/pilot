@@ -1,6 +1,6 @@
 # fix(autopilot): find the earliest release tag with a newest-first probe and a binary search, bounded per row
 
-**Status**: ⏸ HELD 2026-10-13 — [#5658](https://github.com/qf-studio/pilot/issues/5658) → PR#5660 (+382/-31) conflicts with main after PR#5659 (TASK-539) merged 15:52Z in the same function; autopilot held it (needs-manual-rebase). Continuation [#5661](https://github.com/qf-studio/pilot/issues/5661) filed with the autopilot-meta footer so the executor adopts pilot/GH-5658, rebases and resolves. Review on the redriven PR#5660.
+**Status**: ✅ REVIEWED 2026-10-13 — [#5658](https://github.com/qf-studio/pilot/issues/5658) → PR#5660 (9e8921ed7, +384/-31, rebased by continuation [#5661](https://github.com/qf-studio/pilot/issues/5661) after a conflict with PR#5659, autopilot-merged 16:32Z), review **APPROVE-w-notes** (5/5 pins kill incl. the #5659 row cap; full autopilot suite ok under -race). Notes-only: a merged-but-no-tag row stays due every 30 s pass and refetches all 903 tags (10 API calls) per pass; follow-up = cross-pass tag cache with TTL or back off no-tag rows.
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot
 
