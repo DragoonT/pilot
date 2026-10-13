@@ -8043,6 +8043,18 @@
         ],
         "created": "2026-10-13",
         "last_validated": "2026-10-13"
+      },
+      "release-backfill-sweep-runs-inside-controller-tick-and-wedges-the-train": {
+        "type": "pitfall",
+        "summary": "reconcileReleaseBackfill (+ the other epicParentTicker reconcilers) runs synchronously inside Controller.Run's select tick with no context deadline; earliestReleaseTagContaining does one CompareStatus per tag oldest-first (up to 100 tags, 903 tags on pilot) per failed/releasing row, so one sweep can take hours and the controller for that repo stops ticking: no PR processing, no release, no merged scan. Train 2026-10-13 16:00 never tagged PR#5656 ('releasing' 57 min). Diagnose: controller logs nothing at all for that repo; SIGQUIT dump (stderr goes to daemon-stderr.log) shows Run → reconcileReleaseBackfill → CompareStatus.",
+        "path": "memories/pitfalls/release-backfill-sweep-runs-inside-controller-tick-and-wedges-the-train.md",
+        "confidence": 0.95,
+        "concepts": [
+          "autopilot",
+          "reconciler"
+        ],
+        "created": "2026-10-13",
+        "last_validated": "2026-10-13"
       }
     }
   },
@@ -11371,6 +11383,16 @@
       "from": "tenants-do-not-self-upgrade-hosted-invariant",
       "to": "fleet",
       "type": "relates_to"
+    },
+    {
+      "from": "release-backfill-sweep-runs-inside-controller-tick-and-wedges-the-train",
+      "to": "autopilot",
+      "type": "relates_to"
+    },
+    {
+      "from": "release-backfill-sweep-runs-inside-controller-tick-and-wedges-the-train",
+      "to": "reconciler",
+      "type": "relates_to"
     }
   ],
   "concept_index": {
@@ -11746,7 +11768,8 @@
       "ci-post-merge-fix-issue-borrows-merged-branch-short-circuits",
       "mem-221",
       "autopilot-held-prs-redrive-only-for-size-guard-holds",
-      "autopilot-restorestate-drops-held-failed-prs-on-restart"
+      "autopilot-restorestate-drops-held-failed-prs-on-restart",
+      "release-backfill-sweep-runs-inside-controller-tick-and-wedges-the-train"
     ],
     "aws": [
       "absolute-state-paths-bypass-cutover-shim",
@@ -13033,7 +13056,8 @@
       "mem-198",
       "mem-200",
       "TASK-512",
-      "mem-218"
+      "mem-218",
+      "release-backfill-sweep-runs-inside-controller-tick-and-wedges-the-train"
     ],
     "release": [
       "approvals-off-stage-auto-merge",
@@ -13927,12 +13951,12 @@
       "autopilot-restorestate-drops-held-failed-prs-on-restart"
     ]
   },
-  "last_updated": "2026-10-13T10:31:24.320338+00:00",
+  "last_updated": "2026-10-13T15:12:32.277175+00:00",
   "stats": {
     "total_nodes": 679,
-    "total_edges": 665,
+    "total_edges": 667,
     "memory_count": 359,
-    "memories": 361
+    "memories": 362
   },
   "metadata": {}
 }
