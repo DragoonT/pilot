@@ -1,6 +1,6 @@
 # fix(autopilot): run the epicParent reconcilers off the controller tick with a deadline and a row cap
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-13 → [#5657](https://github.com/qf-studio/pilot/issues/5657) (labels `pilot` + `no-decompose`)
+**Status**: ✅ REVIEWED 2026-10-13 — [#5657](https://github.com/qf-studio/pilot/issues/5657) → PR#5659 (head 1edc60bd9, +548/-25, autopilot merging on green at review time), review **APPROVE-w-notes** (4/4 pins kill; full autopilot suite ok under -race). Notes-only: a reconciler that ignores ctx forever keeps the inflight guard and only one WARN fires; the new pass-liveness gauge needs an alerter (follow-up); the pass goroutine may briefly outlive Run at shutdown.
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot
 
