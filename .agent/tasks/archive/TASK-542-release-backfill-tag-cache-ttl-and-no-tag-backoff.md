@@ -1,6 +1,6 @@
 # fix(autopilot): keep the release-backfill tag list across passes with a TTL and back off rows whose merge is in no tag
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-13 → [#5665](https://github.com/qf-studio/pilot/issues/5665) (labels `pilot` + `no-decompose`)
+**Status**: ✅ MERGED + REVIEWED 2026-10-13 → [#5665](https://github.com/qf-studio/pilot/issues/5665) → PR#5669 merged 19:24Z, post-merge review APPROVE-w-defect (2/2 pins killed by the reviewer). Defect: the no-tag soft failure feeds the abandon rule → row flagged `ReleaseBackfillAbandoned` after ~6h with an "API failures" error; follow-up [TASK-547](TASK-547-release-backfill-no-tag-soft-failure-never-abandons.md) → #5671, to land before v2.284.0.
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot
 

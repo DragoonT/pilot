@@ -1,6 +1,6 @@
 # ci(release): publish the Homebrew formula in a separate non-fatal job so a tap-token failure never marks a shipped release red
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-13 → [#5666](https://github.com/qf-studio/pilot/issues/5666) (labels `pilot` + `no-decompose`)
+**Status**: ✅ MERGED + REVIEWED 2026-10-13 → [#5666](https://github.com/qf-studio/pilot/issues/5666) → PR#5670 merged 20:02Z, post-merge review APPROVE-w-notes (formula path `dist/homebrew/Formula/pilot.rb` proven by a local goreleaser snapshot; `continue-on-error` confirmed). Notes: pasted `make lint` evidence exited 1 on pre-existing QF1012 sites → [TASK-548](TASK-548-lint-remaining-qf1012-tui.md) → #5672. Proof outstanding: the v2.284.0 Release run green on the normal path (closes #5615 evidence).
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot
 
