@@ -8055,6 +8055,18 @@
         ],
         "created": "2026-10-13",
         "last_validated": "2026-10-13"
+      },
+      "goreleaser-rerun-on-published-tag-fails-422-push-formula-by-hand": {
+        "type": "pitfall",
+        "summary": "Rerunning a failed Release job on an already-published tag cannot help: goreleaser re-uploads assets and GitHub answers 422 (asset exists) before the Homebrew step. Recovery = render Formula/pilot.rb from the live tap file + release checksums.txt and PUT it via the contents API (push rights on homebrew-pilot). Also: the tap token mix-up on 2026-10-05 (token scoped to homebrew-tap, goreleaser pushes to homebrew-pilot) caused 8 days of red Release runs; fix is token repository access, not a new token.",
+        "path": "memories/pitfalls/goreleaser-rerun-on-published-tag-fails-422-push-formula-by-hand.md",
+        "confidence": 0.9,
+        "concepts": [
+          "release",
+          "ci"
+        ],
+        "created": "2026-10-13",
+        "last_validated": "2026-10-13"
       }
     }
   },
@@ -11393,6 +11405,16 @@
       "from": "release-backfill-sweep-runs-inside-controller-tick-and-wedges-the-train",
       "to": "reconciler",
       "type": "relates_to"
+    },
+    {
+      "from": "goreleaser-rerun-on-published-tag-fails-422-push-formula-by-hand",
+      "to": "release",
+      "type": "relates_to"
+    },
+    {
+      "from": "goreleaser-rerun-on-published-tag-fails-422-push-formula-by-hand",
+      "to": "ci",
+      "type": "relates_to"
     }
   ],
   "concept_index": {
@@ -11824,7 +11846,8 @@
       "required-checks-allowlist-makes-other-gates-decorative",
       "mem-214",
       "console-wire-contract-gate-needs-raw-body-strings-contains-test",
-      "autopilot-held-prs-redrive-only-for-size-guard-holds"
+      "autopilot-held-prs-redrive-only-for-size-guard-holds",
+      "goreleaser-rerun-on-published-tag-fails-422-push-formula-by-hand"
     ],
     "ci-gates": [
       "bake-workflow-tee-masked-failure-promoted-source-ami"
@@ -13080,7 +13103,8 @@
       "mem-140",
       "mem-159",
       "release-tick-retry-with-backoff-and-alert",
-      "mem-202"
+      "mem-202",
+      "goreleaser-rerun-on-published-tag-fails-422-push-formula-by-hand"
     ],
     "repo-onboarding-x": [
       "config-env-expansion-eats-dollar-vars-in-commands",
@@ -13951,12 +13975,12 @@
       "autopilot-restorestate-drops-held-failed-prs-on-restart"
     ]
   },
-  "last_updated": "2026-10-13T15:12:32.277175+00:00",
+  "last_updated": "2026-10-13T19:05:29.980591+00:00",
   "stats": {
     "total_nodes": 679,
-    "total_edges": 667,
+    "total_edges": 669,
     "memory_count": 359,
-    "memories": 362
+    "memories": 363
   },
   "metadata": {}
 }
