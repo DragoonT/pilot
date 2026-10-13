@@ -1,31 +1,40 @@
 # chore(bootstrap): make the pilot binary writable by the pilot user and render upgrade.auto_hot_upgrade: true
 
-**Status**: 📋 Planned 2026-10-13
+**Status**: 🚀 Dispatched to Pilot 2026-10-13 → [#399](https://github.com/qf-studio/pilot-console/issues/399) (labels `pilot` + `no-decompose`)
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot-console
 
-Blocked by: pilot#5651 and pilot#5652 (TASK-532, TASK-533) released on a train (a daemon older than that fails boot with auto_hot_upgrade true under PILOT_HOSTED=1)
+Blocked by: none for the code. Operator order: every tenant daemon must run Pilot v2.282.0 or newer BEFORE the config push that carries this change restarts it (a daemon older than v2.282.0 fails boot on AssertHostedInvariants when auto_hot_upgrade is true under PILOT_HOSTED=1). The only tenant today was swapped to v2.282.0 by hand on 2026-10-13.
 
 ## Context
 
-Tenant daemons never self-upgrade today for two reasons on the console side: `internal/fleet/configrender.go` renders upgrade.auto_hot_upgrade: false into every tenant config, and `internal/fleet/bootstrap.sh.tmpl` leaves the symlink target of the pilot binary root-owned, which makes the daemon's checkBinaryWritable preflight fail. Once the daemon runs the upgrade pipeline headless and verifies checksums (pilot TASK-532, TASK-533), flip both.
+Tenant daemons never self-upgrade today for two console-side reasons: `internal/fleet/configrender.go` renders upgrade.auto_hot_upgrade: false into every tenant config, and the baked-AMI branch of `internal/fleet/bootstrap.sh.tmpl` leaves the ExecStart path as a symlink to the root-owned baked binary, so the daemon's writability preflight (checkBinaryWritable in the pilot repo) fails for user pilot. Pilot v2.282.0 runs the upgrade pipeline headless, verifies release checksums and no longer rejects auto_hot_upgrade under PILOT_HOSTED=1 (pilot#5651, pilot#5652). A failed upgrade attempt re-tries and alerts every 5 minutes, so the binary must be writable before the flag flips.
 
 ## Scope
 
-Ordering constraint from the PR#5654 review: the daemon re-tries a failed upgrade every 5 minutes and alerts each time on ErrBinaryNotWritable, so the binary ownership fix must land on every tenant BEFORE the config render flips auto_hot_upgrade to true (two legs, or one PR plus an SSM pass before the config push).
-
-- `internal/fleet/bootstrap.sh.tmpl`: in both the S3 and the baked-AMI branch install the binary as a real file owned by the pilot user at the service's ExecStart path (replace the symlink with a copy), so the daemon can write its backup and the new binary next to it.
-- `internal/fleet/configrender.go`: render upgrade.auto_hot_upgrade: true; flip the expectation in `internal/fleet/configrender_test.go`.
-- Existing tenants: a one-off SSM step (copy the binary into place and chown) per the pilot repo SOP tenant-binary-upgrade-ssm; documented in the PR body, not automated here.
+- `internal/fleet/bootstrap.sh.tmpl`, baked-AMI branch: replace the symlink statement with a copy. Install the baked binary as a real file owned by pilot at the ExecStart path (install -o pilot -g pilot -m 0755 /usr/local/bin/pilot /opt/pilot/bin/pilot) and chown the directory to pilot. Keep the -x guard on the source and the "do not overwrite an existing real executable on re-run" rule from the PR#147 review (copy only when the path is absent or is a symlink).
+- `internal/fleet/bootstrap.sh.tmpl`, S3 bridge branch: add -o pilot -g pilot to the existing install so the file and its directory are owned by pilot.
+- `internal/fleet/configrender.go`: render upgrade.auto_hot_upgrade: true. Flip the expectation in `internal/fleet/configrender_test.go` (both the map assertion and the golden YAML).
+- Bootstrap unit test: add TestRenderBootstrapBakedBinaryInstalledAsPilotOwnedFile next to the existing RenderBootstrap tests in `internal/fleet/bootstrap_test.go` so the rendered script contains the install line with the pilot owner in both branches and no ln -sf to the baked binary.
 
 ## Acceptance
 
-- To be written when TASK-532 and TASK-533 are merged and the minimum daemon version is known.
+- `go build ./...` passes; paste the output into the PR body.
+- `go vet ./internal/fleet/` passes; paste the output into the PR body.
+- `go test ./internal/fleet/ -run TestRenderTenantConfig -count=1` passes; paste the output into the PR body.
+- `go test ./internal/fleet/ -run TestRenderBootstrap -count=1` passes; paste the output into the PR body.
+- render auto_hot_upgrade false again -> TestRenderTenantConfig fails
+- restore the ln -sf symlink statement in the baked-AMI branch -> TestRenderBootstrapBakedBinaryInstalledAsPilotOwnedFile fails
 
 ## Out of scope
 
 - Console-driven version rollout (pilot-console#390).
+- Any change to the daemon's upgrade pipeline (pilot repo).
+- Migrating existing tenants automatically; the one-off SSM pass is an operator step (done for the founder tenant on 2026-10-13).
 
 ## Refs
 
-- `internal/fleet/bootstrap.sh.tmpl`, `internal/fleet/configrender.go`, `internal/fleet/configrender_test.go`
+- `internal/fleet/bootstrap.sh.tmpl` (S3 bridge and baked-AMI install branches, the pilot.service unit)
+- `internal/fleet/configrender.go`, `internal/fleet/configrender_test.go`, `internal/fleet/bootstrap_test.go` (RenderBootstrap tests)
+- Daemon side: pilot PR#5654 (headless self-upgrade, invariant relaxed), pilot PR#5655 (checksum verification), both in v2.282.0
+- Pilot issue: https://github.com/qf-studio/pilot-console/issues/399
