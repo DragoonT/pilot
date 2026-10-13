@@ -1,6 +1,6 @@
 # feat(upgrade): headless self-upgrade so hosted tenants track the release train
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-13 → [#5651](https://github.com/qf-studio/pilot/issues/5651) (labels `pilot` + `no-decompose`)
+**Status**: ✅ REVIEWED 2026-10-13 — [#5651](https://github.com/qf-studio/pilot/issues/5651) → PR#5654 (head d80d8ad97, +319/-166, autopilot merging at review time), review **APPROVE-w-notes** (3/3 pins kill; full cmd/pilot, config, upgrade suites ok). Notes-only: ErrBinaryNotWritable would alert every 5 min on a tenant whose binary dir is still root-owned (the alert gate only dedupes drain timeouts) — TASK-537 must chown BEFORE the console renders auto_hot_upgrade: true.
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot
 

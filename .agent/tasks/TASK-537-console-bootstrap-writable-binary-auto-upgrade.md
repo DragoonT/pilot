@@ -12,6 +12,8 @@ Tenant daemons never self-upgrade today for two reasons on the console side: `in
 
 ## Scope
 
+Ordering constraint from the PR#5654 review: the daemon re-tries a failed upgrade every 5 minutes and alerts each time on ErrBinaryNotWritable, so the binary ownership fix must land on every tenant BEFORE the config render flips auto_hot_upgrade to true (two legs, or one PR plus an SSM pass before the config push).
+
 - `internal/fleet/bootstrap.sh.tmpl`: in both the S3 and the baked-AMI branch install the binary as a real file owned by the pilot user at the service's ExecStart path (replace the symlink with a copy), so the daemon can write its backup and the new binary next to it.
 - `internal/fleet/configrender.go`: render upgrade.auto_hot_upgrade: true; flip the expectation in `internal/fleet/configrender_test.go`.
 - Existing tenants: a one-off SSM step (copy the binary into place and chown) per the pilot repo SOP tenant-binary-upgrade-ssm; documented in the PR body, not automated here.
