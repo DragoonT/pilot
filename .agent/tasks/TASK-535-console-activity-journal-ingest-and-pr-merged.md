@@ -1,6 +1,6 @@
 # feat(board): journal ingest-observed status transitions and merged PRs into activity_journal
 
-**Status**: ✅ REVIEWED 2026-10-13 — [#395](https://github.com/qf-studio/pilot-console/issues/395) → PR#397 (head fb2e100c6, +348/-11, autopilot merging on green at review time), review **APPROVE-w-notes** (4/4 pins kill; syncingest/boardapi/board suites ok, board store tests Postgres-gated locally). Notes-only: first-ingest and echo paths skip the journal by construction (no dedicated pin); the EchoNever test actually pins the from==to guard; UI rendering of pr_merged + the ingest source badge is a pilot-console-ui follow-up.
+**Status**: ✅ REVIEWED 2026-10-13 — [#395](https://github.com/qf-studio/pilot-console/issues/395) → PR#397 (head fb2e100c6, +348/-11, autopilot-merged 11:41Z, b50b9c426), review **APPROVE-w-notes** (4/4 pins kill; syncingest/boardapi/board suites ok, board store tests Postgres-gated locally). Notes-only: first-ingest and echo paths skip the journal by construction (no dedicated pin); the EchoNever test actually pins the from==to guard; UI rendering of pr_merged + the ingest source badge is a pilot-console-ui follow-up.
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot-console
 

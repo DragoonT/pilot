@@ -1,6 +1,6 @@
 # feat(syncingest): nudge the ingest worker after a chat File callback and after dispatch
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-13 → [#396](https://github.com/qf-studio/pilot-console/issues/396) (labels `pilot` + `no-decompose`)
+**Status**: ✅ REVIEWED 2026-10-13 — [#396](https://github.com/qf-studio/pilot-console/issues/396) → PR#398 (6741db6b4, +594/-4, autopilot-merged 11:53Z), review **APPROVE** (5/5 pins kill; syncingest/chatapi/boardapi suites ok, wire gate clean). Notes-only: AfterFunc nudges after shutdown are harmless (non-blocking channel); one extra instance listing per nudge bounded by the 2 s per-org debounce; nudge and tick serialize on the Run goroutine.
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot-console
 

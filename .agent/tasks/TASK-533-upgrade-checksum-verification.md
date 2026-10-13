@@ -1,6 +1,6 @@
 # feat(upgrade): verify release asset sha256 against checksums.txt before install
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-13 → [#5652](https://github.com/qf-studio/pilot/issues/5652) (labels `pilot` + `no-decompose`)
+**Status**: ✅ REVIEWED 2026-10-13 — [#5652](https://github.com/qf-studio/pilot/issues/5652) → PR#5655 (73dab1222, +258/-0, autopilot-merged 11:54Z), review **APPROVE** (2/2 pins kill; full upgrade suite ok). Notes-only: fails closed on malformed/missing entries, oversized bodies and a star-prefixed filename; skips with a warning only when the API asset list has no checksums.txt; real v2.281.0 format verified.
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot
 
