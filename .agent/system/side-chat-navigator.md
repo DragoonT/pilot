@@ -20,6 +20,6 @@ Byte-faithful relay, no chat state. `projectId` relayed on POST; daemon 400 `unk
 
 ## Rollout notes
 
-- Legs 1, 2a, 2b are in daemon v2.280.0; leg 3 (`projectId`, projects route, turn lock, fence rule) rides the train after it. Until tenants upgrade, the console's projects call answers 409 and the UI hides the selector.
+- All legs are in daemon v2.281.0 (train 10-12). **Tenants do not self-upgrade**: the founder tenant ran 2.276.1 until a manual SSM swap on 10-13 (`sops/operations/tenant-binary-upgrade-ssm.md`); the gap is filed as pilot-console#390. Until a tenant upgrades, web text goes through the legacy `handleQuestion`/`handleIssueIntake` path ("Issue intake requires the bot module…") and the console projects call answers 409.
 - Spec lessons from this program: name the composed/integration tests outside the changed package that encode the old flow (memory `spec-rerouting-a-platform-must-rewrite-composed-tests-of-the-old-flow`); console specs adding JSON fields need the wire-contract test (memory `console-wire-contract-gate-needs-raw-body-strings-contains-test`); amend an issue body only before pickup, else file a follow-up.
 - Autopilot side effect found and fixed: held PRs now redrive on a new head for all CI-side hold reasons (PR#5645), survive restarts (PR#5646), legacy size-guard holds backfilled (#5647).
