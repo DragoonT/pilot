@@ -1,6 +1,6 @@
 # feat(board): render the pr_merged activity kind and mark ingest-sourced status rows
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-13 → [#229](https://github.com/qf-studio/pilot-console-ui/issues/229) (labels `pilot` + `no-decompose`)
+**Status**: ✅ REVIEWED 2026-10-13 — [ui#229](https://github.com/qf-studio/pilot-console-ui/issues/229) → PR#230 (a1d92f86f, +126/-5, autopilot-merged 18:39Z), review **APPROVE** (3/3 pins kill; full suite 886/886). Notes-only: link helper whitelists http(s); unknown kinds render empty rather than crash; BellPopover shares the helper.
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot-console-ui
 
