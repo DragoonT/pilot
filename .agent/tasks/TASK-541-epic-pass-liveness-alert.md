@@ -1,6 +1,6 @@
 # feat(autopilot): alert when the epic-parent reconciler pass goes stale, like tickStaleness does for the PR loop
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-13 → [#5664](https://github.com/qf-studio/pilot/issues/5664) (labels `pilot` + `no-decompose`)
+**Status**: ✅ REVIEWED 2026-10-13 — [#5664](https://github.com/qf-studio/pilot/issues/5664) → PR#5667 (1de7bc8d6, +159/-0, autopilot-merged 18:53Z), review **APPROVE** (2/2 pins kill; autopilot + alerts suites ok). Notes-only: 30 min cooldown dedupes the stale alert; start window anchors on the alerter's construction time; a deadline-exceeded pass never stamps the gauge, so the alert fires after 3×interval + stage timeout.
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot
 
