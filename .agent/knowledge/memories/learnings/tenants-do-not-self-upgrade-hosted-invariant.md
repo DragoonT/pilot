@@ -17,4 +17,6 @@ type: learning
 
 **Decision (founder, 10-13):** daemon self-upgrade is the tenant path. TASK-532 (headless wiring + relax the invariant), TASK-533 (sha256 verification against checksums.txt — the upgrader has none today), TASK-537 (console bootstrap chown + render true). CI never deploys: the tag workflows only publish assets, GHCR and docs.
 
-**How to apply:** after a train, do not assume tenants moved. Check `pilot version` on the tenant (SSM; `pilot --version` does not exist) before any tenant smoke of a new feature.
+**Resolved 2026-10-13 evening:** PR#5654 (headless pipeline, invariant relaxed), PR#5655 (sha256), console PR#400 (pilot-owned binary, render true) shipped; v2.283.0 was picked up by the tenant 27 s after publication with no operator step. From now on tenants track the train.
+
+**How to apply (historical):** after a train, do not assume tenants moved. Check `pilot version` on the tenant (SSM; `pilot --version` does not exist) before any tenant smoke of a new feature.
