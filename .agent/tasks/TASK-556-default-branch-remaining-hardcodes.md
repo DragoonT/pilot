@@ -34,7 +34,7 @@ Also found, lower priority, not in scope: about twelve "main" fallbacks in runne
 
 ## Out of scope
 
-- The twelve `runner.go` fallbacks and `acceptance_evidence_run.go` (separate cleanup once a shared helper exists).
+- The twelve runner.go fallbacks and acceptance_evidence_run.go (separate cleanup once a shared helper exists).
 - Wiring or deleting the worktree pool.
 
 ## Refs
