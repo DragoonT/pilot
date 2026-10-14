@@ -40,7 +40,7 @@
    ```bash
    npm i -g @anthropic-ai/claude-code@latest && claude --version
    ```
-5. **Box — restart the daemon from the script** (drain first: `~/bin/pilot-board` shows no `running` row):
+5. **Box — restart the daemon from the script.** Drain first: `~/bin/pilot-board` shows no `running` row AND the daemon log has no `Processing task` / `Starting task execution` line in the last 60 s (2026-10-14: a restart 24 s after a tick that had just released three held tasks cut two of them mid-start; both re-picked themselves within 3 min, but it cost two failed rows). Count workers with `pgrep -x claude` + `pgrep -f claude-code/cli.js`; a `bash -c source …/.claude/shell-snapshots/…` process is a stale snapshot shell, not a worker:
    ```bash
    sudo -u ec2-user -i tmux send-keys -t pilot C-c; sleep 15
    sudo -u ec2-user -i tmux kill-session -t pilot || true
@@ -49,6 +49,9 @@
 6. **Verify:** `~/bin/pilot-board` shows the daemon up with the current version; the process env carries the new prefix:
    `tr '\0' '\n' < /proc/$(pgrep -o -x pilot)/environ | grep -oE '^CLAUDE_CODE_OAUTH_TOKEN=.{0,12}'`. Let the next ticket run to completion.
 7. **Laptop — re-login the interactive CLI** (separate credential, Keychain-backed): run `claude`, then `/login`. `claude auth status` must show `loggedIn: true`.
+
+## Done log
+- 2026-10-14 15:02–15:11Z: token minted locally → SSM v3 → start-pilot.sh swapped (backup `.bak-202610141505`), headless probe OK, CLI 2.1.104 → 2.1.299, daemon restarted 15:08:34Z (pid 2155961) with the new prefix in its env; first executions under the new token: GH-5688 15:10Z, GH-409 15:11Z.
 
 ## Do not
 - Do not copy `~/.claude/.credentials.json` between machines (one OAuth session on two hosts strands one of them — memory `shared-oauth-session-strands-second-machine`).
