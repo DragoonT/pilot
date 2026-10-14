@@ -14,7 +14,7 @@ Blocked by: none
 
 - `internal/fleet/usagepoller.go`: `daemonUsageRow` gains `executionId`, `estimatedCostUSD *float64`, `reportedCostUSD *float64`, `completedAt`; keep `estimatedUsdCents` and `reportedUsd` as fallbacks. `buildTicketLedgerRows` accepts the wrapper key `executions` first, then `rows`, then a bare array. `kind` defaults to "execution" when absent. `estimatedCostUSD` becomes cents as `dollars * 100` kept fractional (the meter rounds once in SQL). Status maps `completed` and `succeeded` to `succeeded`, `failed` to `failed`, anything else is stored as received. A row with an empty `taskId` falls back to `executionId` before it is skipped.
 - `pollLedger` follows `hasMore`: after a page with `hasMore` true it requests again with `since = nextSince`, at most 10 pages per tick, and advances `TicketLedgerCursor` to the last page's `nextSince`.
-- Add `internal/fleet/testdata/daemon_executions_usage.json`: a verbatim response body of the daemon route as pinned by the daemon's own endpoint test (pilot repo, gateway package, test TestExecutionsUsageEndpoint_RowCarriesAllFields) with a header comment naming that source; the ledger tests decode this file, not a hand-written shape.
+- Add a new fixture file testdata/daemon_executions_usage.json under internal/fleet: a verbatim response body of the daemon route as pinned by the daemon's own endpoint test (pilot repo, gateway package, test TestExecutionsUsageEndpoint_RowCarriesAllFields) with a header comment naming that source; the ledger tests decode this file, not a hand-written shape.
 - Log at Warn, once per instance per tick, when a non-empty body decodes to zero rows.
 
 ## Acceptance
