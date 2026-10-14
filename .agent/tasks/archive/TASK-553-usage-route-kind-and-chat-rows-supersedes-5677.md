@@ -1,6 +1,6 @@
 # feat(gateway): extend GET /api/v1/executions/usage with a kind field and chat_turn rows on top of GH-5676, keeping the chat_turns table, recording and metrics from PR #5682
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-14 → [#5690](https://github.com/qf-studio/pilot/issues/5690) (labels `pilot` + `no-decompose`; re-spec of #5677; supersedes PR #5682)
+**Status**: ✅ MERGED + REVIEWED 2026-10-14 → [#5690](https://github.com/qf-studio/pilot/issues/5690) → PR#5693 merged 17:15Z after founder approval (console), pre-merge review APPROVE (3/3 pins killed by the reviewer at the rebased head). Auto-rebase had failed on two EOF test appends in `internal/executor/chat_turn_test.go`; resolved by hand, both kept. Rides the next train (v2.286.0). Console PR#410 already decodes the new `kind` + chat rows.
 **Created**: 2026-10-14
 **Repo**: qf-studio/pilot
 
