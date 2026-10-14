@@ -1,6 +1,6 @@
 # fix(executor): make the write-boundary guard script portable — realpath -m is GNU-only, so on macOS the guard denies every write and its test fails
 
-**Status**: 📋 Planned 2026-10-14 (found in the post-merge review of PR #5692 / TASK-551)
+**Status**: 🚀 Dispatched to Pilot 2026-10-14 → [#5694](https://github.com/qf-studio/pilot/issues/5694) (labels `pilot` + `no-decompose`; found in the post-merge review of PR #5692 / TASK-551)
 **Created**: 2026-10-14
 **Repo**: qf-studio/pilot
 
@@ -32,3 +32,5 @@ The PreToolUse guard that `setupWriteBoundary` writes (`internal/executor/write_
 
 - `internal/executor/write_boundary.go` (writeBoundaryGuardScript, setupWriteBoundary), `internal/executor/write_boundary_test.go`
 - PR #5692 post-merge review (defect section)
+
+- Pilot issue: https://github.com/qf-studio/pilot/issues/5694
