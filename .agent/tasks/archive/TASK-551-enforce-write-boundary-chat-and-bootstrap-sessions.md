@@ -1,6 +1,6 @@
 # fix(executor): enforce the write boundary of chat and bootstrap sessions with a PreToolUse guard, because --allowedTools does nothing under --dangerously-skip-permissions
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-14 → [#5688](https://github.com/qf-studio/pilot/issues/5688) (labels `pilot` + `no-decompose`; found in the post-merge review of PR #5683 / TASK-549)
+**Status**: ✅ MERGED + REVIEWED 2026-10-14 → [#5688](https://github.com/qf-studio/pilot/issues/5688) → PR#5692 merged 15:42Z, post-merge review APPROVE-w-defect (2/2 pins killed by the reviewer on the Linux box). Defect: `realpath -m` is GNU-only → on macOS the guard denies every write and `TestWriteBoundaryGuardScript` fails; follow-up [TASK-555](TASK-555-write-guard-realpath-portability.md).
 **Created**: 2026-10-14
 **Repo**: qf-studio/pilot
 

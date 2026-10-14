@@ -1,6 +1,6 @@
 # test(executor): build the Navigator bootstrap fixtures from the embedded templates so the suite passes on machines with the Navigator plugin installed
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-14 → [#5689](https://github.com/qf-studio/pilot/issues/5689) (labels `pilot` + `no-decompose`; found in the post-merge review of PR #5683 / TASK-549)
+**Status**: ✅ MERGED + REVIEWED 2026-10-14 → [#5689](https://github.com/qf-studio/pilot/issues/5689) → PR#5691 merged 15:07Z, post-merge review APPROVE (pin killed on a Mac with plugin 8.3.5; the suite now passes there).
 **Created**: 2026-10-14
 **Repo**: qf-studio/pilot
 

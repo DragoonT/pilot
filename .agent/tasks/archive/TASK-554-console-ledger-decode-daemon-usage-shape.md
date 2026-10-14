@@ -1,6 +1,6 @@
 # fix(usage): decode the daemon's real GET /api/v1/executions/usage shape in the ledger poller, so the ticket ledger ingests rows at all
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-14 → [#409](https://github.com/qf-studio/pilot-console/issues/409) (labels `pilot` + `no-decompose`; found while re-specifying pilot#5677)
+**Status**: ✅ MERGED + REVIEWED 2026-10-14 → [console#409](https://github.com/qf-studio/pilot-console/issues/409) → PR#410 merged 15:23Z, post-merge review APPROVE-w-notes (2/3 pins killed by the reviewer; the hasMore pin needs Postgres — CI ran it, reviewer read it). Ledger now ingests the daemon's real shape; chat rows arrive with pilot PR#5693.
 **Created**: 2026-10-14
 **Repo**: qf-studio/pilot-console
 
