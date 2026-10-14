@@ -1,6 +1,6 @@
 # fix(executor): stop assuming main after PR #5620 — chat-filed tasks, lint baseline and the autopilot branch resolver must use the project's default branch
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-14 → [#5695](https://github.com/qf-studio/pilot/issues/5695) (labels `pilot` + `no-decompose`; follow-up from the review of external PR #5620 / issue #5619)
+**Status**: ✅ MERGED + REVIEWED 2026-10-14 → [#5695](https://github.com/qf-studio/pilot/issues/5695) → PR#5697 merged 18:10Z, post-merge review APPROVE (2/2 pins killed by the reviewer). Chat path, lint baseline and autopilot resolver follow the project default branch; external PR#5620 (worktree half) merged 17:34Z.
 **Created**: 2026-10-14
 **Repo**: qf-studio/pilot
 

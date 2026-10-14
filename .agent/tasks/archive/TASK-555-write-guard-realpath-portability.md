@@ -1,6 +1,6 @@
 # fix(executor): make the write-boundary guard script portable — realpath -m is GNU-only, so on macOS the guard denies every write and its test fails
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-14 → [#5694](https://github.com/qf-studio/pilot/issues/5694) (labels `pilot` + `no-decompose`; found in the post-merge review of PR #5692 / TASK-551)
+**Status**: ✅ MERGED + REVIEWED 2026-10-14 → [#5694](https://github.com/qf-studio/pilot/issues/5694) → PR#5696 merged 17:49Z, post-merge review APPROVE (guard test now passes on macOS; both pins killed by the reviewer on a Mac; `realpath -m` gone).
 **Created**: 2026-10-14
 **Repo**: qf-studio/pilot
 
