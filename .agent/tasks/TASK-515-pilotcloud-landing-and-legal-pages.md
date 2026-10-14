@@ -60,6 +60,7 @@ Sections, in order: **Hero** (title "AI that ships your tickets", subtitle "Navi
 **Evidence**: `bun run build` output pasted into the PR body; a Vitest DOM test that renders `/` and asserts the strings "USD 499" and "/ month" and the three policy links exist; mutation pin: change the price constant to 299 -> the pricing test fails.
 
 ### S2 — legal pages (Pilot, `Blocked by: #S0`) — `feat(site): terms, privacy and refund policy pages`
+> **Content source (2026-10-14):** `product/LEGAL-TERMS.md` in the pilot repo holds the full terms, refund policy, privacy facts and licence summary, with `[FOUNDER]` fields for entity, address, law, email provider. Render from it; do not re-derive. Numbers stay on the pricing page.
 **Goal**: three pages rendered from MDX files (content/legal/terms.mdx, privacy.mdx, refunds.mdx) with a shared `LegalLayout` (title, "Last updated", table of contents). Substance:
 - **Terms**: product description (hosted Pilot Console + terminal software under BSL 1.1), account/eligibility, acceptable use, customer-provided API keys and token allowance/overage, IP and license, availability, termination, liability cap, governing law (Montenegro), Paddle as merchant of record for purchases.
 - **Privacy**: controller = legal entity; data collected (account email, GitHub/Linear identities, repository metadata, usage/cost metrics, support messages); processors (AWS eu-central-1, Paddle, Anthropic, GitHub, Doppler); retention; rights (GDPR-style: access, deletion, portability); cookies (none beyond session); contact.
