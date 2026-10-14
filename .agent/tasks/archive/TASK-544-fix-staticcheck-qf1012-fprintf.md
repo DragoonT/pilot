@@ -1,6 +1,6 @@
 # chore(lint): replace WriteString(fmt.Sprintf(...)) with fmt.Fprintf at the three staticcheck QF1012 sites
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-13 → [#5663](https://github.com/qf-studio/pilot/issues/5663) (labels `pilot` + `no-decompose`)
+**Status**: ✅ MERGED + REVIEWED 2026-10-13 → PR#5668 (APPROVE on read); the remaining sites went in TASK-548 → PR#5673 (42-file sweep, `make lint` 0 issues). Shipped in v2.284.0.
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot
 
