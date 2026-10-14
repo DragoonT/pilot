@@ -1,6 +1,6 @@
 # fix(executor): stop assuming main after PR #5620 — chat-filed tasks, lint baseline and the autopilot branch resolver must use the project's default branch
 
-**Status**: 📋 Planned 2026-10-14 (follow-up from the review of external PR #5620 / issue #5619)
+**Status**: 🚀 Dispatched to Pilot 2026-10-14 → [#5695](https://github.com/qf-studio/pilot/issues/5695) (labels `pilot` + `no-decompose`; follow-up from the review of external PR #5620 / issue #5619)
 **Created**: 2026-10-14
 **Repo**: qf-studio/pilot
 
@@ -41,3 +41,5 @@ Also found, lower priority, not in scope: about twelve "main" fallbacks in runne
 
 - `internal/comms/handler.go`, `internal/executor/lint.go`, `internal/executor/prompt_builder.go`, `internal/autopilot/controller.go`, `internal/autopilot/auto_merger.go`, `internal/config/config.go`
 - PR #5620 (external, approved) and issue #5619 — the worktree half of this problem
+
+- Pilot issue: https://github.com/qf-studio/pilot/issues/5695
