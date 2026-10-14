@@ -13,7 +13,7 @@ PR #5620 bases worktrees on the project's default branch. Three places still ass
 - `internal/executor/lint.go` line 81 runs golangci-lint with `--new-from-rev=origin/main`, and the prompt text in `internal/executor/prompt_builder.go` near line 662 tells the model to do the same. On a `mainline` repo the lint step errors on a missing ref.
 - `internal/autopilot/controller.go` around line 6741 (`resolveMainBranchName`) and `internal/autopilot/auto_merger.go` around line 212 fall back to the literal `main` with a WARN and, per their own comment, never consult the project's `default_branch` / `branch_from`. A `mainline` project only works when `environments.<env>.branch` is set by hand.
 
-Also found, lower priority, not in scope: about twelve `"main"` fallbacks in `runner.go` reached only when `task.BaseBranch` is empty and `GetDefaultBranch` fails; `acceptance_evidence_run.go` line 608 goes straight to `main`; the unused worktree pool would race on `SetBaseBranch` if it were ever wired.
+Also found, lower priority, not in scope: about twelve "main" fallbacks in runner.go reached only when `task.BaseBranch` is empty and `GetDefaultBranch` fails; acceptance_evidence_run.go line 608 goes straight to `main`; the unused worktree pool would race on `SetBaseBranch` if it were ever wired.
 
 ## Scope
 
