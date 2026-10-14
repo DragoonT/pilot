@@ -1,6 +1,6 @@
 # fix(board): map the `pr_merged` activity kind and the `source` field on the wire, and never let an unknown kind blank the board
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-14 → [ui#233](https://github.com/qf-studio/pilot-console-ui/issues/233) (labels `pilot` + `no-decompose`; found in the v2.284.0 tenant smoke)
+**Status**: ✅ MERGED + REVIEWED + LIVE 2026-10-14 → [ui#233](https://github.com/qf-studio/pilot-console-ui/issues/233) → PR#234 merged 11:47Z (squash 74d182984), post-merge review APPROVE (2/2 pins killed by the reviewer; 194 tests; vue-tsc clean), deployed 11:56Z, verified on `/board`: GH-9 in Done, Activity shows "PR #10 merged" (linked) and "Synced: Status changed: In Progress → Done", no console errors. Authoring miss on dispatch: a backticked cross-repo `.agent/` path in Refs tripped the base-presence hold for ~20 min (SOP 3b) — fixed by an issue-body edit.
 **Created**: 2026-10-14
 **Repo**: qf-studio/pilot-console-ui
 
@@ -36,5 +36,5 @@ Confirmed in the browser: console shows the TypeError at `BoardView-jHL5URCM.js:
 
 - `src/lib/api/httpAdapter.ts` (toActivityEntry, listBoardActivity, WireActivityEntry), `src/lib/api/types.ts` (BoardActivityPrMerged), `src/lib/activityMessage.ts`, `src/views/BoardView.vue:362`
 - ui PR #230 (TASK-543) — the leg that added the kind everywhere except the mapper
-- pilot `.agent/tasks/archive/TASK-543-ui-render-pr-merged-activity-and-ingest-source.md`
+- pilot repo task doc TASK-543 (archived) — the planning record for PR #230
 - Pilot issue: https://github.com/qf-studio/pilot-console-ui/issues/233
