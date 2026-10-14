@@ -1,6 +1,6 @@
 # chore(lint): fix the remaining staticcheck QF1012 sites so `make lint` passes with golangci-lint 2.14
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-13 → [#5672](https://github.com/qf-studio/pilot/issues/5672) (labels `pilot` + `no-decompose`; found in the post-merge review of PR #5670)
+**Status**: ✅ MERGED + REVIEWED 2026-10-14 → [#5672](https://github.com/qf-studio/pilot/issues/5672) → PR#5673 merged 10-13 21:10Z, post-merge review APPROVE-w-note. Pilot swept all 42 files (324 single-line + 26 multi-line sites, every pair verified identical by the reviewer) because `max-same-issues: 3` had hidden the rest; `make lint` with golangci-lint 2.14.0 now reports 0 issues on origin/main; zero `WriteString(fmt.Sprintf` sites remain.
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot
 
