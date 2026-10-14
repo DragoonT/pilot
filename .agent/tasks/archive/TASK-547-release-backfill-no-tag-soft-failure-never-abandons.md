@@ -1,6 +1,6 @@
 # fix(autopilot): a merged-but-untagged release-backfill row backs off but never counts toward abandonment
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-13 → [#5671](https://github.com/qf-studio/pilot/issues/5671) (labels `pilot` + `no-decompose`; follow-up from the post-merge review of PR #5669 / TASK-542)
+**Status**: ✅ MERGED + REVIEWED 2026-10-14 — [#5671](https://github.com/qf-studio/pilot/issues/5671) → PR#5674 merged by autopilot 09:48Z (8m38s, +159/-20). Post-merge review **APPROVE, 2/2 pins kill** (posted on the PR). Was parked `pilot-needs-human` 10-13 22:30Z: the Refs line cited the TASK-542 doc at `.agent/tasks/` after the same docs commit archived it; fixed by editing the body to the archive path and clearing the label (10-14 09:17Z). Not yet in a tag: v2.284.0 pending.
 **Created**: 2026-10-13
 **Repo**: qf-studio/pilot
 
@@ -38,3 +38,10 @@ The sweep exists (GH-4370) to heal rows whose PR merged outside the train and go
 - PR #5669 post-merge review comment (defect section)
 - TASK-542 (`.agent/tasks/TASK-542-release-backfill-tag-cache-ttl-and-no-tag-backoff.md`)
 - Pilot issue: https://github.com/qf-studio/pilot/issues/5671
+
+## Review (2026-10-14, merge commit 50f29c7)
+
+- Scope faithful: `softFails` exponent separate from `consecutiveFails`/`firstFailAt`; no-tag branch → `releaseBackfillObserveSoftFailure`; `errReleaseBackfillNoTag` deleted; abandon comment updated; `releaseBackfillBackoff(base, n)` extracted so both paths share one schedule.
+- Verified in a detached worktree: `go vet` clean; `-run ReleaseBackfill` ok; full package ok 25.2s. Pin 1 (route back through `releaseBackfillFail`) → `_NoTagRowNeverAbandoned` FAIL. Pin 2 (`nextRetryAt = now`) → `_NoTagRowBacksOff` FAIL.
+- Notes: `softFails` resets only on success, not on a hard-failure blip — intended (cheaper for a row genuinely waiting for a tag); the 7h span check runs at the 1h cap (13h), early doubling is covered by `_NoTagRowBacksOff`; `releaseBackfillServerDyn` is a reusable "tag appears later" fixture.
+- Pitfall recorded: a dispatch commit that archives the task doc it cites breaks the base-presence gate (`.agent/tasks/X` → `.agent/tasks/archive/X`). Cite the archive path when dispatching a follow-up from a review that archives.

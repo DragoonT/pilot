@@ -89,7 +89,7 @@
     "enabled": true
   },
   "deep_research": {
-    "enabled": false,
+    "enabled": true,
     "max_sources": 30,
     "min_sources": 8,
     "fetchers": 4,

@@ -187,3 +187,24 @@ Margin at $499 by included volume (typical infra, Sonnet 5.5 at the planning fig
 **DECIDED 2026-10-01 (founder): recommendation accepted as-is — 100 tickets / $100 allowance / hard cap / own-key overage. The allowance is a configurable plan setting (TASK-502 leg 0), so this table is re-runnable against whatever number is in force.**
 
 What this changes in the product (not in the tables): the tenant box must run on a platform-owned Anthropic key with a per-tenant allowance, the console must meter spend against it (the S5 usage rollup exists), and onboarding must make the customer key optional instead of mandatory. Tracked as TASK-502.
+
+## Cost-plus per ticket, rejected (researched 2026-10-13)
+
+Founder question: why not charge per ticket at measured cost +1-4%? Modelled
+from the figures above (planning $1.00/ticket Sonnet 5.5, stress $3.15 Sonnet 5,
+$52 box, Paddle 5% + $0.50, one charge per month, 100 shipped tickets).
+Source: `research/ai-coding-agent-products-price-extra/report.md` § Q4.
+
+| Scenario | Cost base | Price at +1% | Contribution at +1% | Price at +4% | Contribution at +4% |
+|---|---|---|---|---|---|
+| A. Markup on tokens only (Sonnet 5.5) | $100 tokens + $52 box | $101.00 | -$56.55 | $104.00 | -$53.70 |
+| B. Markup on tokens + box (Sonnet 5.5) | $152 | $153.52 | -$6.66 | $158.08 | -$2.32 |
+| C. Markup on tokens + box (Sonnet 5 stress) | $367 | $370.67 | -$15.36 | $381.68 | -$4.90 |
+
+- Break-even markup just to pay Paddle on full cost: (cost + $0.50) / 0.95 → +5.6% at $152, +5.4% at $367.
+- To keep today's 64% margin at Sonnet 5.5 cost: $1.52 / (0.95 − 0.64) ≈ **$4.90/ticket** — the flat plan's $4.99.
+- To keep 50%: $1.52 / 0.45 ≈ **$3.38/ticket**. This is the value-price band for any overage pack.
+- Cost-plus also passes model deflation through: Sonnet 5 → 5.5 cut cost/ticket ~80%; under cost-plus revenue falls 80% too, under the flat plan it becomes margin.
+- Not covered by 1-4%: Paddle, the box ($0.52/ticket at 100), the $215 control plane, the 1.34 executions per shipped ticket, and measurement error (`estimated_cost_usd` is a list-price estimate; counters reset on restart).
+
+**Allowance gap:** "100 tickets" is enforced as `included_usd_cents=10000`. At $3.15/ticket the cap fires at ticket ~32; at the 375-task mixed window ($3.51 tokens, $4.85 all-in) at ticket ~28. Fix and pack pricing: `tasks/TASK-546-pricing-v3-honest-allowance-overage-packs.md`.

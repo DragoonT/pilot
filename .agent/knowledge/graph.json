@@ -3021,6 +3021,47 @@
           "testing",
           "context"
         ]
+      },
+      "TASK-546": {
+        "path": ".agent/tasks/TASK-546-pricing-v3-honest-allowance-overage-packs.md",
+        "title": "Pricing v3 — honest ticket allowance + prepaid overage packs at a value price",
+        "status": "backlog",
+        "concepts": [
+          "workflow",
+          "api",
+          "deployment",
+          "knowledge",
+          "database",
+          "context",
+          "theory of mind",
+          "testing"
+        ]
+      },
+      "TASK-549": {
+        "path": ".agent/tasks/TASK-549-legacy-repo-navigator-bootstrap.md",
+        "title": "Legacy repo bootstrap — build real Navigator context on first run, persist it, and price it",
+        "status": "backlog",
+        "concepts": [
+          "deployment",
+          "testing",
+          "knowledge",
+          "theory of mind",
+          "context",
+          "frontend",
+          "skills",
+          "api"
+        ]
+      },
+      "TASK-547": {
+        "path": ".agent/tasks/archive/TASK-547-release-backfill-no-tag-soft-failure-never-abandons.md",
+        "title": "Task 547 Release Backfill No Tag Soft Failure Never Abandons",
+        "status": "completed",
+        "concepts": [
+          "api",
+          "context",
+          "deployment",
+          "testing"
+        ]
       }
     },
     "memories": {
@@ -8067,6 +8108,142 @@
         ],
         "created": "2026-10-13",
         "last_validated": "2026-10-13"
+      },
+      "mem-233": {
+        "type": "pattern",
+        "summary": "Coding-agent vendors bill overage at model API rates on top of a seat or plan fee, so their margin comes from the base fee rather than from token resale. [https://cursor.com/help/models-and-usage/usage-limits (fetched 2026-10-13, sha256 a6c3fda80b12), https://visualstudiomagazine.com/articles/2026/04/27/devs-sound-off-on-usage-based-copilot-pricing-change-you-will-get-less-but-pay-the-same-price.aspx (fetched 2026-10-13, sha256 cc45dd1fe971), https://www.usagepricing.com/blueprint/cognition (fetched 2026-10-13, sha256 063e7f92be17), https://www.superblocks.com/blog/claude-code-pricing (fetched 2026-10-13, sha256 26813c475755)]",
+        "path": "memories/patterns/mem-233.md",
+        "confidence": 0.7,
+        "concepts": [
+          "api",
+          "deployment"
+        ],
+        "created": "2026-10-13",
+        "last_validated": "2026-10-13"
+      },
+      "mem-234": {
+        "type": "pattern",
+        "summary": "Rolling five-hour, weekly or 30-day usage windows are the standard defence against a customer burning a monthly allowance in days. [https://techcrunch.com/2025/07/28/anthropic-unveils-new-rate-limits-to-curb-claude-code-power-users/ (fetched 2026-10-13, sha256 43f0a29b9b47), https://uibakery.io/blog/openai-codex-pricing (fetched 2026-10-13, sha256 734071a90ccf), https://www.usagepricing.com/blueprint/factory (fetched 2026-10-13, sha256 902f00ce7e80)]",
+        "path": "memories/patterns/mem-234.md",
+        "confidence": 0.7,
+        "concepts": [
+          "deployment"
+        ],
+        "created": "2026-10-13",
+        "last_validated": "2026-10-13"
+      },
+      "mem-235": {
+        "type": "pattern",
+        "summary": "Prepaid credits that roll over, with opt-in auto-reload and per-session or per-user spend limits, are the standard overage mechanism for agent products. [https://www.usagepricing.com/blueprint/cognition (fetched 2026-10-13, sha256 063e7f92be17), https://www.usagepricing.com/blueprint/factory (fetched 2026-10-13, sha256 902f00ce7e80), https://docs.stripe.com/billing/subscriptions/usage-based/billing-credits/implementation-guide (fetched 2026-10-13, sha256 11818d4177fe)]",
+        "path": "memories/patterns/mem-235.md",
+        "confidence": 0.7,
+        "concepts": [
+          "deployment"
+        ],
+        "created": "2026-10-13",
+        "last_validated": "2026-10-13"
+      },
+      "mem-236": {
+        "type": "learning",
+        "summary": "Some vendors still charge a platform fee on BYO-key usage: Cursor charges $0.25 per million tokens on Teams and Enterprise, and Factory charges BYOK beyond a free allowance. [https://cursor.com/help/models-and-usage/api-keys (fetched 2026-10-13, sha256 64bd186b9b1f), https://www.usagepricing.com/blueprint/factory (fetched 2026-10-13, sha256 902f00ce7e80)]",
+        "path": "memories/learnings/mem-236.md",
+        "confidence": 0.7,
+        "concepts": [
+          "api",
+          "deployment"
+        ],
+        "created": "2026-10-13",
+        "last_validated": "2026-10-13"
+      },
+      "mem-237": {
+        "type": "learning",
+        "summary": "Moving a coding tool from request or message pricing to token or credit pricing has repeatedly triggered user backlash: Cursor in June 2025, Augment in Oct 2025, and Copilot in 2026. [https://techcrunch.com/2025/07/07/cursor-apologizes-for-unclear-pricing-changes-that-upset-users/ (fetched 2026-10-13, sha256 40a4a6341899), https://www.theregister.com/2025/10/15/augment_pricing_model/ (fetched 2026-10-13, sha256 11498f6e5da2), https://visualstudiomagazine.com/articles/2026/04/27/devs-sound-off-on-usage-based-copilot-pricing-change-you-will-get-less-but-pay-the-same-price.aspx (fetched 2026-10-13, sha256 cc45dd1fe971)]",
+        "path": "memories/learnings/mem-237.md",
+        "confidence": 0.7,
+        "concepts": [
+          "deployment"
+        ],
+        "created": "2026-10-13",
+        "last_validated": "2026-10-13"
+      },
+      "mem-238": {
+        "type": "learning",
+        "summary": "AI product gross margins averaged 45% in 2025, and leading AI coding tools reportedly ran negative gross margins. [https://www.1752.vc/learn/ai-gross-margins-and-inference-costs (fetched 2026-10-13, sha256 68bb13fc5cbe), https://charlesrubenfeld.substack.com/p/blame-competition-not-compute-for (fetched 2026-10-13, sha256 80c328934e67)]",
+        "path": "memories/learnings/mem-238.md",
+        "confidence": 0.7,
+        "concepts": [
+          "general"
+        ],
+        "created": "2026-10-13",
+        "last_validated": "2026-10-13"
+      },
+      "mem-239": {
+        "type": "learning",
+        "summary": "Outcome pricing for support agents sits at $0.50-$2.00 per resolution and depends on a vendor-defined proxy for \"resolved\". [https://www.techtarget.com/enterprise-software/feature/Outcome-based-AI-pricing-hits-a-measurement-problem (fetched 2026-10-13, sha256 1acac0b1b0f9), https://www.concret.io/blog/new-agentforce-pricing-model (fetched 2026-10-13, sha256 0da8867745ed)]",
+        "path": "memories/learnings/mem-239.md",
+        "confidence": 0.7,
+        "concepts": [
+          "deployment"
+        ],
+        "created": "2026-10-13",
+        "last_validated": "2026-10-13"
+      },
+      "mem-240": {
+        "type": "pitfall",
+        "summary": "A cost-plus price with a 1-4% markup is below a 5% + $0.50 payment-processor fee, so Pilot's per-ticket invoice would have negative contribution before any fixed cost. [internal://pilot/navigator-research-2026-10-13 (fetched 2026-10-13, sha256 22e54af46a23)]",
+        "path": "memories/pitfalls/mem-240.md",
+        "confidence": 0.7,
+        "concepts": [
+          "general"
+        ],
+        "created": "2026-10-13",
+        "last_validated": "2026-10-13"
+      },
+      "mem-241": {
+        "type": "pitfall",
+        "summary": "Pilot markets \"100 tickets\" but enforces a $100 list-price allowance, so at Sonnet 5 costs of $3.15 per ticket the cap fires near ticket 32. [internal://pilot/navigator-research-2026-10-13 (fetched 2026-10-13, sha256 22e54af46a23)]",
+        "path": "memories/pitfalls/mem-241.md",
+        "confidence": 0.7,
+        "concepts": [
+          "general"
+        ],
+        "created": "2026-10-13",
+        "last_validated": "2026-10-13"
+      },
+      "mem-242": {
+        "type": "pitfall",
+        "summary": "Cost-plus pricing hands model-price cuts to the customer: Pilot's cost per ticket fell about 80% from Sonnet 5 to Sonnet 5.5, which a flat plan keeps as margin. [internal://pilot/navigator-research-2026-10-13 (fetched 2026-10-13, sha256 22e54af46a23)]",
+        "path": "memories/pitfalls/mem-242.md",
+        "confidence": 0.7,
+        "concepts": [
+          "deployment"
+        ],
+        "created": "2026-10-13",
+        "last_validated": "2026-10-13"
+      },
+      "mem-243": {
+        "type": "decision",
+        "summary": "Pilot should keep the flat $499, 100-ticket, no-seat plan and price any metered overage per shipped ticket at a value price (about $3.38-$4.90, this report's calculation from Pilot's Sonnet 5.5 cost), not at cost +1-4%. [internal://pilot/navigator-research-2026-10-13 (fetched 2026-10-13, sha256 22e54af46a23), internal://pilot/navigator-research-2026-10-13 (fetched 2026-10-13, sha256 22e54af46a23), https://www.1752.vc/learn/ai-gross-margins-and-inference-costs (fetched 2026-10-13, sha256 68bb13fc5cbe)]",
+        "path": "memories/decisions/mem-243.md",
+        "confidence": 0.7,
+        "concepts": [
+          "general"
+        ],
+        "created": "2026-10-13",
+        "last_validated": "2026-10-13"
+      },
+      "mem-244": {
+        "type": "pitfall",
+        "summary": "A docs commit that dispatches a follow-up issue and archives the parent task doc in the same commit leaves the issue citing .agent/tasks/X.md while main has .agent/tasks/archive/X.md; the base-presence gate holds then parks it (pilot-needs-human). Cite the archive path or fix the body and clear the label. #5671, 2026-10-13/14.",
+        "path": "memories/pitfalls/mem-244.md",
+        "confidence": 0.95,
+        "concepts": [
+          "workflow",
+          "deployment",
+          "context"
+        ],
+        "created": "2026-10-14",
+        "last_validated": "2026-10-14"
       }
     }
   },
@@ -11415,6 +11592,96 @@
       "from": "goreleaser-rerun-on-published-tag-fails-422-push-formula-by-hand",
       "to": "ci",
       "type": "relates_to"
+    },
+    {
+      "from": "TASK-546",
+      "to": "database",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-546",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-546",
+      "to": "knowledge",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-546",
+      "to": "workflow",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-546",
+      "to": "api",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-546",
+      "to": "deployment",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-546",
+      "to": "context",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-549",
+      "to": "deployment",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-549",
+      "to": "api",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-549",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-549",
+      "to": "frontend",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-549",
+      "to": "knowledge",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-549",
+      "to": "context",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-549",
+      "to": "skills",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-547",
+      "to": "api",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-547",
+      "to": "context",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-547",
+      "to": "deployment",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-547",
+      "to": "testing",
+      "type": "implements"
     }
   ],
   "concept_index": {
@@ -11608,7 +11875,12 @@
       "TASK-527",
       "TASK-528",
       "TASK-529",
-      "TASK-530"
+      "TASK-530",
+      "mem-233",
+      "mem-236",
+      "TASK-546",
+      "TASK-549",
+      "TASK-547"
     ],
     "approval": [
       "approvals-off-stage-auto-merge",
@@ -12043,7 +12315,11 @@
       "TASK-527",
       "TASK-528",
       "TASK-529",
-      "TASK-530"
+      "TASK-530",
+      "TASK-546",
+      "TASK-549",
+      "TASK-547",
+      "mem-244"
     ],
     "conversational-bot": [
       "mem-036",
@@ -12172,7 +12448,8 @@
       "TASK-516",
       "TASK-519",
       "TASK-528",
-      "TASK-530"
+      "TASK-530",
+      "TASK-546"
     ],
     "decomposition": [
       "decomposer-narrative-bullets-as-subtask-boundaries",
@@ -12375,7 +12652,18 @@
       "TASK-525",
       "TASK-527",
       "TASK-528",
-      "TASK-529"
+      "TASK-529",
+      "mem-233",
+      "mem-234",
+      "mem-235",
+      "mem-236",
+      "mem-237",
+      "mem-239",
+      "mem-242",
+      "TASK-546",
+      "TASK-549",
+      "TASK-547",
+      "mem-244"
     ],
     "dispatch": [
       "auto-preserved-wip-recover-by-cherry-pick-continuation",
@@ -12614,7 +12902,8 @@
       "TASK-516",
       "TASK-517",
       "TASK-526",
-      "TASK-527"
+      "TASK-527",
+      "TASK-549"
     ],
     "gateway": [
       "TASK-01",
@@ -12850,7 +13139,9 @@
       "TASK-515",
       "TASK-517",
       "TASK-518",
-      "TASK-519"
+      "TASK-519",
+      "TASK-546",
+      "TASK-549"
     ],
     "labels": [
       "mem-100",
@@ -13191,7 +13482,8 @@
       "TASK-505",
       "TASK-516",
       "TASK-518",
-      "TASK-519"
+      "TASK-519",
+      "TASK-549"
     ],
     "social-engineering": [
       "mem-125"
@@ -13421,7 +13713,10 @@
       "TASK-527",
       "TASK-528",
       "TASK-529",
-      "TASK-530"
+      "TASK-530",
+      "TASK-546",
+      "TASK-549",
+      "TASK-547"
     ],
     "testing-quality": [
       "TASK-384",
@@ -13582,7 +13877,9 @@
       "TASK-510",
       "TASK-508",
       "TASK-518",
-      "TASK-521"
+      "TASK-521",
+      "TASK-546",
+      "mem-244"
     ],
     "workflow-discipline": [
       "TASK-359",
@@ -13668,7 +13965,9 @@
       "TASK-515",
       "TASK-516",
       "TASK-517",
-      "TASK-528"
+      "TASK-528",
+      "TASK-546",
+      "TASK-549"
     ],
     "stage-semantics": [
       "stagefailed-conflates-healthy-handoff-with-terminal-failure"
@@ -13973,14 +14272,19 @@
     ],
     "state-store": [
       "autopilot-restorestate-drops-held-failed-prs-on-restart"
+    ],
+    "general": [
+      "mem-238",
+      "mem-240",
+      "mem-241",
+      "mem-243"
     ]
   },
-  "last_updated": "2026-10-13T19:05:29.980591+00:00",
+  "last_updated": "2026-10-14T10:38:41.375839+00:00",
   "stats": {
-    "total_nodes": 679,
-    "total_edges": 669,
-    "memory_count": 359,
-    "memories": 363
+    "total_nodes": 709,
+    "total_edges": 687,
+    "memory_count": 386
   },
   "metadata": {}
 }
