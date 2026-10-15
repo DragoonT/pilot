@@ -3,7 +3,7 @@
 **Resume with**: `/nav-start-active`. Supersedes `2026-10-15_before-compact-v2286-released.md` for this track. A parallel session owns TASK-557 (Linear state write-back, PR#5702 merged, fast-follow #5703) — see its marker `2026-10-15_linear-state-writeback-pr5702-awaiting-approval.md`; do not touch its docs.
 
 ## ONE next action
-**This track is closed.** Next candidates, founder's pick: (1) console#403 (PR#408 needs-manual-rebase) + console#404 (PR#406 pilot-needs-human) — TASK-546 session; (2) a mechanical backticked-path pre-flight in nav-pilot (recurrence #5 today); (3) nav config v7.8.0 → plugin v8.4.2 sync + `deep_research.enabled` flip; (4) product gap, not filed: a Pilot auto-preserved commit that builds and passes should continue the pipeline instead of parking `pilot-blocked` (GH-5701 and GH-413 today).
+**This track is closed.** Next candidates, founder's pick: (1) console#403 (PR#408 needs-manual-rebase) + console#404 (PR#406 pilot-needs-human) — TASK-546 session; (2) a mechanical backticked-path pre-flight in nav-pilot (recurrence #5 today); (3) nav config v7.8.0 → plugin v8.4.2 sync + `deep_research.enabled` flip; (4) was the auto-preserved-commit gap — SHIPPED by the other session as pilot 15a521345 (`feat(executor): adopt a green auto-preserved commit as the deliverable`), nothing left to file.
 
 ## State
 - **Ledger:** console prod-0.1.33 (reconciler td 46, 11:59Z). `ticket_ledger` org 425f9f99 = 4 execution (GH-3/5/7/9) + 1 chat_turn (12:51:57Z, est 16.613 c / reported 16.719 c). No 400 since the deploy. Testica (b79d7a56) 503 = stopped exhaustion-test box, expected.
