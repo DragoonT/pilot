@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "updated": "2026-10-08T15:51:08.646114+00:00",
+  "updated": "2026-10-15T10:28:29.793377+00:00",
   "nodes": {
     "concepts": {
       "pilot-architecture": {
@@ -8244,6 +8244,65 @@
         ],
         "created": "2026-10-14",
         "last_validated": "2026-10-14"
+      },
+      "allowedtools-inert-under-dangerously-skip-permissions": {
+        "type": "pitfall",
+        "summary": "Every Pilot claude spawn passes --dangerously-skip-permissions, so --allowedTools is only an auto-approve list: Write(.agent/**) did not stop a write to ./outside.txt in a live CLI probe (2026-10-14). The chat 'read-only' tool list and the bootstrap allowlist were prompt-level only; unit tests passed because the fake backend re-implemented the rule. What holds under skip-permissions: --disallowedTools (deny list) and a PreToolUse hook passed with --settings that exits 2 (hooks fire regardless of permission mode). Fixed by TASK-551 (PR#5692: per-run settings file + write-guard.sh + git sweep af",
+        "path": "memories/pitfalls/allowedtools-inert-under-dangerously-skip-permissions.md",
+        "confidence": 0.95,
+        "concepts": [
+          "executor",
+          "claude-code",
+          "permissions",
+          "security",
+          "chat",
+          "navigator-bootstrap"
+        ],
+        "created": "2026-10-15",
+        "last_validated": "2026-10-15"
+      },
+      "console-ledger-poller-decoded-assumed-usage-shape-zero-rows": {
+        "type": "pitfall",
+        "summary": "console PR#405 (GH-401) decoded {rows|array} with kind, estimatedUsdCents, reportedUsd, status=succeeded; daemon GH-5676 served {executions,nextSince,hasMore} with estimatedCostUSD, reportedCostUSD, status=completed, no kind. Both merged the same morning from one plan (TASK-546) that never fixed the shape; fixtures on each side were written to their own assumption. Result: ticket_ledger stayed empty with no error above debug; the meter fell back to the rollup delta so enforcement ran but chat dollars (D10) could never land. Fixed: console#409→PR#410 (decoder to the shipped shape + hasMore pagi",
+        "path": "memories/pitfalls/console-ledger-poller-decoded-assumed-usage-shape-zero-rows.md",
+        "confidence": 0.9,
+        "concepts": [
+          "pricing-v3",
+          "usage-ledger",
+          "contract-drift",
+          "doc-vs-wire",
+          "console"
+        ],
+        "created": "2026-10-15",
+        "last_validated": "2026-10-15"
+      },
+      "issue-body-backticked-paths-not-on-main-trip-base-presence-hold": {
+        "type": "pitfall",
+        "summary": "Four dispatches on 2026-10-13/14 sat in 'Task held: prerequisite not on main' for 5–25 min each: a cross-repo .agent/ task doc (ui#233), src/stray.txt as a test fixture name (pilot#5688), five files that existed only on a closed PR branch (pilot#5690), a new testdata JSON to be created (console#409). The legacy gate treats every backticked path-like span as a prerequisite that must exist on main; the shadow classifier would have let 'to_be_created' through but is not authoritative. Fix is an issue-body edit; the next 5-min tick releases the hold.",
+        "path": "memories/pitfalls/issue-body-backticked-paths-not-on-main-trip-base-presence-hold.md",
+        "confidence": 0.95,
+        "concepts": [
+          "dispatch",
+          "base-presence",
+          "issue-authoring",
+          "nav-pilot"
+        ],
+        "created": "2026-10-15",
+        "last_validated": "2026-10-15"
+      },
+      "evidence-runner-pastes-nonzero-exit-under-passes-bullet": {
+        "type": "learning",
+        "summary": "runPasteOutputItem treats a non-zero exit as 'a legitimate result worth pasting' (only binary-missing/timeout mark Not-verified). PR#5670's body carried 'make lint … Error 1' under a 'passes; paste the output' bullet and autopilot merged on green CI (CI pins golangci-lint 2.8.0; local 2.14.0 flags QF1012). Also: golangci-lint's shared cache leaks a dead sibling worktree's paths into a Pilot run's lint output; and the runner refuses '|' inside -run quotes and any command not in the allowlist (grep) — write acceptance commands without pipes and with allowlisted binaries.",
+        "path": "memories/learnings/evidence-runner-pastes-nonzero-exit-under-passes-bullet.md",
+        "confidence": 0.9,
+        "concepts": [
+          "evidence-gate",
+          "review",
+          "lint",
+          "issue-authoring"
+        ],
+        "created": "2026-10-15",
+        "last_validated": "2026-10-15"
       }
     }
   },
@@ -11682,6 +11741,46 @@
       "from": "TASK-547",
       "to": "testing",
       "type": "implements"
+    },
+    {
+      "from": "allowedtools-inert-under-dangerously-skip-permissions",
+      "to": "executor",
+      "type": "relates_to"
+    },
+    {
+      "from": "allowedtools-inert-under-dangerously-skip-permissions",
+      "to": "security",
+      "type": "relates_to"
+    },
+    {
+      "from": "allowedtools-inert-under-dangerously-skip-permissions",
+      "to": "chat",
+      "type": "relates_to"
+    },
+    {
+      "from": "issue-body-backticked-paths-not-on-main-trip-base-presence-hold",
+      "to": "dispatch",
+      "type": "relates_to"
+    },
+    {
+      "from": "issue-body-backticked-paths-not-on-main-trip-base-presence-hold",
+      "to": "base-presence",
+      "type": "relates_to"
+    },
+    {
+      "from": "issue-body-backticked-paths-not-on-main-trip-base-presence-hold",
+      "to": "issue-authoring",
+      "type": "relates_to"
+    },
+    {
+      "from": "evidence-runner-pastes-nonzero-exit-under-passes-bullet",
+      "to": "review",
+      "type": "relates_to"
+    },
+    {
+      "from": "evidence-runner-pastes-nonzero-exit-under-passes-bullet",
+      "to": "issue-authoring",
+      "type": "relates_to"
     }
   ],
   "concept_index": {
@@ -12687,7 +12786,8 @@
       "poller-labels-removed-log-means-never-applied",
       "sequential-gates-on-execution-not-merge-fastfollow-misbase",
       "stall-status-reused-as-hold-marker",
-      "terminal-status-without-rearm-probe-kills-operator-recovery"
+      "terminal-status-without-rearm-probe-kills-operator-recovery",
+      "issue-body-backticked-paths-not-on-main-trip-base-presence-hold"
     ],
     "dispatcher": [
       "alert-engine-counts-operator-cancels",
@@ -12816,7 +12916,8 @@
       "workflow-yaml-requires-front-matter",
       "heartbeat-callback-never-set-in-production",
       "alerts-engine-drops-events-without-handleevent-case",
-      "executor-alert-event-strings-must-equal-alerts-eventtype"
+      "executor-alert-event-strings-must-equal-alerts-eventtype",
+      "allowedtools-inert-under-dangerously-skip-permissions"
     ],
     "external-contributor": [
       "external-fork-pr-sweeps-stale-agent-state"
@@ -13033,7 +13134,9 @@
       "mem-221",
       "spec-rerouting-a-platform-must-rewrite-composed-tests-of-the-old-flow",
       "console-wire-contract-gate-needs-raw-body-strings-contains-test",
-      "chat-filed-issues-cite-untracked-agent-scaffold"
+      "chat-filed-issues-cite-untracked-agent-scaffold",
+      "issue-body-backticked-paths-not-on-main-trip-base-presence-hold",
+      "evidence-runner-pastes-nonzero-exit-under-passes-bullet"
     ],
     "knowledge": [
       "TASK-368",
@@ -13453,7 +13556,8 @@
       "mem-125",
       "mem-128",
       "required-checks-allowlist-makes-other-gates-decorative",
-      "runselfreview-runs-in-repo-root-phantom-reimplementation"
+      "runselfreview-runs-in-repo-root-phantom-reimplementation",
+      "allowedtools-inert-under-dangerously-skip-permissions"
     ],
     "ship-test": [
       "bake-workflow-tee-masked-failure-promoted-source-ami",
@@ -14015,7 +14119,8 @@
       "mem-204",
       "use-nav-research-agent-for-all-project-research",
       "mem-220",
-      "mem-221"
+      "mem-221",
+      "evidence-runner-pastes-nonzero-exit-under-passes-bullet"
     ],
     "operations": [
       "dead-cdk-stack-carried-live-founder-box-backup-policy",
@@ -14162,7 +14267,8 @@
     ],
     "base-presence": [
       "held-task-at-queue-head-starves-serial-project-worker",
-      "chat-filed-issues-cite-untracked-agent-scaffold"
+      "chat-filed-issues-cite-untracked-agent-scaffold",
+      "issue-body-backticked-paths-not-on-main-trip-base-presence-hold"
     ],
     "linear": [
       "linear-sdk-poller-migration-dropped-project-routing"
@@ -14255,7 +14361,8 @@
     ],
     "chat": [
       "spec-rerouting-a-platform-must-rewrite-composed-tests-of-the-old-flow",
-      "chat-filed-issues-cite-untracked-agent-scaffold"
+      "chat-filed-issues-cite-untracked-agent-scaffold",
+      "allowedtools-inert-under-dangerously-skip-permissions"
     ],
     "wire-contract": [
       "console-wire-contract-gate-needs-raw-body-strings-contains-test"
@@ -14280,11 +14387,12 @@
       "mem-243"
     ]
   },
-  "last_updated": "2026-10-14T10:38:41.375839+00:00",
+  "last_updated": "2026-10-15T10:28:29.793377+00:00",
   "stats": {
-    "total_nodes": 709,
-    "total_edges": 687,
-    "memory_count": 386
+    "total_nodes": 702,
+    "total_edges": 695,
+    "memory_count": 386,
+    "memories": 379
   },
   "metadata": {}
 }
