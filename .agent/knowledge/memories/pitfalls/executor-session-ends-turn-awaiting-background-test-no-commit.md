@@ -21,3 +21,5 @@ Diagnose from the recording: the RESULT text names the deferred commit; grep run
 **Captured**: 2026-10-15
 **Confidence**: 95%
 **Concepts**: executor, worktree, recovery, stalled, silent-failure, claude-code-integration
+
+**Recurrence 2026-10-15 15:49Z (2nd same day):** console GH-413 (TASK-559) — same chain, preserved commit `b6acaba` on `pilot/GH-413` was complete (3 files, 16/16 PASS, both pins kill). Recovery as above: detached worktree verify → PR#414 opened from the branch unchanged, autopilot merged 15:58Z. The product gap stands: a preserved commit that builds and passes should continue the pipeline, not park as a deterministic failure.

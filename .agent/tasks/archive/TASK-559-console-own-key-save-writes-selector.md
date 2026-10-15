@@ -1,6 +1,6 @@
 # fix(orgs): write PILOT_ANTHROPIC_KEY_SOURCE=own when a customer saves an Anthropic key and no pool key is lent, so legacy orgs stop being metered as unknown
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-15 → [console#413](https://github.com/qf-studio/pilot-console/issues/413)
+**Status**: ✅ MERGED 2026-10-15 15:58Z → [console#413](https://github.com/qf-studio/pilot-console/issues/413) → [PR#414](https://github.com/qf-studio/pilot-console/pull/414) (recovery PR from Pilot's preserved `b6acaba`; executor ended its turn with a background test running, 2nd instance today). Reviewer verified before opening: build + vet clean, 16/16 `TestHandlePutCredential*` PASS against Postgres, both pins kill (evidence in the PR body). Autopilot merged on green at 1c7e01ce1. Founder tenant already fixed by hand; new own-key saves now write the selector themselves.
 **Created**: 2026-10-15
 **Repo**: qf-studio/pilot-console
 
