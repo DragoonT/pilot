@@ -3,7 +3,7 @@
 **Resume with**: `/nav-start-active`. Supersedes `2026-10-15_before-compact-v2286-released.md` for this track. A parallel session owns TASK-557 (Linear state write-back, PR#5702 merged, fast-follow #5703) — see its marker `2026-10-15_linear-state-writeback-pr5702-awaiting-approval.md`; do not touch its docs.
 
 ## ONE next action
-**Prove `key_source=own` on the founder tenant**: the selector was written (String) and the daemon restarted 15:15:31Z — send one chat question, read `chat_turns.key_source` on the tenant, then `ticket_ledger` after the 15-min tick. If `own`: file the console gap (putCredentialSecret never writes the selector for legacy orgs). Previous wording kept below for context.
+**File the console gap (founder call):** `putCredentialSecret` (console `internal/orgs/handlers.go`) writes `ANTHROPIC_API_KEY_OWN` but never `PILOT_ANTHROPIC_KEY_SOURCE=own` unless the org was allowance-suspended, so every pre-TASK-502 org on its own key is metered as `unknown`. Founder tenant fixed by hand 15:15Z and PROVEN 15:26Z (`key_source=own` in `ticket_ledger`). Then console#403/#404 (TASK-546 session) and nav config sync.
 
 **(done 15:15Z) Founder: give the founder tenant a key source.** Org `425f9f99` (EC2 `i-0289111000cebcee9`) has the 09-25 SSM layout (`ANTHROPIC_API_KEY`, `GITHUB_TOKEN`, `PILOT_GATEWAY_TOKEN` only). Add `/tenants/425f9f99-4491-4044-9038-f50b0b0a3a5b/PILOT_ANTHROPIC_KEY_SOURCE` (+ the `_PLATFORM`/`_OWN` pair) or re-push its config, then one chat turn must show `key_source` ≠ `unknown` in `ticket_ledger`. Until then the meter counts $0 for this org.
 
