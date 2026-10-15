@@ -1,6 +1,6 @@
 # TASK-557: Linear native state write-back on start, PR and merge (Jira verified by category fallback)
 
-**Status**: ✅ MERGED 2026-10-15 11:41Z → PR#5702 (squash f44f387e), review APPROVE-w-defects; fast-follow #5703 labeled `pilot` 11:46Z. Open: live proof on the box after the 16:00 Berlin train (next `LIN-*` dispatch → `leg=start` + `leg=pr` log lines, issue in a started state, completion comment).
+**Status**: ✅ DONE 2026-10-15 — PR#5702 (merged 11:41Z) + fast-follows PR#5704 (12:22Z) + PR#5706 (13:35Z), all in **v2.287.0** (box self-upgraded 14:07Z). **Live proof 15:06–15:25Z on QF-301/302**: `leg=start` transition logged, ✅ completion comment with the GitLab MR URL posted, issues now `Done` (the Done move is not Pilot's — no merge leg for GitLab MRs; `in_review` unconfigured so the PR leg is comment-only). Open follow-up: #5708 (review defects of PR#5706: needs_human push-failed text, superseded must not move state, double `failed:` prefix, stale no-PR text, docs paragraph).
 **Created**: 2026-10-15
 **Assignee**: Pilot (one issue, this repo)
 
@@ -162,18 +162,19 @@ the issue is in a `started` state and has a completion comment with the MR URL.
 
 ## Done
 
-- [ ] `adapters.linear.transitions` parses (top level + per workspace) with tests
-- [ ] Start / PR / failed legs run in the per-workspace closure; mutation pins 1 and 3 fail when applied
-- [ ] Merge leg fires once per merged pilot/LIN-* PR; pin 2 fails when applied; `LinearDoneNotified` persisted
-- [ ] INFO transition lines + WARN failures in the daemon log
-- [ ] Docs + example config updated; no `$` in values
-- [ ] Live: one `LIN-*` task on the box reaches a `started` state and gets the completion comment
+- [x] `adapters.linear.transitions` parses (top level + per workspace) with tests
+- [x] Start / PR / failed legs run in the per-workspace closure; mutation pins 1 and 3 fail when applied
+- [x] Merge leg fires once per merged pilot/LIN-* PR; pin 2 fails when applied; `LinearDoneNotified` persisted
+- [x] INFO transition lines + WARN failures in the daemon log
+- [x] Docs + example config updated; no `$` in values
+- [x] Live: one `LIN-*` task on the box reaches a `started` state and gets the completion comment (QF-301/302, 2026-10-15)
 
 ---
 
 ## Refs
 
 - Pilot issue: https://github.com/qf-studio/pilot/issues/5701
+- #5705 → PR#5706 merged 13:35Z, post-merge review 10-15: **APPROVE-w-defects** (outcome threading correct, e2e table test through the real dispatcher, pins 2/2 kill; defects: `needs_human` comment claims pushed even on push failure and drops the reason · `superseded` restore clobbers a human close · `failed: execution failed:` double prefix · stale generic no-PR text · docs paragraph contradiction; notes: colon-in-path partial redaction, `Status` vs `Outcome` altitude, dead `TerminalByDesign`). Fast-follow https://github.com/qf-studio/pilot/issues/5708 dispatched (`pilot`). **All three PRs are in v2.287.0 (14:04Z).**
 - #5703 → PR#5704 (12:07Z) review 10-15: **CHANGES REQUESTED** (posted as a comment; GitHub refuses request-changes on a same-account PR) — the leg still branches on `Success`/`PRURL`: `no_op` posts a failure with 'unknown error', `needs_human` posts 'nothing waiting for review' and leaves the started state, `BackendError` classification unreachable on the dispatcher path (error rebuilt from a DB string). Pins 3/3 kill, gated flip + error masking fixed. Follow-up https://github.com/qf-studio/pilot/issues/5705 (thread the classified outcome into the leg) — PR#5704 merged 12:22Z; #5705 labeled `pilot` 12:3xZ.
 - PR#5702 review 10-15: **APPROVE-w-defects** posted on the PR (4 behaviour defects: start leg before admission gates · success-without-PR dead end · NotifyMerged masks the matched workspace error · raw error in the failure comment; 6 notes). Fast-follow filed: https://github.com/qf-studio/pilot/issues/5703 — label `pilot` after #5702 merges.
 - PR: https://github.com/qf-studio/pilot/pull/5702 (opened by Navigator from the auto-preserved commit 8fe4dd2 after a detached-worktree verify; the executor run ended its turn while a background `go test` was still active — pitfall `executor-session-ends-turn-awaiting-background-test-no-commit`)

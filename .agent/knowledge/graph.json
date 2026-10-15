@@ -3084,18 +3084,18 @@
         ]
       },
       "TASK-557": {
-        "path": ".agent/tasks/TASK-557-linear-native-state-write-back.md",
+        "path": ".agent/tasks/archive/TASK-557-linear-native-state-write-back.md",
         "title": "Linear native state write-back on start, PR and merge (Jira verified by category fallback)",
-        "status": "backlog",
+        "status": "completed",
         "concepts": [
-          "database",
-          "skills",
-          "deployment",
-          "testing",
-          "api",
           "context",
-          "knowledge",
-          "frontend"
+          "frontend",
+          "deployment",
+          "api",
+          "testing",
+          "skills",
+          "database",
+          "knowledge"
         ]
       },
       "TASK-558": {
@@ -8396,6 +8396,114 @@
         ],
         "created": "2026-10-15",
         "last_validated": "2026-10-15"
+      },
+      "mem-245": {
+        "type": "decision",
+        "summary": "Where the transition logic lives: (b) pilot-side - No SDK release leg; SDK already exposes everything needed; Jira's notifier-owns-transition shape is kept at the call sites",
+        "path": "memories/decisions/mem-245.md",
+        "confidence": 0.95,
+        "concepts": [
+          "context",
+          "frontend",
+          "deployment",
+          "api",
+          "testing",
+          "skills",
+          "database",
+          "knowledge"
+        ],
+        "created": "2026-10-15",
+        "last_validated": "2026-10-15"
+      },
+      "mem-246": {
+        "type": "decision",
+        "summary": "Default behaviour with no config: (b) - Mirrors Jira's category fallback; the box gets correct behaviour on the next train with zero config; Linear state **types** are stable across teams, names ar...",
+        "path": "memories/decisions/mem-246.md",
+        "confidence": 0.95,
+        "concepts": [
+          "context",
+          "frontend",
+          "deployment",
+          "api",
+          "testing",
+          "skills",
+          "database",
+          "knowledge"
+        ],
+        "created": "2026-10-15",
+        "last_validated": "2026-10-15"
+      },
+      "mem-247": {
+        "type": "decision",
+        "summary": "State at PR-open: (b) - A PR is not done; `done` on an unmerged MR is the false-success class (TASK-460). GitLab projects stop at `in_review` until autopilot observes GitLab merges",
+        "path": "memories/decisions/mem-247.md",
+        "confidence": 0.95,
+        "concepts": [
+          "context",
+          "frontend",
+          "deployment",
+          "api",
+          "testing",
+          "skills",
+          "database",
+          "knowledge"
+        ],
+        "created": "2026-10-15",
+        "last_validated": "2026-10-15"
+      },
+      "mem-248": {
+        "type": "decision",
+        "summary": "Merge-leg gating: branch prefix - Same contract as `jiraIssueKeyFromBranch`; PRState has no source adapter field; the branch is already the carrier",
+        "path": "memories/decisions/mem-248.md",
+        "confidence": 0.95,
+        "concepts": [
+          "context",
+          "frontend",
+          "deployment",
+          "api",
+          "testing",
+          "skills",
+          "database",
+          "knowledge"
+        ],
+        "created": "2026-10-15",
+        "last_validated": "2026-10-15"
+      },
+      "mem-249": {
+        "type": "decision",
+        "summary": "Issue id for the merge leg: identifier \u2192 `GetIssue` \u2192 UUID - No schema widening beyond the attempt-once flag; one extra read per merge",
+        "path": "memories/decisions/mem-249.md",
+        "confidence": 0.95,
+        "concepts": [
+          "context",
+          "frontend",
+          "deployment",
+          "api",
+          "testing",
+          "skills",
+          "database",
+          "knowledge"
+        ],
+        "created": "2026-10-15",
+        "last_validated": "2026-10-15"
+      },
+      "mem-250": {
+        "type": "decision",
+        "summary": "Failure comment: add now - Today a failed `LIN-*` task is invisible in Linear except for a `pilot-failed` label; `NotifyTaskFailed` already exists",
+        "path": "memories/decisions/mem-250.md",
+        "confidence": 0.95,
+        "concepts": [
+          "context",
+          "frontend",
+          "deployment",
+          "api",
+          "testing",
+          "skills",
+          "database",
+          "knowledge"
+        ],
+        "created": "2026-10-15",
+        "last_validated": "2026-10-15"
       }
     }
   },
@@ -11949,6 +12057,36 @@
       "from": "TASK-558",
       "to": "database",
       "type": "implements"
+    },
+    {
+      "from": "mem-245",
+      "to": "TASK-557",
+      "type": "learned-from"
+    },
+    {
+      "from": "mem-246",
+      "to": "TASK-557",
+      "type": "learned-from"
+    },
+    {
+      "from": "mem-247",
+      "to": "TASK-557",
+      "type": "learned-from"
+    },
+    {
+      "from": "mem-248",
+      "to": "TASK-557",
+      "type": "learned-from"
+    },
+    {
+      "from": "mem-249",
+      "to": "TASK-557",
+      "type": "learned-from"
+    },
+    {
+      "from": "mem-250",
+      "to": "TASK-557",
+      "type": "learned-from"
     }
   ],
   "concept_index": {
@@ -12149,7 +12287,13 @@
       "TASK-549",
       "TASK-547",
       "TASK-557",
-      "TASK-558"
+      "TASK-558",
+      "mem-245",
+      "mem-246",
+      "mem-247",
+      "mem-248",
+      "mem-249",
+      "mem-250"
     ],
     "approval": [
       "approvals-off-stage-auto-merge",
@@ -12591,7 +12735,13 @@
       "TASK-547",
       "mem-244",
       "TASK-557",
-      "TASK-558"
+      "TASK-558",
+      "mem-245",
+      "mem-246",
+      "mem-247",
+      "mem-248",
+      "mem-249",
+      "mem-250"
     ],
     "conversational-bot": [
       "mem-036",
@@ -12723,7 +12873,13 @@
       "TASK-530",
       "TASK-546",
       "TASK-557",
-      "TASK-558"
+      "TASK-558",
+      "mem-245",
+      "mem-246",
+      "mem-247",
+      "mem-248",
+      "mem-249",
+      "mem-250"
     ],
     "decomposition": [
       "decomposer-narrative-bullets-as-subtask-boundaries",
@@ -12939,7 +13095,13 @@
       "TASK-547",
       "mem-244",
       "TASK-557",
-      "TASK-558"
+      "TASK-558",
+      "mem-245",
+      "mem-246",
+      "mem-247",
+      "mem-248",
+      "mem-249",
+      "mem-250"
     ],
     "dispatch": [
       "auto-preserved-wip-recover-by-cherry-pick-continuation",
@@ -13184,7 +13346,13 @@
       "TASK-526",
       "TASK-527",
       "TASK-549",
-      "TASK-557"
+      "TASK-557",
+      "mem-245",
+      "mem-246",
+      "mem-247",
+      "mem-248",
+      "mem-249",
+      "mem-250"
     ],
     "gateway": [
       "TASK-01",
@@ -13425,7 +13593,13 @@
       "TASK-519",
       "TASK-546",
       "TASK-549",
-      "TASK-557"
+      "TASK-557",
+      "mem-245",
+      "mem-246",
+      "mem-247",
+      "mem-248",
+      "mem-249",
+      "mem-250"
     ],
     "labels": [
       "mem-100",
@@ -13771,7 +13945,13 @@
       "TASK-518",
       "TASK-519",
       "TASK-549",
-      "TASK-557"
+      "TASK-557",
+      "mem-245",
+      "mem-246",
+      "mem-247",
+      "mem-248",
+      "mem-249",
+      "mem-250"
     ],
     "social-engineering": [
       "mem-125"
@@ -14008,7 +14188,13 @@
       "TASK-549",
       "TASK-547",
       "TASK-557",
-      "TASK-558"
+      "TASK-558",
+      "mem-245",
+      "mem-246",
+      "mem-247",
+      "mem-248",
+      "mem-249",
+      "mem-250"
     ],
     "testing-quality": [
       "TASK-384",
@@ -14590,11 +14776,11 @@
       "founder-tenant-legacy-ssm-layout-key-source-unknown-unmetered"
     ]
   },
-  "last_updated": "2026-10-15T13:25:25.060462+00:00",
+  "last_updated": "2026-10-15T15:47:11.152169+00:00",
   "stats": {
-    "total_nodes": 711,
-    "total_edges": 710,
-    "memory_count": 382
+    "total_nodes": 717,
+    "total_edges": 716,
+    "memory_count": 388
   },
   "metadata": {}
 }
