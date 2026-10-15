@@ -159,7 +159,7 @@ Disable via config: `executor.navigator.auto_init: false`
 
 ## Current State
 
-**Current Version:** box runs **v2.283.0** (out-of-band tag 10-13 17:19Z; self-upgraded 17:24Z). **Hosted tenants now self-upgrade too** (headless pipeline PR#5654 + sha256 PR#5655 + console PR#400; tenant `i-0289111000cebcee9` took v2.283.0 at 17:22Z with no SSM). v2.284.0 pending: PR#5667 alert + PR#5668 lint + the in-flight #5665/#5666.
+**Current Version:** box runs **v2.286.0** (out-of-band tag 10-15 09:42Z at e1135e111; box self-upgraded 09:45Z, tenant `i-0289111000cebcee9` 09:48Z; Release run green incl. the non-fatal `homebrew-tap` job). Contents since v2.285.0: PR#5691 hermetic bootstrap tests · #5692 write-boundary guard · #5693 usage route `kind` + chat rows · #5620 (external) worktree base = project default branch · #5696 guard portability · #5697 remaining `main` assumptions.
 
 **PRIORITY (founder directive 2026-07-26 — supersedes 07-17):** **SaaS/platform UNPARKED — TASK-405 is active work again.** The 07-17 ordering (pointer delivery → pilot reliability → SaaS parked) held while the dispatch-reliability chain was open; that chain closed with v2.246.0 on 07-25. Pointer and pilot reliability remain live tracks but no longer gate S-milestone dispatch. Memory: `founder-priority-pointer-first-saas-parked` (superseded).
 
