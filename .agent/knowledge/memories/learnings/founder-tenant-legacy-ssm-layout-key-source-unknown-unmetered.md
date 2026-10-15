@@ -19,3 +19,5 @@ Apply this knowledge when working on related topics.
 **Captured**: 2026-10-15
 **Confidence**: 95%
 **Concepts**: usage-ledger, ssm, tenant-provisioning, allowance, key-source
+
+**Applied 2026-10-15 ~15:15Z (operator, this session):** `PILOT_ANTHROPIC_KEY_SOURCE=own` written as a plain `String` (the IAM user lacks `kms:Encrypt` on the console KMS key `0578f83b-…`; the value is not a secret, and `get-parameters-by-path --with-decryption` returns both types). Tenant daemon restarted idle at 15:15:31Z; `/run/pilot/env` now carries the selector. Proof pending: next chat turn must record `key_source=own`. Product gap, not filed yet: `putCredentialSecret` in console `internal/orgs/handlers.go` writes `ANTHROPIC_API_KEY_OWN` but never the selector unless the org was allowance-suspended, so every pre-TASK-502 org stays `unknown`.
