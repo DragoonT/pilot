@@ -1,6 +1,6 @@
 # chore(console-api): add the InviteBaseUrl parameter and PILOT_CONSOLE_INVITE_BASE_URL env so org invites are enabled in prod
 
-**Status**: 📨 FILED 2026-10-16 → [https://github.com/qf-studio/aws-infrastructure-pilot/issues/21](https://github.com/qf-studio/aws-infrastructure-pilot/issues/21) — assigned to the founder (repo not registered with Pilot; Nelya may take it)
+**Status**: 🚀 PR OPEN 2026-10-16 → [infra#21](https://github.com/qf-studio/aws-infrastructure-pilot/issues/21) → [PR#22](https://github.com/qf-studio/aws-infrastructure-pilot/pull/22) (6 lines, template validated, opened by hand at the founder's request). After merge: infra pipeline `sync-templates` → next console-api deploy → smoke invite.
 **Created**: 2026-10-16
 **Repo**: qf-studio/aws-infrastructure-pilot
 
@@ -34,3 +34,4 @@ pilot-console PR #406 (issue #404, merged 2026-10-16 10:49Z) added org member in
 - `stacks/pilot-fleet/services/console-api.yml` (Parameters: EmailEnabled, EmailFrom; env block PILOT_CONSOLE_EMAIL_*)
 - pilot-console PR #406, issue #404; pilot-console deploy workflow deploy-quantflow-aws.yml (TEMPLATE_BASE, parameter-overrides)
 - Issue: https://github.com/qf-studio/aws-infrastructure-pilot/issues/21
+- PR: https://github.com/qf-studio/aws-infrastructure-pilot/pull/22
