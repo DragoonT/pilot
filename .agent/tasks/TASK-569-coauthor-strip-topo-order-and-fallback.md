@@ -1,6 +1,6 @@
 # TASK-569: fix(executor): co-author range strip walks history in topo order; no silent HEAD-only fallback (PR #5723 fast-follow)
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-16 → [#5731](https://github.com/qf-studio/pilot/issues/5731) (`pilot`, `no-decompose`)
+**Status**: 🟡 [PR#5733](https://github.com/qf-studio/pilot/pull/5733) open, CI `lint` red → autopilot fix [#5735](https://github.com/qf-studio/pilot/issues/5735) in progress (14:13Z). Pre-merge review 2026-10-16 14:20Z: **CHANGES REQUESTED** (posted as a comment review; GitHub refuses request-changes on an own PR). Defect 1: `refExists` left unused after its callers were removed (= the lint red; #5735 fixes it). Defect 2: with no `origin` refs `rev-list --not --remotes=origin` is unbounded and silent, whole-history rewrite then a failed push — needs a WARN + HEAD-only return; file as a same-files follow-up, label `pilot` after PR#5733 merges. Pins 3/3 kill; all three new subtests sound.
 **Created**: 2026-10-16
 **Assignee**: Pilot (one issue, this repo)
 **Source**: post-merge review 2026-10-16
