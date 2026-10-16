@@ -1190,6 +1190,21 @@
         "name": "Continuation",
         "aliases": [],
         "domain": "general"
+      },
+      "smoke-testing": {
+        "name": "Smoke-Testing",
+        "aliases": [],
+        "domain": "general"
+      },
+      "invites": {
+        "name": "Invites",
+        "aliases": [],
+        "domain": "general"
+      },
+      "console-ui": {
+        "name": "Console-Ui",
+        "aliases": [],
+        "domain": "general"
       }
     },
     "tasks": {
@@ -3136,6 +3151,18 @@
           "context",
           "workflow",
           "testing"
+        ]
+      },
+      "TASK-567": {
+        "path": ".agent/tasks/archive/TASK-567-ui-register-with-invite-skips-org.md",
+        "title": "Task 567 Ui Register With Invite Skips Org",
+        "status": "completed",
+        "concepts": [
+          "frontend",
+          "testing",
+          "api",
+          "authentication",
+          "context"
         ]
       }
     },
@@ -8547,6 +8574,21 @@
         ],
         "created": "2026-10-16",
         "last_validated": "2026-10-16"
+      },
+      "smoke-new-user-flows-with-a-fresh-account-registration-side-effects": {
+        "type": "learning",
+        "summary": "The first real org-invite smoke (2026-10-16) passed every backend and UI test and still failed for a real invitee: RegisterView's one submit does register\u2192createOrg, the console allows one org per user, and there is no org-delete route, so a new user who registered could never accept (409). Nobody had walked the flow as a brand-new account. Rule: for any user-facing flow that a NEW account enters (invites, shared links, referrals), the smoke must start from a fresh registration, and the spec must name the registration side effects (org creation, onboarding bounces, verification redirects) that can strand the flow. Fixed same morning by ui#237 \u2192 PR#238 (TASK-567). Also: a plus-address of a personal Gmail is not readable from a session whose Gmail MCP is the work account \u2014 pick the invitee mailbox before the smoke.",
+        "path": "memories/learnings/smoke-new-user-flows-with-a-fresh-account-registration-side-effects.md",
+        "confidence": 0.9,
+        "concepts": [
+          "onboarding",
+          "false-success",
+          "smoke-testing",
+          "invites",
+          "console-ui"
+        ],
+        "created": "2026-10-16",
+        "last_validated": "2026-10-16"
       }
     }
   },
@@ -12165,6 +12207,36 @@
       "from": "TASK-563",
       "to": "testing",
       "type": "implements"
+    },
+    {
+      "from": "smoke-new-user-flows-with-a-fresh-account-registration-side-effects",
+      "to": "TASK-567",
+      "type": "learned-from"
+    },
+    {
+      "from": "TASK-567",
+      "to": "frontend",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-567",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-567",
+      "to": "api",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-567",
+      "to": "authentication",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-567",
+      "to": "context",
+      "type": "implements"
     }
   ],
   "concept_index": {
@@ -12372,7 +12444,8 @@
       "mem-248",
       "mem-249",
       "mem-250",
-      "TASK-563"
+      "TASK-563",
+      "TASK-567"
     ],
     "approval": [
       "approvals-off-stage-auto-merge",
@@ -12485,7 +12558,8 @@
       "TASK-522",
       "TASK-523",
       "TASK-524",
-      "TASK-563"
+      "TASK-563",
+      "TASK-567"
     ],
     "auto-merge": [
       "mem-103"
@@ -12822,7 +12896,8 @@
       "mem-248",
       "mem-249",
       "mem-250",
-      "TASK-563"
+      "TASK-563",
+      "TASK-567"
     ],
     "conversational-bot": [
       "mem-036",
@@ -13353,7 +13428,8 @@
       "ci-post-merge-fix-issue-borrows-merged-branch-short-circuits",
       "mem-211",
       "test-fake-daemon-more-permissive-than-real-route-hides-400",
-      "executor-swallowed-rejected-push-as-success-branch-exists-is-not-pushed"
+      "executor-swallowed-rejected-push-as-success-branch-exists-is-not-pushed",
+      "smoke-new-user-flows-with-a-fresh-account-registration-side-effects"
     ],
     "flag-cutover": [
       "absolute-state-paths-bypass-cutover-shim",
@@ -13436,7 +13512,8 @@
       "mem-247",
       "mem-248",
       "mem-249",
-      "mem-250"
+      "mem-250",
+      "TASK-567"
     ],
     "gateway": [
       "TASK-01",
@@ -14279,7 +14356,8 @@
       "mem-248",
       "mem-249",
       "mem-250",
-      "TASK-563"
+      "TASK-563",
+      "TASK-567"
     ],
     "testing-quality": [
       "TASK-384",
@@ -14753,7 +14831,8 @@
     ],
     "onboarding": [
       "connect-means-wire-the-integration-not-create-work-in-product-repos",
-      "mem-210"
+      "mem-210",
+      "smoke-new-user-flows-with-a-fresh-account-registration-side-effects"
     ],
     "product-repos": [
       "connect-means-wire-the-integration-not-create-work-in-product-repos"
@@ -14867,13 +14946,22 @@
     ],
     "continuation": [
       "executor-swallowed-rejected-push-as-success-branch-exists-is-not-pushed"
+    ],
+    "smoke-testing": [
+      "smoke-new-user-flows-with-a-fresh-account-registration-side-effects"
+    ],
+    "invites": [
+      "smoke-new-user-flows-with-a-fresh-account-registration-side-effects"
+    ],
+    "console-ui": [
+      "smoke-new-user-flows-with-a-fresh-account-registration-side-effects"
     ]
   },
-  "last_updated": "2026-10-16T10:27:28.149507+00:00",
+  "last_updated": "2026-10-16T12:53:25.335034+00:00",
   "stats": {
-    "total_nodes": 722,
-    "total_edges": 723,
-    "memory_count": 389
+    "total_nodes": 727,
+    "total_edges": 729,
+    "memory_count": 390
   },
   "metadata": {}
 }
