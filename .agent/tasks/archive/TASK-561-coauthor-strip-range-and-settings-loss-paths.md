@@ -1,6 +1,6 @@
 # TASK-561: fix(executor): co-author strip covers the whole branch and the settings key survives hooks-off (PR #5714 fast-follow)
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-15 → [#5719](https://github.com/qf-studio/pilot/issues/5719) (`pilot`, `no-decompose`)
+**Status**: ✅ MERGED 2026-10-15 19:28Z → [PR#5723](https://github.com/qf-studio/pilot/pull/5723) (#5719). Post-merge review 2026-10-16: **APPROVE with defects**, 3/3 pins kill; defects: `rev-list` without `--topo-order` duplicates history on a two-line range (merge commit) and leaves the trailer reachable; silent HEAD-only fallback when the default branch is unresolvable. Follow-up to file. Archived.
 **Created**: 2026-10-15
 **Assignee**: Pilot (one issue, this repo, `pilot` + `no-decompose`)
 **Source**: post-merge review + nav-research on main 5892a89f6

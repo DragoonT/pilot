@@ -1,6 +1,6 @@
 # TASK-560: fix(executor): finish every begun adoption — deferred finalizer, direct-mode retry baseline (PR #5713 fast-follow)
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-15 → [#5718](https://github.com/qf-studio/pilot/issues/5718) (`pilot`, `no-decompose`)
+**Status**: ✅ MERGED 2026-10-15 18:41Z → [PR#5722](https://github.com/qf-studio/pilot/pull/5722) (#5718). Post-merge review 2026-10-16: **APPROVE with notes**, 3/3 pins kill, no defects; notes: the explicit "passed" site is load-bearing for the post-gate policy, defer closes over `result` not `outResult`, PR-body evidence incomplete. Archived.
 **Created**: 2026-10-15
 **Assignee**: Pilot (one issue, this repo, `pilot` + `no-decompose`)
 **Source**: post-merge review + nav-research on main 5892a89f6

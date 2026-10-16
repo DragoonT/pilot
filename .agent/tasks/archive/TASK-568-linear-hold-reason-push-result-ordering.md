@@ -1,6 +1,6 @@
-# TASK-562: fix(linear): one-line push reason, branch_pushed visible with the terminal status, superseded read-error keeps the prior (PR #5717 fast-follow)
+# TASK-568: fix(linear): one-line push reason, branch_pushed visible with the terminal status, superseded read-error keeps the prior (PR #5717 fast-follow)
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-15 → [#5720](https://github.com/qf-studio/pilot/issues/5720) (`pilot`, `no-decompose`)
+**Status**: ✅ MERGED 2026-10-15 21:00Z → [PR#5728](https://github.com/qf-studio/pilot/pull/5728) (#5720; chain PR#5724 → #5725 → PR#5726 → #5727, CI skew with PR#5723's `Push` signature). Post-merge review 2026-10-16: **APPROVE with notes**, 4/4 pins kill, no defects; `Persist` writes `branch_pushed` first with a non-terminal guard. Renumbered from TASK-562 (collided with the archived console-403 doc). Archived.
 **Created**: 2026-10-15
 **Assignee**: Pilot (one issue, this repo, `pilot` + `no-decompose`)
 **Source**: post-merge review + nav-research on main 5892a89f6
