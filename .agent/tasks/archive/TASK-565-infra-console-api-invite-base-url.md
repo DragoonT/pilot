@@ -1,6 +1,6 @@
 # chore(console-api): add the InviteBaseUrl parameter and PILOT_CONSOLE_INVITE_BASE_URL env so org invites are enabled in prod
 
-**Status**: 🚀 PR OPEN 2026-10-16 → [infra#21](https://github.com/qf-studio/aws-infrastructure-pilot/issues/21) → [PR#22](https://github.com/qf-studio/aws-infrastructure-pilot/pull/22) (6 lines, template validated, opened by hand at the founder's request). After merge: infra pipeline `sync-templates` → next console-api deploy → smoke invite.
+**Status**: ✅ DONE 2026-10-16 → [infra#21](https://github.com/qf-studio/aws-infrastructure-pilot/issues/21) → PR#22 merged 11:29Z (b7e8ab0d4); `deploy-pilot-fleet` run 38894127666 `sync-templates` synced console-api.yml 11:30:45Z; console deploy run 38894362654 (prod-0.1.36) → console-api task def **rev 57** carries `PILOT_CONSOLE_INVITE_BASE_URL=https://console.pilotcloud.dev`, rollout complete ~11:43Z. **Smoke 11:44Z:** owner invited `mr.alex.petrov+pilotinvite@gmail.com` from Members → `POST /api/v1/org/members/invites` 201, `email sent via ses message_id=010701a14487325e-…`, row shows `invited`; an accept call 11 s later answered 403 (link opened under the owner session → wrong-email state, as designed). Left for the founder: accept with a second account (register the invited address, verify, log in, open the link) → member row.
 **Created**: 2026-10-16
 **Repo**: qf-studio/aws-infrastructure-pilot
 
