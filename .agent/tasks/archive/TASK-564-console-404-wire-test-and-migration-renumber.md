@@ -1,6 +1,6 @@
 # fix(orgs): unblock the org invites PR (#406) — raw-body wire-contract test for the members payload, migration renumbered past main, merge main
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-16 → [console#416](https://github.com/qf-studio/pilot-console/issues/416) (continuation of console#404 / PR#406; autopilot-meta footer adopts pilot/GH-404; merge not rebase so the push fast-forwards on the old runner)
+**Status**: ✅ MERGED 2026-10-16 10:49Z → console#416 ran 10:35Z, pushed fast-forward (merge of main + 0031 + wire test), [PR#406](https://github.com/qf-studio/pilot-console/pull/406) merged by autopilot at 96eb7d136; console#404 + #416 closed. Review APPROVE-w-notes on the PR: token-hash/CSRF/owner/email-match/409 mapping all sound. **Founder item:** invites are dormant in prod until `PILOT_CONSOLE_INVITE_BASE_URL` is set on console-api (503 otherwise). Open question: does auth-service refuse login for unverified emails (accept trusts the session email).
 **Created**: 2026-10-16
 **Repo**: qf-studio/pilot-console
 
