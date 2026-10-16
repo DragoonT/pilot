@@ -1175,6 +1175,21 @@
         "name": "Key-Source",
         "aliases": [],
         "domain": "general"
+      },
+      "git-push": {
+        "name": "Git-Push",
+        "aliases": [],
+        "domain": "general"
+      },
+      "autopilot-fix": {
+        "name": "Autopilot-Fix",
+        "aliases": [],
+        "domain": "general"
+      },
+      "continuation": {
+        "name": "Continuation",
+        "aliases": [],
+        "domain": "general"
       }
     },
     "tasks": {
@@ -3108,6 +3123,19 @@
           "api",
           "testing",
           "database"
+        ]
+      },
+      "TASK-563": {
+        "path": ".agent/tasks/archive/TASK-563-executor-push-rejection-swallowed-as-success.md",
+        "title": "Task 563 Executor Push Rejection Swallowed As Success",
+        "status": "completed",
+        "concepts": [
+          "deployment",
+          "authentication",
+          "api",
+          "context",
+          "workflow",
+          "testing"
         ]
       }
     },
@@ -8504,6 +8532,21 @@
         ],
         "created": "2026-10-15",
         "last_validated": "2026-10-15"
+      },
+      "executor-swallowed-rejected-push-as-success-branch-exists-is-not-pushed": {
+        "type": "pitfall",
+        "summary": "Executor push loop (runner.go, GH-1389 shortcut) treated any push error as success when a remote branch of that name existed; a non-fast-forward rejection on an autopilot-fix continuation (console GH-415 rebasing pilot/GH-403, 2026-10-16 09:34Z) was swallowed, the stale PR#408 adopted, 'Task completed successfully' logged, nothing pushed. The earlier continuation #5661 only worked because that session force-pushed itself. Rule: 'branch exists on remote' is not 'my commit is on remote'; forgive a failed push only when remote head == local HEAD, and push a rebased autopilot-fix continuation once with --force-with-lease on the footer SHA. Fixed by pilot#5729 \u2192 PR#5730 (TASK-563). Recovery when it happens on an old daemon: the session's commits survive in the box's project repo (/var/lib/pilot/repos/...), push them from the box as ec2-user with gh credentials and a lease on the old head.",
+        "path": "memories/pitfalls/executor-swallowed-rejected-push-as-success-branch-exists-is-not-pushed.md",
+        "confidence": 0.95,
+        "concepts": [
+          "false-success",
+          "executor",
+          "git-push",
+          "autopilot-fix",
+          "continuation"
+        ],
+        "created": "2026-10-16",
+        "last_validated": "2026-10-16"
       }
     }
   },
@@ -12087,6 +12130,41 @@
       "from": "mem-250",
       "to": "TASK-557",
       "type": "learned-from"
+    },
+    {
+      "from": "executor-swallowed-rejected-push-as-success-branch-exists-is-not-pushed",
+      "to": "TASK-563",
+      "type": "learned-from"
+    },
+    {
+      "from": "TASK-563",
+      "to": "deployment",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-563",
+      "to": "authentication",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-563",
+      "to": "api",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-563",
+      "to": "context",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-563",
+      "to": "workflow",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-563",
+      "to": "testing",
+      "type": "implements"
     }
   ],
   "concept_index": {
@@ -12293,7 +12371,8 @@
       "mem-247",
       "mem-248",
       "mem-249",
-      "mem-250"
+      "mem-250",
+      "TASK-563"
     ],
     "approval": [
       "approvals-off-stage-auto-merge",
@@ -12405,7 +12484,8 @@
       "TASK-520",
       "TASK-522",
       "TASK-523",
-      "TASK-524"
+      "TASK-524",
+      "TASK-563"
     ],
     "auto-merge": [
       "mem-103"
@@ -12741,7 +12821,8 @@
       "mem-247",
       "mem-248",
       "mem-249",
-      "mem-250"
+      "mem-250",
+      "TASK-563"
     ],
     "conversational-bot": [
       "mem-036",
@@ -13101,7 +13182,8 @@
       "mem-247",
       "mem-248",
       "mem-249",
-      "mem-250"
+      "mem-250",
+      "TASK-563"
     ],
     "dispatch": [
       "auto-preserved-wip-recover-by-cherry-pick-continuation",
@@ -13257,7 +13339,8 @@
       "alerts-engine-drops-events-without-handleevent-case",
       "executor-alert-event-strings-must-equal-alerts-eventtype",
       "allowedtools-inert-under-dangerously-skip-permissions",
-      "executor-session-ends-turn-awaiting-background-test-no-commit"
+      "executor-session-ends-turn-awaiting-background-test-no-commit",
+      "executor-swallowed-rejected-push-as-success-branch-exists-is-not-pushed"
     ],
     "external-contributor": [
       "external-fork-pr-sweeps-stale-agent-state"
@@ -13269,7 +13352,8 @@
       "mem-203",
       "ci-post-merge-fix-issue-borrows-merged-branch-short-circuits",
       "mem-211",
-      "test-fake-daemon-more-permissive-than-real-route-hides-400"
+      "test-fake-daemon-more-permissive-than-real-route-hides-400",
+      "executor-swallowed-rejected-push-as-success-branch-exists-is-not-pushed"
     ],
     "flag-cutover": [
       "absolute-state-paths-bypass-cutover-shim",
@@ -14194,7 +14278,8 @@
       "mem-247",
       "mem-248",
       "mem-249",
-      "mem-250"
+      "mem-250",
+      "TASK-563"
     ],
     "testing-quality": [
       "TASK-384",
@@ -14357,7 +14442,8 @@
       "TASK-518",
       "TASK-521",
       "TASK-546",
-      "mem-244"
+      "mem-244",
+      "TASK-563"
     ],
     "workflow-discipline": [
       "TASK-359",
@@ -14611,7 +14697,8 @@
       "mem-205"
     ],
     "autopilot-fix": [
-      "ci-post-merge-fix-issue-borrows-merged-branch-short-circuits"
+      "ci-post-merge-fix-issue-borrows-merged-branch-short-circuits",
+      "executor-swallowed-rejected-push-as-success-branch-exists-is-not-pushed"
     ],
     "ci_post_merge": [
       "ci-post-merge-fix-issue-borrows-merged-branch-short-circuits"
@@ -14774,13 +14861,19 @@
     ],
     "key-source": [
       "founder-tenant-legacy-ssm-layout-key-source-unknown-unmetered"
+    ],
+    "git-push": [
+      "executor-swallowed-rejected-push-as-success-branch-exists-is-not-pushed"
+    ],
+    "continuation": [
+      "executor-swallowed-rejected-push-as-success-branch-exists-is-not-pushed"
     ]
   },
-  "last_updated": "2026-10-15T15:47:11.152169+00:00",
+  "last_updated": "2026-10-16T10:27:28.149507+00:00",
   "stats": {
-    "total_nodes": 717,
-    "total_edges": 716,
-    "memory_count": 388
+    "total_nodes": 722,
+    "total_edges": 723,
+    "memory_count": 389
   },
   "metadata": {}
 }
