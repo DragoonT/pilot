@@ -1,6 +1,6 @@
 # fix(invites): a visitor who arrives with an invite registers without an organisation, so the accept does not 409
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-16 → [https://github.com/qf-studio/pilot-console-ui/issues/237](https://github.com/qf-studio/pilot-console-ui/issues/237)
+**Status**: ✅ MERGED 2026-10-16 12:15Z → [ui#237](https://github.com/qf-studio/pilot-console-ui/issues/237) → PR#238 (278975017, autopilot), live 12:18Z; post-merge review APPROVE-w-notes (reviewer: 27 specs pass, 3/3 pins kill). Found by the first real invite smoke: registration always created an org → accept 409.
 **Created**: 2026-10-16
 **Repo**: qf-studio/pilot-console-ui
 
