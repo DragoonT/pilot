@@ -1,6 +1,6 @@
 # feat(invites): accept-invite page — land the emailed link, join the org, and show expired / wrong-email / already-in-an-org states
 
-**Status**: 🚀 PR#236 OPEN, reviewed APPROVE-w-notes pre-merge 2026-10-16 → [ui#235](https://github.com/qf-studio/pilot-console-ui/issues/235) → [PR#236](https://github.com/qf-studio/pilot-console-ui/pull/236) (+342/−1; reviewer: build ok, 12+19+115 specs pass, 3/3 pins kill). Autopilot merges on green. End-to-end still gated on infra#21 (env var).
+**Status**: ✅ MERGED 2026-10-16 11:13Z → [ui#235](https://github.com/qf-studio/pilot-console-ui/issues/235) → [PR#236](https://github.com/qf-studio/pilot-console-ui/pull/236) (ddbd556dd), reviewed APPROVE-w-notes pre-merge (3/3 pins kill). The UI deploys on its release train. End-to-end invites still wait on infra#21 (TASK-565: `PILOT_CONSOLE_INVITE_BASE_URL`), then one smoke invite.
 **Created**: 2026-10-16
 **Repo**: qf-studio/pilot-console-ui
 
