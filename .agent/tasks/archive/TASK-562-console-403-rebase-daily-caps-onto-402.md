@@ -1,6 +1,6 @@
 # fix(allowance): rebase the daily caps branch (PR #408) onto the merged tickets-or-USD exhaustion (PR #407) and renumber its migration
 
-**Status**: ✅ MERGED 2026-10-16 10:00Z → PR#408 (1cbc0eb32) merged by autopilot after the hand-pushed rebase; console#403 closed pilot-done, console#415 closed. Daily caps (#403) now on main together with tickets-or-USD exhaustion (#402). Rebase verified by trial merge + Pilot's gates; the #403 feature itself has had no post-merge review yet (+1672/-50). Runner defect → [TASK-563](TASK-563-executor-push-rejection-swallowed-as-success.md) / pilot#5729.
+**Status**: ✅ MERGED 2026-10-16 10:00Z → PR#408 (1cbc0eb32) merged by autopilot after the hand-pushed rebase; console#403 closed pilot-done, console#415 closed. Daily caps (#403) now on main together with tickets-or-USD exhaustion (#402). Rebase verified by trial merge + Pilot's gates; **#403 feature post-merge review APPROVE-w-notes posted on PR#408 10:2xZ** (spec met; 7 daily-cap tests; prod rev 48 bumped 3 tenants once, founder tenant has `daily_turn_cap: 200`, daemon active). Notes: ≤15-min count lag from the ledger poll; rollover ignores monthly exhaustion (brief flap); rendered-field additions restart every tenant once; stale "migration 0029" comment. Runner defect → [TASK-563](TASK-563-executor-push-rejection-swallowed-as-success.md) / pilot#5729.
 **Created**: 2026-10-16
 **Repo**: qf-studio/pilot-console
 
