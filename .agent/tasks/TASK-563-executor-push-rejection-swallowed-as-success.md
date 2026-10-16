@@ -1,6 +1,6 @@
 # fix(executor): a rejected push must not count as success, and an autopilot-fix continuation must push its rebased branch with a lease on the footer SHA
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-16 → [#5729](https://github.com/qf-studio/pilot/issues/5729)
+**Status**: 🚀 PR#5730 OPEN, reviewed APPROVE-w-notes pre-merge 2026-10-16 → [#5729](https://github.com/qf-studio/pilot/issues/5729) → [PR#5730](https://github.com/qf-studio/pilot/pull/5730) (+437/−40; reviewer ran 11/11 PASS and all 3 pins kill — pin 1 reproduces the GH-415 shape `Success = true ... pull/408`). Autopilot merges on green. Open note: footer-branch worktree base resolution did not log on GH-415 (separate look).
 **Created**: 2026-10-16
 **Repo**: qf-studio/pilot
 
