@@ -1,6 +1,6 @@
 # fix(allowance): rebase the daily caps branch (PR #408) onto the merged tickets-or-USD exhaustion (PR #407) and renumber its migration
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-16 → [console#415](https://github.com/qf-studio/pilot-console/issues/415) (continuation of console#403 / PR#408; autopilot-meta footer adopts pilot/GH-403)
+**Status**: 🚀 PR#408 REBASED 2026-10-16 → [console#415](https://github.com/qf-studio/pilot-console/issues/415) ran 09:28–09:34Z and produced the right rebase (e654efb + fb83d43 on main, 0030 migration, gates green) but the runner's plain push was rejected non-fast-forward and swallowed as success (PR#408 head unchanged). Recovered by hand: force-with-lease push from the box at ~10:0xZ → PR#408 head fb83d43, MERGEABLE, CI running; autopilot merges on green. Defect filed as [TASK-563](TASK-563-executor-push-rejection-swallowed-as-success.md).
 **Created**: 2026-10-16
 **Repo**: qf-studio/pilot-console
 
