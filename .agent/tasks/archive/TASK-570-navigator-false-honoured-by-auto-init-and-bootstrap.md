@@ -1,6 +1,6 @@
 # TASK-570: fix(executor): auto-init and bootstrap honour navigator: false; daemon lists projects with it off (PR #5721 fast-follow)
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-16 → [#5732](https://github.com/qf-studio/pilot/issues/5732) (`pilot`, `no-decompose`)
+**Status**: ✅ MERGED 2026-10-16 14:42Z → [PR#5736](https://github.com/qf-studio/pilot/pull/5736) (#5732). Post-merge review 2026-10-16: **APPROVE with defects**, 3/3 pins kill; defect: the bootstrap gate is keyed on the worktree `executionPath`, not the clone path, so it is inert under worktree isolation (protected today only by the upstream auto-init gate) — follow-up to file. Archived.
 **Created**: 2026-10-16
 **Assignee**: Pilot (one issue, this repo)
 **Source**: post-merge review 2026-10-16
