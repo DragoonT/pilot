@@ -1,5 +1,5 @@
 {
-  "version": "7.8.0",
+  "version": "8.4.4",
   "project_management": "none",
   "task_prefix": "TASK",
   "team_chat": "none",
@@ -104,5 +104,16 @@
   },
   "judge": {
     "enabled": true
+  },
+  "adhd_mode": {
+    "enabled": true,
+    "on": null
+  },
+  "reply_modes": {
+    "enabled": true
+  },
+  "ste_mode": {
+    "enabled": true,
+    "on": null
   }
 }
