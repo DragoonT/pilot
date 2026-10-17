@@ -14,6 +14,8 @@ Before gh issue create, extract backticked path-like tokens from the body and gi
 
 **Recurrence 2026-10-15 (5th):** console#411 (TASK-558) held 'prerequisite not on main' for ~8 min because the Context cited the daemon handler as a backticked pilot-repo path (`internal/gateway/dashboard.go`) in a console issue. The author knew the rule (marker process-correction line) and still skipped the check. The check is mechanical: extract backticked tokens matching `^[\w.-]+(/[\w.-]+)+$`, probe each with `gh api repos/<owner>/<repo>/contents/<path>?ref=main`, rewrite every miss in prose. Run it before `gh issue create`, every time, no exceptions.
 
+**Recurrences 2026-10-15 (6th, 7th):** pilot#5708 held 48 min on a backticked *example* path with a leading slash inside a regex explanation (a path that never existed anywhere); pilot#5710 held 112 min on `~/.pilot/config.yaml` (a box config path, not a repo path). The gate probes every backticked token that looks like a path, including home-dir paths and git refs. Since then (TASK-569–573, 7 issues, zero holds): before `gh issue create`, run `grep -o '`[A-Za-z0-9_./-]*/[A-Za-z0-9_./-]*`' body.md | tr -d '`' | sed 's/:[0-9, -]*$//' | sort -u | while read p; do git cat-file -e origin/main:$p || echo MISS $p; done` and rewrite every MISS in prose — example paths, home paths, git refs (`origin/HEAD`, `origin/other`) included.
+
 ## Related
 - TASK-550
 - TASK-551

@@ -1205,6 +1205,31 @@
         "name": "Console-Ui",
         "aliases": [],
         "domain": "general"
+      },
+      "self-close": {
+        "name": "Self-Close",
+        "aliases": [],
+        "domain": "general"
+      },
+      "repick": {
+        "name": "Repick",
+        "aliases": [],
+        "domain": "general"
+      },
+      "superseded": {
+        "name": "Superseded",
+        "aliases": [],
+        "domain": "general"
+      },
+      "co-author": {
+        "name": "Co-Author",
+        "aliases": [],
+        "domain": "general"
+      },
+      "history-rewrite": {
+        "name": "History-Rewrite",
+        "aliases": [],
+        "domain": "general"
       }
     },
     "tasks": {
@@ -3163,6 +3188,40 @@
           "api",
           "authentication",
           "context"
+        ]
+      },
+      "TASK-571": {
+        "path": ".agent/tasks/TASK-571-coauthor-strip-no-origin-warn-head-only.md",
+        "title": "fix(executor): co-author strip warns and stays HEAD-only with no origin refs (PR #5737 fast-follow)",
+        "status": "dispatched",
+        "concepts": [
+          "testing",
+          "deployment",
+          "authentication"
+        ]
+      },
+      "TASK-573": {
+        "path": ".agent/tasks/TASK-573-selfclose-handoff-marks-original-superseded.md",
+        "title": "fix(autopilot): self-closed PR hand-off marks the original task superseded; fix issue closes it (re-pick loop 2026-10-16)",
+        "status": "dispatched",
+        "concepts": [
+          "knowledge",
+          "markers",
+          "workflow",
+          "deployment",
+          "api",
+          "testing"
+        ]
+      },
+      "TASK-569": {
+        "path": ".agent/tasks/archive/TASK-569-coauthor-strip-topo-order-and-fallback.md",
+        "title": "fix(executor): co-author range strip walks history in topo order; no silent HEAD-only fallback (PR #5723 fast-follow)",
+        "status": "completed",
+        "concepts": [
+          "api",
+          "authentication",
+          "deployment",
+          "testing"
         ]
       }
     },
@@ -8589,6 +8648,64 @@
         ],
         "created": "2026-10-16",
         "last_validated": "2026-10-16"
+      },
+      "autopilot-selfclose-handoff-leaves-original-task-repickable": {
+        "type": "pitfall",
+        "summary": "Self-close hand-off skips the superseded write and demotes the original to failed; dispatcher re-picks the original into the fix run's branch (GH-5731 x3, 2026-10-16).",
+        "path": "memories/pitfalls/autopilot-selfclose-handoff-leaves-original-task-repickable.md",
+        "confidence": 0.9,
+        "concepts": [
+          "autopilot-fix",
+          "dispatcher",
+          "self-close",
+          "repick",
+          "superseded"
+        ],
+        "created": "2026-10-17",
+        "last_validated": "2026-10-17"
+      },
+      "infra-repicks-bypass-hard-cap-backoff-and-identical-failure-streak": {
+        "type": "pitfall",
+        "summary": "Infra re-picks skip the hard cap, backoff and failure streak; only an 8-per-task cap bounds a deterministic infra loop.",
+        "path": "memories/pitfalls/infra-repicks-bypass-hard-cap-backoff-and-identical-failure-streak.md",
+        "confidence": 0.85,
+        "concepts": [
+          "repick",
+          "infra",
+          "dispatcher",
+          "git-push"
+        ],
+        "created": "2026-10-17",
+        "last_validated": "2026-10-17"
+      },
+      "slack-approval-click-not-received-relay-via-local-decision-api": {
+        "type": "learning",
+        "summary": "Slack approve click did not reach the daemon; relay the stated decision via POST /api/v1/approvals/{id}/decision on the box (127.0.0.1:9091, claude-code auth = local passes).",
+        "path": "memories/learnings/slack-approval-click-not-received-relay-via-local-decision-api.md",
+        "confidence": 0.9,
+        "concepts": [
+          "approval",
+          "adapters",
+          "gateway",
+          "autopilot",
+          "ops-discipline"
+        ],
+        "created": "2026-10-17",
+        "last_validated": "2026-10-17"
+      },
+      "rev-list-without-topo-order-breaks-oldest-first-reparent": {
+        "type": "pitfall",
+        "summary": "rev-list default order inverts across merges; oldest-first re-parent duplicates history. Use --topo-order; guard the --remotes=origin bound.",
+        "path": "memories/pitfalls/rev-list-without-topo-order-breaks-oldest-first-reparent.md",
+        "confidence": 0.9,
+        "concepts": [
+          "git",
+          "executor",
+          "co-author",
+          "history-rewrite"
+        ],
+        "created": "2026-10-17",
+        "last_validated": "2026-10-17"
       }
     }
   },
@@ -12237,6 +12354,91 @@
       "from": "TASK-567",
       "to": "context",
       "type": "implements"
+    },
+    {
+      "from": "TASK-571",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-571",
+      "to": "deployment",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-571",
+      "to": "authentication",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-573",
+      "to": "knowledge",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-573",
+      "to": "markers",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-573",
+      "to": "workflow",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-573",
+      "to": "deployment",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-573",
+      "to": "api",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-573",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-569",
+      "to": "api",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-569",
+      "to": "authentication",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-569",
+      "to": "deployment",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-569",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "autopilot-selfclose-handoff-leaves-original-task-repickable",
+      "to": "TASK-573",
+      "type": "learned-from"
+    },
+    {
+      "from": "infra-repicks-bypass-hard-cap-backoff-and-identical-failure-streak",
+      "to": "TASK-573",
+      "type": "learned-from"
+    },
+    {
+      "from": "slack-approval-click-not-received-relay-via-local-decision-api",
+      "to": "TASK-569",
+      "type": "learned-from"
+    },
+    {
+      "from": "rev-list-without-topo-order-breaks-oldest-first-reparent",
+      "to": "TASK-571",
+      "type": "learned-from"
     }
   ],
   "concept_index": {
@@ -12252,7 +12454,8 @@
       "slack-approval-socket-mode-unroutable",
       "slack-routing-three-keys-alerts-vs-approvals-vs-chat",
       "mem-213",
-      "spec-rerouting-a-platform-must-rewrite-composed-tests-of-the-old-flow"
+      "spec-rerouting-a-platform-must-rewrite-composed-tests-of-the-old-flow",
+      "slack-approval-click-not-received-relay-via-local-decision-api"
     ],
     "alerts": [
       "TASK-379",
@@ -12445,13 +12648,16 @@
       "mem-249",
       "mem-250",
       "TASK-563",
-      "TASK-567"
+      "TASK-567",
+      "TASK-573",
+      "TASK-569"
     ],
     "approval": [
       "approvals-off-stage-auto-merge",
       "require-approval-flip-doesnt-release-held-prs",
       "slack-approval-socket-mode-unroutable",
-      "slack-routing-three-keys-alerts-vs-approvals-vs-chat"
+      "slack-routing-three-keys-alerts-vs-approvals-vs-chat",
+      "slack-approval-click-not-received-relay-via-local-decision-api"
     ],
     "architecture": [
       "mem-148"
@@ -12559,7 +12765,9 @@
       "TASK-523",
       "TASK-524",
       "TASK-563",
-      "TASK-567"
+      "TASK-567",
+      "TASK-571",
+      "TASK-569"
     ],
     "auto-merge": [
       "mem-103"
@@ -12630,7 +12838,8 @@
       "mem-221",
       "autopilot-held-prs-redrive-only-for-size-guard-holds",
       "autopilot-restorestate-drops-held-failed-prs-on-restart",
-      "release-backfill-sweep-runs-inside-controller-tick-and-wedges-the-train"
+      "release-backfill-sweep-runs-inside-controller-tick-and-wedges-the-train",
+      "slack-approval-click-not-received-relay-via-local-decision-api"
     ],
     "aws": [
       "absolute-state-paths-bypass-cutover-shim",
@@ -13258,7 +13467,10 @@
       "mem-248",
       "mem-249",
       "mem-250",
-      "TASK-563"
+      "TASK-563",
+      "TASK-571",
+      "TASK-573",
+      "TASK-569"
     ],
     "dispatch": [
       "auto-preserved-wip-recover-by-cherry-pick-continuation",
@@ -13307,7 +13519,9 @@
       "reconcile-timeout-counts-queue-wait",
       "stall-status-reused-as-hold-marker",
       "ci-post-merge-fix-issue-borrows-merged-branch-short-circuits",
-      "held-task-at-queue-head-starves-serial-project-worker"
+      "held-task-at-queue-head-starves-serial-project-worker",
+      "autopilot-selfclose-handoff-leaves-original-task-repickable",
+      "infra-repicks-bypass-hard-cap-backoff-and-identical-failure-streak"
     ],
     "docs-site-infra": [
       "mem-067"
@@ -13415,7 +13629,8 @@
       "executor-alert-event-strings-must-equal-alerts-eventtype",
       "allowedtools-inert-under-dangerously-skip-permissions",
       "executor-session-ends-turn-awaiting-background-test-no-commit",
-      "executor-swallowed-rejected-push-as-success-branch-exists-is-not-pushed"
+      "executor-swallowed-rejected-push-as-success-branch-exists-is-not-pushed",
+      "rev-list-without-topo-order-breaks-oldest-first-reparent"
     ],
     "external-contributor": [
       "external-fork-pr-sweeps-stale-agent-state"
@@ -13520,13 +13735,15 @@
       "mem-056",
       "ready-gate-couples-credential-validity",
       "unwired-config-field-validated-but-dead",
-      "spec-rerouting-a-platform-must-rewrite-composed-tests-of-the-old-flow"
+      "spec-rerouting-a-platform-must-rewrite-composed-tests-of-the-old-flow",
+      "slack-approval-click-not-received-relay-via-local-decision-api"
     ],
     "git": [
       "apply-script-silent-rollback-causes",
       "mem-161",
       "mem-177",
-      "runselfreview-runs-in-repo-root-phantom-reimplementation"
+      "runselfreview-runs-in-repo-root-phantom-reimplementation",
+      "rev-list-without-topo-order-breaks-oldest-first-reparent"
     ],
     "git-operations": [
       "mem-011",
@@ -13760,7 +13977,8 @@
       "mem-247",
       "mem-248",
       "mem-249",
-      "mem-250"
+      "mem-250",
+      "TASK-573"
     ],
     "labels": [
       "mem-100",
@@ -13825,7 +14043,8 @@
       "mem-182",
       "TASK-489",
       "TASK-505",
-      "TASK-515"
+      "TASK-515",
+      "TASK-573"
     ],
     "memory": [
       "TASK-358",
@@ -13884,7 +14103,8 @@
       "rlimit-as-breaks-node-subprocesses",
       "ssm-runs-as-root-cli-reads-empty-ledger",
       "slack-routing-three-keys-alerts-vs-approvals-vs-chat",
-      "task-stuck-and-lane-starvation-fire-on-terminal-and-needs-human"
+      "task-stuck-and-lane-starvation-fire-on-terminal-and-needs-human",
+      "slack-approval-click-not-received-relay-via-local-decision-api"
     ],
     "orchestrator": [
       "TASK-02",
@@ -14357,7 +14577,10 @@
       "mem-249",
       "mem-250",
       "TASK-563",
-      "TASK-567"
+      "TASK-567",
+      "TASK-571",
+      "TASK-573",
+      "TASK-569"
     ],
     "testing-quality": [
       "TASK-384",
@@ -14521,7 +14744,8 @@
       "TASK-521",
       "TASK-546",
       "mem-244",
-      "TASK-563"
+      "TASK-563",
+      "TASK-573"
     ],
     "workflow-discipline": [
       "TASK-359",
@@ -14776,7 +15000,8 @@
     ],
     "autopilot-fix": [
       "ci-post-merge-fix-issue-borrows-merged-branch-short-circuits",
-      "executor-swallowed-rejected-push-as-success-branch-exists-is-not-pushed"
+      "executor-swallowed-rejected-push-as-success-branch-exists-is-not-pushed",
+      "autopilot-selfclose-handoff-leaves-original-task-repickable"
     ],
     "ci_post_merge": [
       "ci-post-merge-fix-issue-borrows-merged-branch-short-circuits"
@@ -14942,7 +15167,8 @@
       "founder-tenant-legacy-ssm-layout-key-source-unknown-unmetered"
     ],
     "git-push": [
-      "executor-swallowed-rejected-push-as-success-branch-exists-is-not-pushed"
+      "executor-swallowed-rejected-push-as-success-branch-exists-is-not-pushed",
+      "infra-repicks-bypass-hard-cap-backoff-and-identical-failure-streak"
     ],
     "continuation": [
       "executor-swallowed-rejected-push-as-success-branch-exists-is-not-pushed"
@@ -14955,13 +15181,32 @@
     ],
     "console-ui": [
       "smoke-new-user-flows-with-a-fresh-account-registration-side-effects"
+    ],
+    "self-close": [
+      "autopilot-selfclose-handoff-leaves-original-task-repickable"
+    ],
+    "repick": [
+      "autopilot-selfclose-handoff-leaves-original-task-repickable",
+      "infra-repicks-bypass-hard-cap-backoff-and-identical-failure-streak"
+    ],
+    "superseded": [
+      "autopilot-selfclose-handoff-leaves-original-task-repickable"
+    ],
+    "infra": [
+      "infra-repicks-bypass-hard-cap-backoff-and-identical-failure-streak"
+    ],
+    "co-author": [
+      "rev-list-without-topo-order-breaks-oldest-first-reparent"
+    ],
+    "history-rewrite": [
+      "rev-list-without-topo-order-breaks-oldest-first-reparent"
     ]
   },
-  "last_updated": "2026-10-16T12:53:25.335034+00:00",
+  "last_updated": "2026-10-17T12:45:21.480930+00:00",
   "stats": {
-    "total_nodes": 727,
-    "total_edges": 729,
-    "memory_count": 390
+    "total_nodes": 739,
+    "total_edges": 746,
+    "memory_count": 394
   },
   "metadata": {}
 }
