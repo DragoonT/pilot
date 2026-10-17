@@ -1,6 +1,6 @@
 # TASK-572: fix(executor): Navigator bootstrap gate keyed on the clone path (PR #5736 fast-follow)
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-17 → [#5739](https://github.com/qf-studio/pilot/issues/5739) (`pilot`, `no-decompose`)
+**Status**: ✅ MERGED 2026-10-17 13:01Z → [PR#5742](https://github.com/qf-studio/pilot/pull/5742) (#5739). Post-merge review 2026-10-17: **APPROVE with defects**, 2/3 pins kill — pin C (`runner.go:3949` passes `executionPath` twice) survives: the mirror subtest returns `false` from the lookup, so the auto-init gate at `:3944` short-circuits before the changed call site. Defect 2: `navBootstrapAttempted` keyed on `executionPath` (unique per worktree) → the once-per-process retry guard is per task. Both → [TASK-574](../TASK-574-bootstrap-callsite-test-and-attempt-guard-key.md). Archived.
 **Created**: 2026-10-17
 **Assignee**: Pilot (one issue, this repo)
 **Source**: post-merge review 2026-10-16

@@ -1,6 +1,6 @@
 # TASK-571: fix(executor): co-author strip warns and stays HEAD-only with no origin refs (PR #5737 fast-follow)
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-17 → [#5738](https://github.com/qf-studio/pilot/issues/5738) (`pilot`, `no-decompose`)
+**Status**: ✅ MERGED 2026-10-17 12:35Z → [PR#5740](https://github.com/qf-studio/pilot/pull/5740) (#5738). Post-merge review 2026-10-17: **APPROVE with notes**, 2/2 pins kill (origin-refs check removed → `HEAD's parent changed`; WARN removed → `log missing "reason=..."`). Notes: the "older commit was rewritten" assertion reads the pre-strip SHA and can never fail (git objects are immutable); `task_id`/`branch` substrings are satisfied by either WARN, only `reason=` pins the degradation line; `for-each-ref` is the right detector (an `origin` added but never fetched is HEAD-only + WARN, push then succeeds once). No follow-up. Archived.
 **Created**: 2026-10-17
 **Assignee**: Pilot (one issue, this repo)
 **Source**: post-merge review 2026-10-16
