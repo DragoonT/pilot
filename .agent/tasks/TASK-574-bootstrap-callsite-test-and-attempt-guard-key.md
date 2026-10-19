@@ -1,6 +1,7 @@
 # TASK-574: fix(executor): bootstrap gate — cover the runner call site under worktree isolation; key the once-per-process attempt guard on the project path (PR #5742 fast-follow)
 
-**Status**: 📋 Planned 2026-10-17 — not dispatched (founder call)
+**Status**: 🚀 Dispatched to Pilot 2026-10-19 → [#5745](https://github.com/qf-studio/pilot/issues/5745) (labels `pilot` + `no-decompose`)
+**Last Updated**: 2026-10-19
 **Created**: 2026-10-17
 **Assignee**: Pilot (one issue, this repo)
 **Source**: post-merge review of PR #5742 (GH-5739), 2026-10-17
@@ -38,5 +39,6 @@ Two defects from the review of PR #5742.
 
 ## Refs
 
+- Pilot issue: https://github.com/qf-studio/pilot/issues/5745
 - PR #5742 review (verdict comment, defects 1 and 2), GH-5739, GH-5732, GH-5710
 - `internal/executor/navigator_bootstrap.go`, `internal/executor/runner.go`, `internal/executor/runner_git.go`, `internal/executor/runner_test.go`, `internal/executor/navigator_bootstrap_test.go`, `internal/executor/worktree.go`
