@@ -8833,9 +8833,9 @@
       },
       "box-slack-socket-mode-config-false-but-socket-mode-starts": {
         "type": "learning",
-        "summary": "Box config adapters.slack.socket_mode is false but daemon logs Slack Socket Mode started in polling mode; the SOP HTTP-interactivity claim is unproven - settle the click path before leg C (#5758).",
+        "summary": "Box config says socket_mode: false but the daemon starts with --slack, and main.go sets SocketMode = slackFlag - the flag wins; clicks reach the box via Socket Mode. Settled 2026-10-19; leg C (#5758) adds a startup INFO line with the effective value.",
         "path": "memories/learnings/box-slack-socket-mode-config-false-but-socket-mode-starts.md",
-        "confidence": 0.7,
+        "confidence": 0.95,
         "concepts": [
           "approval",
           "adapters",

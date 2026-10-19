@@ -77,13 +77,13 @@ made asks invisible: PR#4806 sat 50 min in an unwatched bot DM).
 so the choice is visible in config). Alerts moved off `#pointer` to `#pilot-reports` at the
 same time so the DM/`#pointer` split is clean. Consequences:
 - Second approver (Nelya, `U0ADEMJ7J83`) does **not** see DM-routed asks. Founder-accepted.
-- Buttons in a DM work only because the box runs `socket_mode: false` (HTTP interactivity);
-  flipping to Socket Mode re-triggers pitfall `slack-approval-socket-mode-unroutable`.
-  **⚠️ Unverified as of 2026-10-19:** the box config does say `socket_mode: false`, but
-  daemon.log shows "Slack Socket Mode started in polling mode", and the HTTP interactions
-  route is registered only inside `pilot.New` (gateway mode). Establish the real click path
-  before changing Slack ingress (TASK-576 leg C, #5758; memory
-  `box-slack-socket-mode-config-false-but-socket-mode-starts`).
+- Buttons in a DM reach the daemon through **Socket Mode**. The box config says
+  `socket_mode: false`, but the daemon starts with `--slack`, and that flag sets
+  `SocketMode = true` (`cmd/pilot/main.go`, `cmd.Flags().Changed("slack")` block). The flag
+  wins over the config file. Settled 2026-10-19 (memory
+  `box-slack-socket-mode-config-false-but-socket-mode-starts`). The HTTP interactions
+  route exists only in gateway mode (`pilot.New`); polling mode without `--slack` has no
+  click ingress at all (TASK-576 leg C, #5758). The 10-16 lost click is still unexplained.
 - Full channel map: `.agent/system/references/reference_slack_notifications_routing.md`.
 
 ## Per-project routing and approver identity (2026-10-19)
