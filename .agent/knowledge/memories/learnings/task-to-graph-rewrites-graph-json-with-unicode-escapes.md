@@ -19,3 +19,6 @@ After any Navigator graph script, check git diff --stat on graph.json; re-encode
 **Captured**: 2026-10-19
 **Confidence**: 95%
 **Concepts**: knowledge
+
+## Correction (2026-10-19, same day)
+The pre-commit knowledge-graph step also rewrites graph.json with `\u` escapes when a commit adds memories (commit 61a7bb46c: 633 changed lines, all encoding). Re-encoding by hand only holds until the next such commit. The escaped and UTF-8 forms are the same JSON; accept the churn, or fix the encoding in the hook / graph scripts (ensure_ascii=False) in the navigator repo.

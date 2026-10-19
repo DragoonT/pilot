@@ -8846,9 +8846,9 @@
       },
       "task-to-graph-rewrites-graph-json-with-unicode-escapes": {
         "type": "learning",
-        "summary": "task_to_graph.py writes graph.json with \\u escapes (~500 lines churn); re-dump with ensure_ascii=False before commit.",
+        "summary": "task_to_graph.py and the pre-commit graph step write graph.json with \\u escapes (hundreds of lines of churn); a hand re-encode holds only until the next memory-adding commit - fix ensure_ascii in the navigator scripts.",
         "path": "memories/learnings/task-to-graph-rewrites-graph-json-with-unicode-escapes.md",
-        "confidence": 0.95,
+        "confidence": 0.9,
         "concepts": [
           "knowledge"
         ],
