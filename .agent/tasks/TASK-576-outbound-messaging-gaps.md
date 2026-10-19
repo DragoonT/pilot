@@ -96,7 +96,7 @@ make lint
 ## Done
 
 - [ ] [#5756](https://github.com/qf-studio/pilot/issues/5756)–[#5760](https://github.com/qf-studio/pilot/issues/5760) merged and post-merge reviewed.
-  - Leg A ran 6× `status=infra` on 2026-10-19 (stale `origin/pilot/GH-5756` from an auto-preserve push; executor bug, not the leg). Remote branch deleted 15:32Z; bug filed as [#5762](https://github.com/qf-studio/pilot/issues/5762). **PR#5763 reviewed 2026-10-19 15:55Z: APPROVE-w-notes** (mutation verified locally: both new tests kill the old success return; notes: operator-facing fail-closed behaviour worth a docs line, handler map-iteration is leg E).
+  - Leg A ran 6× `status=infra` on 2026-10-19 (stale `origin/pilot/GH-5756` from an auto-preserve push; executor bug, not the leg). Remote branch deleted 15:32Z; bug filed as [#5762](https://github.com/qf-studio/pilot/issues/5762). **PR#5763 reviewed 2026-10-19 15:55Z: APPROVE-w-notes** (mutation verified locally: both new tests kill the old success return; notes: operator-facing fail-closed behaviour worth a docs line, handler map-iteration is leg E). **Leg A merged 16:37Z (4191a47) after a platform-breaker hold during the GitHub Actions incident. Leg B PR#5764 reviewed 17:10Z: APPROVE-w-notes** (mutation + race verified; unresolvable project rows skipped with WARN and no GitHub call; box has no GitHub handler, so no behaviour change there).
 - [ ] Box: after the release that carries leg D, enable the opt-in key and confirm one Telegram notice for the next merged PR.
 - [ ] `.agent/system/references/reference_slack_notifications_routing.md` row for Telegram PR notices corrected after leg D ships.
 
