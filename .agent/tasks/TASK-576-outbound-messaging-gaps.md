@@ -1,6 +1,6 @@
 # TASK-576: Outbound messaging gaps — approvals and notices that silently go nowhere
 
-**Status**: 🚧 In Progress (5 legs, chained, dispatched 2026-10-19)
+**Status**: ✅ ALL 5 LEGS + #5755 MERGED AND POST-MERGE REVIEWED 2026-10-19 (PR#5763/#5764/#5765/#5766/#5767/#5768, 16:37→19:00Z). Open: box operator steps after v2.290.0 (10-20 14:00Z train) — read the `Slack ingress` line, enable `lifecycle_notifications`, lift the `approvers_by_channel.telegram` hold.
 **Created**: 2026-10-19
 **Assignee**: Pilot
 
@@ -54,11 +54,11 @@ The legs are chained (A → B → C → D → E) because A and E both edit `inte
 
 ## Acceptance Criteria
 
-- [ ] A: an enabled approval stage with no resolvable handler makes `SubmitApprovalRequest` return an error; the PR is never merged by the clock.
-- [ ] B: a github-review approval request survives a daemon restart and resolves when the PR is approved after the restart.
-- [ ] C: each run mode has exactly one Slack approval handler instance, and a click on a card resolves the request that card belongs to.
-- [ ] D: with Telegram configured and the new opt-in key enabled, a merged PR produces one Telegram notice; with the key off, behavior is unchanged.
-- [ ] E: approval routing never depends on Go map iteration order.
+- [x] A: an enabled approval stage with no resolvable handler makes `SubmitApprovalRequest` return an error; the PR is never merged by the clock.
+- [x] B: a github-review approval request survives a daemon restart and resolves when the PR is approved after the restart.
+- [x] C: each run mode has exactly one Slack approval handler instance, and a click on a card resolves the request that card belongs to.
+- [x] D: with Telegram configured and the new opt-in key enabled, a merged PR produces one Telegram notice; with the key off, behavior is unchanged.
+- [x] E: approval routing never depends on Go map iteration order.
 
 ---
 
@@ -95,8 +95,9 @@ make lint
 
 ## Done
 
-- [ ] [#5756](https://github.com/qf-studio/pilot/issues/5756)–[#5760](https://github.com/qf-studio/pilot/issues/5760) merged and post-merge reviewed.
+- [x] [#5756](https://github.com/qf-studio/pilot/issues/5756)–[#5760](https://github.com/qf-studio/pilot/issues/5760) merged and post-merge reviewed.
   - Leg A ran 6× `status=infra` on 2026-10-19 (stale `origin/pilot/GH-5756` from an auto-preserve push; executor bug, not the leg). Remote branch deleted 15:32Z; bug filed as [#5762](https://github.com/qf-studio/pilot/issues/5762). **PR#5763 reviewed 2026-10-19 15:55Z: APPROVE-w-notes** (mutation verified locally: both new tests kill the old success return; notes: operator-facing fail-closed behaviour worth a docs line, handler map-iteration is leg E). **Leg A merged 16:37Z (4191a47) after a platform-breaker hold during the GitHub Actions incident. Leg B PR#5764 reviewed 17:10Z: APPROVE-w-notes** (mutation + race verified; unresolvable project rows skipped with WARN and no GitHub call; box has no GitHub handler, so no behaviour change there).
+  - **Legs C/D/E + #5755 autopilot-merged 17:36Z / 18:06Z / 18:35Z / 19:00Z (PR#5765 / #5766 / #5767 / #5768); all four post-merge reviewed 19:30Z, APPROVE (C, D, #5755 with notes; E clean).** Each verified on main: uncached tests, lint 0 issues, one mutation per leg killed (C: ignore injected manager → wiring test fails; D: never SetNotifier → wiring test fails; E: map-range pick → determinism test fails, Slack won ~75% of picks; #5755: approver-first → 5 tests fail). Notes: box polling+`--slack` = Socket Mode effective, read the new `Slack ingress` INFO line after v2.290.0; D needs the operator opt-in on the box; E only changes producers with an explicitly empty `approval_source`; #5768's `make lint` showed 3 pre-existing `SA4023` hits in `cmd/pilot/tunnel.go` on the box toolchain only (CI lint green).
 - [ ] Box: after the release that carries leg D, enable the opt-in key and confirm one Telegram notice for the next merged PR.
 - [ ] `.agent/system/references/reference_slack_notifications_routing.md` row for Telegram PR notices corrected after leg D ships.
 
