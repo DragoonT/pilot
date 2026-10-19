@@ -1,6 +1,6 @@
 # TASK-574: fix(executor): bootstrap gate — cover the runner call site under worktree isolation; key the once-per-process attempt guard on the project path (PR #5742 fast-follow)
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-19 → [#5745](https://github.com/qf-studio/pilot/issues/5745) (labels `pilot` + `no-decompose`)
+**Status**: ✅ MERGED 2026-10-19 → [#5745](https://github.com/qf-studio/pilot/issues/5745) → [PR#5750](https://github.com/qf-studio/pilot/pull/5750) 10:38Z. **Post-merge review 2026-10-19: APPROVE-w-notes** (guard keyed on `projectPath` at `navigator_bootstrap.go:383`; both pins fail where expected; `-count=3` + lint clean). Notes: the runner subtest's "≥2 lookups" is satisfied by the copy-back lookup too (pin D: bootstrap call removed → subtest still passes; pin A still bites via the key check) — harden with `backend.callCount() == 2`; guard key is the raw `task.ProjectPath` string, move it if config moves to `FindProjectByCanonicalPath`. No follow-up filed.
 **Last Updated**: 2026-10-19
 **Created**: 2026-10-17
 **Assignee**: Pilot (one issue, this repo)

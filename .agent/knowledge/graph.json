@@ -3235,9 +3235,9 @@
         ]
       },
       "TASK-574": {
-        "path": ".agent/tasks/TASK-574-bootstrap-callsite-test-and-attempt-guard-key.md",
+        "path": ".agent/tasks/archive/TASK-574-bootstrap-callsite-test-and-attempt-guard-key.md",
         "title": "fix(executor): bootstrap gate — cover the runner call site under worktree isolation; key the once-per-process attempt guard on the project path (PR #5742 fast-follow)",
-        "status": "dispatched",
+        "status": "completed",
         "concepts": [
           "executor",
           "worktree",
@@ -15299,7 +15299,7 @@
       "rev-list-without-topo-order-breaks-oldest-first-reparent"
     ]
   },
-  "last_updated": "2026-10-19T09:52:49.951019+00:00",
+  "last_updated": "2026-10-19T11:13:41.452830+00:00",
   "stats": {
     "total_nodes": 744,
     "total_edges": 750,
