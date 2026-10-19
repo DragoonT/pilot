@@ -96,6 +96,7 @@ make lint
 ## Done
 
 - [ ] [#5756](https://github.com/qf-studio/pilot/issues/5756)–[#5760](https://github.com/qf-studio/pilot/issues/5760) merged and post-merge reviewed.
+  - Leg A ran 6× `status=infra` on 2026-10-19 (stale `origin/pilot/GH-5756` from an auto-preserve push; executor bug, not the leg). Remote branch deleted 15:32Z; bug filed as [#5762](https://github.com/qf-studio/pilot/issues/5762).
 - [ ] Box: after the release that carries leg D, enable the opt-in key and confirm one Telegram notice for the next merged PR.
 - [ ] `.agent/system/references/reference_slack_notifications_routing.md` row for Telegram PR notices corrected after leg D ships.
 
