@@ -3253,6 +3253,17 @@
           "testing",
           "workflow"
         ]
+      },
+      "TASK-576": {
+        "path": ".agent/tasks/TASK-576-outbound-messaging-gaps.md",
+        "title": "Outbound messaging gaps — approvals and notices that silently go nowhere",
+        "status": "in-progress",
+        "concepts": [
+          "context",
+          "testing",
+          "deployment",
+          "api"
+        ]
       }
     },
     "memories": {
@@ -12523,6 +12534,26 @@
       "from": "ccd-slack-connector-off-by-default-enable-per-session",
       "to": "TASK-515",
       "type": "learned-from"
+    },
+    {
+      "from": "TASK-576",
+      "to": "deployment",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-576",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-576",
+      "to": "context",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-576",
+      "to": "api",
+      "type": "implements"
     }
   ],
   "concept_index": {
@@ -12734,7 +12765,8 @@
       "TASK-563",
       "TASK-567",
       "TASK-573",
-      "TASK-569"
+      "TASK-569",
+      "TASK-576"
     ],
     "approval": [
       "approvals-off-stage-auto-merge",
@@ -13190,7 +13222,8 @@
       "mem-249",
       "mem-250",
       "TASK-563",
-      "TASK-567"
+      "TASK-567",
+      "TASK-576"
     ],
     "conversational-bot": [
       "mem-036",
@@ -13554,7 +13587,8 @@
       "TASK-563",
       "TASK-571",
       "TASK-573",
-      "TASK-569"
+      "TASK-569",
+      "TASK-576"
     ],
     "dispatch": [
       "auto-preserved-wip-recover-by-cherry-pick-continuation",
@@ -14673,7 +14707,8 @@
       "test-asserts-on-pre-rewrite-sha-is-vacuous",
       "process-guard-keyed-on-execution-path-is-per-task-under-worktree-isolation",
       "TASK-572",
-      "TASK-574"
+      "TASK-574",
+      "TASK-576"
     ],
     "testing-quality": [
       "TASK-384",
@@ -15299,10 +15334,10 @@
       "rev-list-without-topo-order-breaks-oldest-first-reparent"
     ]
   },
-  "last_updated": "2026-10-19T11:18:18.732360+00:00",
+  "last_updated": "2026-10-19T13:51:14.466448+00:00",
   "stats": {
-    "total_nodes": 744,
-    "total_edges": 750,
+    "total_nodes": 746,
+    "total_edges": 754,
     "memory_count": 397
   },
   "metadata": {}
