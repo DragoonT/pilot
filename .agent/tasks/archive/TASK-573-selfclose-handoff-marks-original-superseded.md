@@ -1,6 +1,7 @@
 # TASK-573: fix(autopilot): self-closed PR hand-off marks the original task superseded; fix issue closes it (re-pick loop 2026-10-16)
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-17 → [#5741](https://github.com/qf-studio/pilot/issues/5741) (`pilot`, `no-decompose`)
+**Status**: ✅ MERGED 2026-10-17 → [#5741](https://github.com/qf-studio/pilot/issues/5741) → [PR#5743](https://github.com/qf-studio/pilot/pull/5743) 13:35Z, in v2.288.1. **Post-merge review 2026-10-19: APPROVE-w-notes** (option A: supersede written at both self-close sites; all 3 pins hold; ordering vs the StageFailed demotion safe by construction, proven against SQLite). Notes: closed original keeps `pilot` labels (`owner_death.go` returns on closed before the label mutation; doc comment stale) · supersede on a still-`running` row is a silent no-op (GH-4499 shape) · Closes chain one hop deep. Follow-up unfiled.
+**Last Updated**: 2026-10-19
 **Created**: 2026-10-17
 **Assignee**: Pilot (one issue, this repo)
 **Source**: incident GH-5731 re-pick loop + nav-research 2026-10-17

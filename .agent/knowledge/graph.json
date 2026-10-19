@@ -3201,9 +3201,9 @@
         ]
       },
       "TASK-573": {
-        "path": ".agent/tasks/TASK-573-selfclose-handoff-marks-original-superseded.md",
+        "path": ".agent/tasks/archive/TASK-573-selfclose-handoff-marks-original-superseded.md",
         "title": "fix(autopilot): self-closed PR hand-off marks the original task superseded; fix issue closes it (re-pick loop 2026-10-16)",
-        "status": "dispatched",
+        "status": "completed",
         "concepts": [
           "knowledge",
           "markers",
@@ -3237,7 +3237,7 @@
       "TASK-574": {
         "path": ".agent/tasks/TASK-574-bootstrap-callsite-test-and-attempt-guard-key.md",
         "title": "fix(executor): bootstrap gate — cover the runner call site under worktree isolation; key the once-per-process attempt guard on the project path (PR #5742 fast-follow)",
-        "status": "planned",
+        "status": "dispatched",
         "concepts": [
           "executor",
           "worktree",
@@ -15289,7 +15289,7 @@
       "rev-list-without-topo-order-breaks-oldest-first-reparent"
     ]
   },
-  "last_updated": "2026-10-19T09:34:59.156800+00:00",
+  "last_updated": "2026-10-19T09:46:23.471432+00:00",
   "stats": {
     "total_nodes": 744,
     "total_edges": 750,
