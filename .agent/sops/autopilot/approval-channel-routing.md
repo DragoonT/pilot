@@ -79,4 +79,31 @@ same time so the DM/`#pointer` split is clean. Consequences:
 - Second approver (Nelya, `U0ADEMJ7J83`) does **not** see DM-routed asks. Founder-accepted.
 - Buttons in a DM work only because the box runs `socket_mode: false` (HTTP interactivity);
   flipping to Socket Mode re-triggers pitfall `slack-approval-socket-mode-unroutable`.
+  **⚠️ Unverified as of 2026-10-19:** the box config does say `socket_mode: false`, but
+  daemon.log shows "Slack Socket Mode started in polling mode", and the HTTP interactions
+  route is registered only inside `pilot.New` (gateway mode). Establish the real click path
+  before changing Slack ingress (TASK-576 leg C, #5758; memory
+  `box-slack-socket-mode-config-false-but-socket-mode-starts`).
 - Full channel map: `.agent/system/references/reference_slack_notifications_routing.md`.
+
+## Per-project routing and approver identity (2026-10-19)
+
+Resolution order, most specific first:
+
+| What | Keys (first set wins) |
+|------|-----------------------|
+| Channel | `projects[].approval.approval_source` → `environments.<env>.approval_source` → `autopilot.approval_source` |
+| Approvers | `projects[].approval.approvers` → `approval.<stage>.approvers_by_channel.<channel>` → `approval.<stage>.approvers` |
+
+- One PR goes to exactly one channel (`slack` · `telegram` · `github-review`). There is no
+  fan-out to several channels.
+- Slack and Telegram user IDs are different identity systems. A flat approver list of Slack IDs
+  rejects every Telegram tap. Use `approvers_by_channel` (PR#5754, #5753).
+- **Telegram caveat until #5755 ships:** a valid Telegram ID as the first approver moves the ask
+  from `adapters.telegram.chat_id` to that user's DM (`resolveDestChatID` is approver-first;
+  Slack has been channel-first since GH-4808).
+- `github-review` needs `adapters.github.approval.enabled: true` (null on the box). Each request
+  resolves its own owner/repo from the project and fails closed when it cannot (#5716). An
+  approval counts only on an open PR and on the current head SHA (#5749).
+- No registered handler for an enabled stage currently returns success, and the controller clock
+  then applies `default_action` → fix #5756 (TASK-576 leg A).

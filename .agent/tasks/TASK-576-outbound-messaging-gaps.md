@@ -48,6 +48,8 @@ Every outbound path either delivers or fails loudly, and every approval request 
 
 The legs are chained (A → B → C → D → E) because A and E both edit `internal/approval/manager.go`, and B, C and D all edit `cmd/pilot/main.go`.
 
+**Leg C open question (found after dispatch, 2026-10-19):** the box config has `adapters.slack.socket_mode: false`, but daemon.log shows "Slack Socket Mode started in polling mode" and a reconnect about every 5 h. The polling-mode Socket Mode block requires `SocketMode` true, and the HTTP interactions route exists only in `pilot.New`. So the effective value differs from the file, or the research missed a path. Settle this before leg C's PR is reviewed: the PR must not break the path that delivers clicks on the box today. Memory `box-slack-socket-mode-config-false-but-socket-mode-starts`. The #5758 body does not carry this yet.
+
 ---
 
 ## Acceptance Criteria
