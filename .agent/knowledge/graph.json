@@ -8750,6 +8750,16 @@
         ],
         "confidence": 0.95,
         "created": "2026-10-17"
+      },
+      "ccd-slack-connector-off-by-default-enable-per-session": {
+        "type": "learning",
+        "summary": "Claude desktop Code sessions carry the claude.ai Slack connector but it is disabled per session; session_connectors_status → set_session_connector_enabled turns it on. Pilot's own Linear is not the connected workspace. #infrastructure=C0BV37L87C1, Nelya=U0ADEMJ7J83 (2026-10-19).",
+        "file": ".agent/knowledge/memories/learnings/ccd-slack-connector-off-by-default-enable-per-session.md",
+        "concepts": [
+          "workflow-discipline"
+        ],
+        "confidence": 0.95,
+        "created": "2026-10-19"
       }
     }
   },
@@ -12498,6 +12508,11 @@
       "from": "process-guard-keyed-on-execution-path-is-per-task-under-worktree-isolation",
       "to": "TASK-574",
       "type": "learned-from"
+    },
+    {
+      "from": "ccd-slack-connector-off-by-default-enable-per-session",
+      "to": "TASK-515",
+      "type": "learned-from"
     }
   ],
   "concept_index": {
@@ -14850,7 +14865,8 @@
       "s6-lite-cutover-recipe",
       "pilot-never-reads-gh-comments-by-design",
       "issue-body-literal-migration-version-collides-with-sibling-leg",
-      "use-nav-research-agent-for-all-project-research"
+      "use-nav-research-agent-for-all-project-research",
+      "ccd-slack-connector-off-by-default-enable-per-session"
     ],
     "worktree": [
       "auto-preserved-wip-recover-by-cherry-pick-continuation",
@@ -15273,11 +15289,11 @@
       "rev-list-without-topo-order-breaks-oldest-first-reparent"
     ]
   },
-  "last_updated": "2026-10-17T13:22:27.870858+00:00",
+  "last_updated": "2026-10-19T09:34:59.156800+00:00",
   "stats": {
-    "total_nodes": 743,
-    "total_edges": 749,
-    "memory_count": 396
+    "total_nodes": 744,
+    "total_edges": 750,
+    "memory_count": 397
   },
   "metadata": {}
 }
