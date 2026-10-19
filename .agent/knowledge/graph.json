@@ -3245,9 +3245,9 @@
         ]
       },
       "TASK-575": {
-        "path": ".agent/tasks/TASK-575-selfclose-supersede-running-row-and-closed-original-labels.md",
+        "path": ".agent/tasks/archive/TASK-575-selfclose-supersede-running-row-and-closed-original-labels.md",
         "title": "fix(autopilot): self-close hand-off — supersede a still-running original row, and strip pilot labels from an original the fix PR closed (PR #5743 fast-follow)",
-        "status": "dispatched",
+        "status": "completed",
         "concepts": [
           "autopilot",
           "testing",
@@ -15299,7 +15299,7 @@
       "rev-list-without-topo-order-breaks-oldest-first-reparent"
     ]
   },
-  "last_updated": "2026-10-19T11:13:41.452830+00:00",
+  "last_updated": "2026-10-19T11:18:18.732360+00:00",
   "stats": {
     "total_nodes": 744,
     "total_edges": 750,

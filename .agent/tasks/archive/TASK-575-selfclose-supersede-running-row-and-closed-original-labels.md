@@ -1,6 +1,6 @@
 # TASK-575: fix(autopilot): self-close hand-off — supersede a still-running original row, and strip `pilot` labels from an original the fix PR closed (PR #5743 fast-follow)
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-19 → [#5747](https://github.com/qf-studio/pilot/issues/5747) (labels `pilot` + `no-decompose`)
+**Status**: ✅ MERGED 2026-10-19 → [#5747](https://github.com/qf-studio/pilot/issues/5747) → [PR#5751](https://github.com/qf-studio/pilot/pull/5751) 11:09Z. **Post-merge review 2026-10-19: APPROVE-w-notes** (both store calls at `controller.go:10881-10911`; early return narrowed to `pilot-superseded` at `owner_death.go:249`; both pins fail; lint 0). Notes: closed + zero-overlap now gets the mismatch comment/alert (judged correct); "Leaving this issue open" wording at `owner_death.go:291`/`:309` and doc bullets `:178-184` now stale on a closed issue; the StageFailed CAS rejection logs at ERROR (GH-4423) on every hand-off. No follow-up filed.
 **Last Updated**: 2026-10-19
 **Created**: 2026-10-19
 **Assignee**: Pilot (one issue, this repo)
