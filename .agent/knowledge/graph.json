@@ -2433,7 +2433,7 @@
         ]
       },
       "TASK-471": {
-        "path": "/Users/aleks.petrov/Projects/startups/pilot/.agent/tasks/TASK-471-canary-declined-rows-two-legs.md",
+        "path": "/Users/aleks.petrov/Projects/startups/pilot/.agent/tasks/archive/TASK-471-canary-declined-rows-two-legs.md",
         "title": "Task 471 Canary Declined Rows Two Legs",
         "status": "completed",
         "concepts": [
@@ -2637,7 +2637,7 @@
         ]
       },
       "TASK-487": {
-        "path": "/Users/aleks.petrov/Projects/startups/pilot/.agent/tasks/TASK-487-rls-dormancy-honesty-and-test-credential-cleanup.md",
+        "path": "/Users/aleks.petrov/Projects/startups/pilot/.agent/tasks/archive/TASK-487-rls-dormancy-honesty-and-test-credential-cleanup.md",
         "title": "Task 487 Rls Dormancy Honesty And Test Credential Cleanup",
         "status": "backlog",
         "concepts": [
@@ -2649,7 +2649,7 @@
         ]
       },
       "TASK-488": {
-        "path": "/Users/aleks.petrov/Projects/startups/pilot/.agent/tasks/TASK-488-compiler-scoping-close-the-escape-hatch.md",
+        "path": "/Users/aleks.petrov/Projects/startups/pilot/.agent/tasks/archive/TASK-488-compiler-scoping-close-the-escape-hatch.md",
         "title": "Task 488 Compiler Scoping Close The Escape Hatch",
         "status": "backlog",
         "concepts": [
@@ -2703,7 +2703,7 @@
         ]
       },
       "TASK-493": {
-        "path": ".agent/tasks/TASK-493-review-trigger-hardening.md",
+        "path": ".agent/tasks/archive/TASK-493-review-trigger-hardening.md",
         "title": "Review-feedback trigger hardening — bot filter on webhook path, stage guard, identity-based exclusion, human-only feedback body",
         "status": "dispatched",
         "concepts": [
@@ -2718,7 +2718,7 @@
         ]
       },
       "TASK-494": {
-        "path": ".agent/tasks/TASK-494-docs-sync-github-only-post-aws-cutover.md",
+        "path": ".agent/tasks/archive/TASK-494-docs-sync-github-only-post-aws-cutover.md",
         "title": "Docs sync post-AWS-cutover — GitHub-only leg, pilot-docs owns its workflows, GitLab files removed, /getting-started 404",
         "status": "dispatched",
         "concepts": [
@@ -2826,7 +2826,7 @@
         ]
       },
       "TASK-510": {
-        "path": ".agent/tasks/TASK-510-linear-invoices-gitlab-cutover.md",
+        "path": ".agent/tasks/archive/TASK-510-linear-invoices-gitlab-cutover.md",
         "title": "Linear Invoices — move the Pilot integration from the GitHub mirrors to the canonical GitLab repos",
         "status": "completed",
         "concepts": [
