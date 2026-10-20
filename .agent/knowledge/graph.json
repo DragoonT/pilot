@@ -3308,6 +3308,19 @@
           "deployment",
           "testing"
         ]
+      },
+      "TASK-580": {
+        "path": ".agent/tasks/TASK-580-console-419-revision-2-scratch-migrate-lock.md",
+        "title": "Task 580 Console 419 Revision 2 Scratch Migrate Lock",
+        "status": "dispatched",
+        "concepts": [
+          "testing",
+          "database",
+          "context",
+          "deployment",
+          "knowledge",
+          "authentication"
+        ]
       }
     },
     "memories": {
@@ -12943,6 +12956,36 @@
       "from": "TASK-579",
       "to": "deployment",
       "type": "implements"
+    },
+    {
+      "from": "TASK-580",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-580",
+      "to": "database",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-580",
+      "to": "authentication",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-580",
+      "to": "knowledge",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-580",
+      "to": "deployment",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-580",
+      "to": "context",
+      "type": "implements"
     }
   ],
   "concept_index": {
@@ -13282,7 +13325,8 @@
       "TASK-567",
       "TASK-571",
       "TASK-569",
-      "TASK-578"
+      "TASK-578",
+      "TASK-580"
     ],
     "auto-merge": [
       "mem-103"
@@ -13632,7 +13676,8 @@
       "TASK-576",
       "TASK-577",
       "TASK-578",
-      "TASK-579"
+      "TASK-579",
+      "TASK-580"
     ],
     "conversational-bot": [
       "mem-036",
@@ -13774,7 +13819,8 @@
       "mem-248",
       "mem-249",
       "mem-250",
-      "TASK-578"
+      "TASK-578",
+      "TASK-580"
     ],
     "decomposition": [
       "decomposer-narrative-bullets-as-subtask-boundaries",
@@ -14006,7 +14052,8 @@
       "org-runner-group-repo-access-needs-admin-org-scope",
       "verify-issue-premise-against-live-fleet-before-dispatch",
       "TASK-578",
-      "TASK-579"
+      "TASK-579",
+      "TASK-580"
     ],
     "dispatch": [
       "auto-preserved-wip-recover-by-cherry-pick-continuation",
@@ -14540,7 +14587,8 @@
       "TASK-576",
       "TASK-577",
       "TASK-578",
-      "TASK-579"
+      "TASK-579",
+      "TASK-580"
     ],
     "labels": [
       "mem-100",
@@ -15151,7 +15199,8 @@
       "TASK-576",
       "TASK-577",
       "TASK-578",
-      "TASK-579"
+      "TASK-579",
+      "TASK-580"
     ],
     "testing-quality": [
       "TASK-384",
@@ -15783,10 +15832,10 @@
       "gh5468-unlisted-check-failure-blocks-gate-but-evidence-still-allowlist-scoped"
     ]
   },
-  "last_updated": "2026-10-20T16:08:04.013380+00:00",
+  "last_updated": "2026-10-20T16:24:58.295347+00:00",
   "stats": {
-    "total_nodes": 764,
-    "total_edges": 787,
+    "total_nodes": 765,
+    "total_edges": 793,
     "memory_count": 411
   },
   "metadata": {}
