@@ -1230,6 +1230,11 @@
         "name": "History-Rewrite",
         "aliases": [],
         "domain": "general"
+      },
+      "ci-monitor": {
+        "name": "Ci-Monitor",
+        "aliases": [],
+        "domain": "general"
       }
     },
     "tasks": {
@@ -8935,6 +8940,33 @@
         ],
         "created": "2026-10-20",
         "last_validated": "2026-10-20"
+      },
+      "github-matching-refs-ignores-per-page-and-page": {
+        "type": "pitfall",
+        "summary": "GitHub git/matching-refs/heads/<prefix> ignores per_page and page and sends no Link header (probe 2026-10-20: per_page=1 -> all 7 refs, page=2 -> same 7). A page loop that stops on len<100 works below 100 refs by accident and returns N identical pages above it: PR#5775's ListBranches would process each pilot/* branch 50x at 100+ refs (#5777). Fetch matching-refs in one request; never paginate it.",
+        "path": "memories/pitfalls/github-matching-refs-ignores-per-page-and-page.md",
+        "confidence": 0.95,
+        "concepts": [
+          "github",
+          "autopilot",
+          "api"
+        ],
+        "created": "2026-10-20",
+        "last_validated": "2026-10-20"
+      },
+      "gh5468-unlisted-check-failure-blocks-gate-but-evidence-still-allowlist-scoped": {
+        "type": "pitfall",
+        "summary": "Since GH-5468 a failed check outside required_checks fails the CI gate, but GetFailedChecks / GetFailedCheckLogsByCheck / GetFailedCheckExcerpts still drop unlisted checks via isScopedCheck, so the PR is parked pilot-needs-human with 'zero evidence gathered' although the log is one call away. Hits every repo that inherits the global allowlist [test, lint] and has its own checks: pilot-console PR#417 2026-10-20. Daemon fix #5776; box mitigation: ci_checks.required_checks: [] per console project.",
+        "path": "memories/pitfalls/gh5468-unlisted-check-failure-blocks-gate-but-evidence-still-allowlist-scoped.md",
+        "confidence": 0.95,
+        "concepts": [
+          "autopilot",
+          "github",
+          "dispatch",
+          "ci-monitor"
+        ],
+        "created": "2026-10-20",
+        "last_validated": "2026-10-20"
       }
     }
   },
@@ -12803,6 +12835,16 @@
       "from": "verify-issue-premise-against-live-fleet-before-dispatch",
       "to": "TASK-405",
       "type": "learned-from"
+    },
+    {
+      "from": "github-matching-refs-ignores-per-page-and-page",
+      "to": "TASK-577",
+      "type": "learned-from"
+    },
+    {
+      "from": "gh5468-unlisted-check-failure-blocks-gate-but-evidence-still-allowlist-scoped",
+      "to": "TASK-405",
+      "type": "learned-from"
     }
   ],
   "concept_index": {
@@ -13019,7 +13061,8 @@
       "TASK-573",
       "TASK-569",
       "TASK-576",
-      "TASK-577"
+      "TASK-577",
+      "github-matching-refs-ignores-per-page-and-page"
     ],
     "approval": [
       "approvals-off-stage-auto-merge",
@@ -13215,7 +13258,9 @@
       "slack-approval-click-not-received-relay-via-local-decision-api",
       "sqlite-memory-dsn-serializes-to-one-conn",
       "stagefailed-conflates-healthy-handoff-with-terminal-failure",
-      "terminal-status-without-rearm-probe-kills-operator-recovery"
+      "terminal-status-without-rearm-probe-kills-operator-recovery",
+      "github-matching-refs-ignores-per-page-and-page",
+      "gh5468-unlisted-check-failure-blocks-gate-but-evidence-still-allowlist-scoped"
     ],
     "aws": [
       "absolute-state-paths-bypass-cutover-shim",
@@ -13881,7 +13926,8 @@
       "stall-status-reused-as-hold-marker",
       "terminal-status-without-rearm-probe-kills-operator-recovery",
       "issue-body-backticked-paths-not-on-main-trip-base-presence-hold",
-      "verify-issue-premise-against-live-fleet-before-dispatch"
+      "verify-issue-premise-against-live-fleet-before-dispatch",
+      "gh5468-unlisted-check-failure-blocks-gate-but-evidence-still-allowlist-scoped"
     ],
     "dispatcher": [
       "alert-engine-counts-operator-cancels",
@@ -14175,7 +14221,9 @@
       "pr-numbers-collide-across-repos-approval-must-key-on-owner-repo",
       "required-checks-allowlist-makes-other-gates-decorative",
       "slack-connector-returns-text-only-colleague-attachments-need-a-pr",
-      "org-runner-group-repo-access-needs-admin-org-scope"
+      "org-runner-group-repo-access-needs-admin-org-scope",
+      "github-matching-refs-ignores-per-page-and-page",
+      "gh5468-unlisted-check-failure-blocks-gate-but-evidence-still-allowlist-scoped"
     ],
     "github-adapter": [
       "TASK-379",
@@ -15618,13 +15666,16 @@
     ],
     "history-rewrite": [
       "rev-list-without-topo-order-breaks-oldest-first-reparent"
+    ],
+    "ci-monitor": [
+      "gh5468-unlisted-check-failure-blocks-gate-but-evidence-still-allowlist-scoped"
     ]
   },
-  "last_updated": "2026-10-20T07:46:12.192544+00:00",
+  "last_updated": "2026-10-20T08:46:35.849621+00:00",
   "stats": {
-    "total_nodes": 758,
-    "total_edges": 773,
-    "memory_count": 408
+    "total_nodes": 761,
+    "total_edges": 775,
+    "memory_count": 410
   },
   "metadata": {}
 }
