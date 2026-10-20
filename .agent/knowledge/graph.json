@@ -3296,6 +3296,18 @@
           "testing",
           "database"
         ]
+      },
+      "TASK-579": {
+        "path": ".agent/tasks/TASK-579-dashboard-queue-grouped-by-project.md",
+        "title": "Task 579 Dashboard Queue Grouped By Project",
+        "status": "dispatched",
+        "concepts": [
+          "knowledge",
+          "markers",
+          "context",
+          "deployment",
+          "testing"
+        ]
       }
     },
     "memories": {
@@ -12906,6 +12918,31 @@
       "from": "TASK-578",
       "to": "database",
       "type": "implements"
+    },
+    {
+      "from": "TASK-579",
+      "to": "knowledge",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-579",
+      "to": "markers",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-579",
+      "to": "context",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-579",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-579",
+      "to": "deployment",
+      "type": "implements"
     }
   ],
   "concept_index": {
@@ -13594,7 +13631,8 @@
       "TASK-567",
       "TASK-576",
       "TASK-577",
-      "TASK-578"
+      "TASK-578",
+      "TASK-579"
     ],
     "conversational-bot": [
       "mem-036",
@@ -13967,7 +14005,8 @@
       "TASK-577",
       "org-runner-group-repo-access-needs-admin-org-scope",
       "verify-issue-premise-against-live-fleet-before-dispatch",
-      "TASK-578"
+      "TASK-578",
+      "TASK-579"
     ],
     "dispatch": [
       "auto-preserved-wip-recover-by-cherry-pick-continuation",
@@ -14500,7 +14539,8 @@
       "task-to-graph-rewrites-graph-json-with-unicode-escapes",
       "TASK-576",
       "TASK-577",
-      "TASK-578"
+      "TASK-578",
+      "TASK-579"
     ],
     "labels": [
       "mem-100",
@@ -14566,7 +14606,8 @@
       "TASK-489",
       "TASK-505",
       "TASK-515",
-      "TASK-573"
+      "TASK-573",
+      "TASK-579"
     ],
     "memory": [
       "TASK-358",
@@ -15109,7 +15150,8 @@
       "TASK-574",
       "TASK-576",
       "TASK-577",
-      "TASK-578"
+      "TASK-578",
+      "TASK-579"
     ],
     "testing-quality": [
       "TASK-384",
@@ -15741,10 +15783,10 @@
       "gh5468-unlisted-check-failure-blocks-gate-but-evidence-still-allowlist-scoped"
     ]
   },
-  "last_updated": "2026-10-20T15:51:19.119813+00:00",
+  "last_updated": "2026-10-20T16:08:04.013380+00:00",
   "stats": {
-    "total_nodes": 763,
-    "total_edges": 782,
+    "total_nodes": 764,
+    "total_edges": 787,
     "memory_count": 411
   },
   "metadata": {}
