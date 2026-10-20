@@ -3283,6 +3283,19 @@
           "knowledge",
           "testing"
         ]
+      },
+      "TASK-578": {
+        "path": ".agent/tasks/TASK-578-console-419-revision-test-db-lock.md",
+        "title": "Task 578 Console 419 Revision Test Db Lock",
+        "status": "backlog",
+        "concepts": [
+          "authentication",
+          "deployment",
+          "knowledge",
+          "context",
+          "testing",
+          "database"
+        ]
       }
     },
     "memories": {
@@ -12863,6 +12876,36 @@
       "from": "console-ci-shared-postgres-truncate-races-instances-e2e",
       "to": "TASK-405",
       "type": "learned-from"
+    },
+    {
+      "from": "TASK-578",
+      "to": "authentication",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-578",
+      "to": "deployment",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-578",
+      "to": "knowledge",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-578",
+      "to": "context",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-578",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-578",
+      "to": "database",
+      "type": "implements"
     }
   ],
   "concept_index": {
@@ -13201,7 +13244,8 @@
       "TASK-563",
       "TASK-567",
       "TASK-571",
-      "TASK-569"
+      "TASK-569",
+      "TASK-578"
     ],
     "auto-merge": [
       "mem-103"
@@ -13549,7 +13593,8 @@
       "TASK-563",
       "TASK-567",
       "TASK-576",
-      "TASK-577"
+      "TASK-577",
+      "TASK-578"
     ],
     "conversational-bot": [
       "mem-036",
@@ -13690,7 +13735,8 @@
       "mem-247",
       "mem-248",
       "mem-249",
-      "mem-250"
+      "mem-250",
+      "TASK-578"
     ],
     "decomposition": [
       "decomposer-narrative-bullets-as-subtask-boundaries",
@@ -13920,7 +13966,8 @@
       "TASK-576",
       "TASK-577",
       "org-runner-group-repo-access-needs-admin-org-scope",
-      "verify-issue-premise-against-live-fleet-before-dispatch"
+      "verify-issue-premise-against-live-fleet-before-dispatch",
+      "TASK-578"
     ],
     "dispatch": [
       "auto-preserved-wip-recover-by-cherry-pick-continuation",
@@ -14452,7 +14499,8 @@
       "TASK-573",
       "task-to-graph-rewrites-graph-json-with-unicode-escapes",
       "TASK-576",
-      "TASK-577"
+      "TASK-577",
+      "TASK-578"
     ],
     "labels": [
       "mem-100",
@@ -15060,7 +15108,8 @@
       "TASK-572",
       "TASK-574",
       "TASK-576",
-      "TASK-577"
+      "TASK-577",
+      "TASK-578"
     ],
     "testing-quality": [
       "TASK-384",
@@ -15692,10 +15741,10 @@
       "gh5468-unlisted-check-failure-blocks-gate-but-evidence-still-allowlist-scoped"
     ]
   },
-  "last_updated": "2026-10-20T09:00:11.217245+00:00",
+  "last_updated": "2026-10-20T15:51:19.119813+00:00",
   "stats": {
-    "total_nodes": 762,
-    "total_edges": 776,
+    "total_nodes": 763,
+    "total_edges": 782,
     "memory_count": 411
   },
   "metadata": {}
