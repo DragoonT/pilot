@@ -8967,6 +8967,19 @@
         ],
         "created": "2026-10-20",
         "last_validated": "2026-10-20"
+      },
+      "console-ci-shared-postgres-truncate-races-instances-e2e": {
+        "type": "pitfall",
+        "summary": "pilot-console CI runs go test ./... against ONE Postgres service; internal/fleet reconciler_test.go TRUNCATEs instances/instance_events while internal/instances provision_e2e_test.go runs in parallel, so TestProvisionDeprovisionRowTransitions_E2E can fail with 'GetInstance after provision: fleet: not found' on an unrelated change (PR#417 head 94e2bea, 2026-10-20; green on rerun). A 'db down' ERROR line nearby is a fake-store error path from another test, not the cause. Rerun first; durable fix = per-package schema or -p 1 for DB packages.",
+        "path": "memories/pitfalls/console-ci-shared-postgres-truncate-races-instances-e2e.md",
+        "confidence": 0.9,
+        "concepts": [
+          "ci",
+          "cross-repo",
+          "fleet"
+        ],
+        "created": "2026-10-20",
+        "last_validated": "2026-10-20"
       }
     }
   },
@@ -12845,6 +12858,11 @@
       "from": "gh5468-unlisted-check-failure-blocks-gate-but-evidence-still-allowlist-scoped",
       "to": "TASK-405",
       "type": "learned-from"
+    },
+    {
+      "from": "console-ci-shared-postgres-truncate-races-instances-e2e",
+      "to": "TASK-405",
+      "type": "learned-from"
     }
   ],
   "concept_index": {
@@ -13316,7 +13334,8 @@
       "mem-214",
       "console-wire-contract-gate-needs-raw-body-strings-contains-test",
       "autopilot-held-prs-redrive-only-for-size-guard-holds",
-      "goreleaser-rerun-on-published-tag-fails-422-push-formula-by-hand"
+      "goreleaser-rerun-on-published-tag-fails-422-push-formula-by-hand",
+      "console-ci-shared-postgres-truncate-races-instances-e2e"
     ],
     "ci-gates": [
       "bake-workflow-tee-masked-failure-promoted-source-ami"
@@ -13549,7 +13568,8 @@
       "founder-priority-pointer-first-saas-parked",
       "mem-139",
       "slack-connector-returns-text-only-colleague-attachments-need-a-pr",
-      "org-runner-group-repo-access-needs-admin-org-scope"
+      "org-runner-group-repo-access-needs-admin-org-scope",
+      "console-ci-shared-postgres-truncate-races-instances-e2e"
     ],
     "dashboard": [
       "TASK-358",
@@ -14097,7 +14117,8 @@
       "fleet-env-doubles-as-environment-tag-value",
       "mem-199",
       "tenants-do-not-self-upgrade-hosted-invariant",
-      "verify-issue-premise-against-live-fleet-before-dispatch"
+      "verify-issue-premise-against-live-fleet-before-dispatch",
+      "console-ci-shared-postgres-truncate-races-instances-e2e"
     ],
     "forensics": [
       "apply-script-silent-rollback-causes",
@@ -15671,11 +15692,11 @@
       "gh5468-unlisted-check-failure-blocks-gate-but-evidence-still-allowlist-scoped"
     ]
   },
-  "last_updated": "2026-10-20T08:46:35.849621+00:00",
+  "last_updated": "2026-10-20T09:00:11.217245+00:00",
   "stats": {
-    "total_nodes": 761,
-    "total_edges": 775,
-    "memory_count": 410
+    "total_nodes": 762,
+    "total_edges": 776,
+    "memory_count": 411
   },
   "metadata": {}
 }
