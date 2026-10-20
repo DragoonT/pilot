@@ -1,10 +1,10 @@
 # feat(autopilot): sweep orphaned `pilot/*` remote branches that no tracked PR will ever delete
 
-**Status**: 🚀 DISPATCHED 2026-10-19 → [#5770](https://github.com/qf-studio/pilot/issues/5770) (`pilot`, `no-decompose`) · **Owner**: Navigator plans, Pilot executes · **Related**: #5762 (executor side of GH-5756: auto-preserve push collides with the re-pick; separate PR, do not duplicate), TASK-508 (post-merge branch borrowing)
+**Status**: 🚀 DISPATCHED 2026-10-19 → [#5770](https://github.com/qf-studio/pilot/issues/5770) (`pilot`, `no-decompose`). **Parked `pilot-needs-human` 10-19 21:53Z** — base-presence hold on the two NEW file paths this doc backticked (8th recurrence of the pitfall). **Un-parked 10-20 07:40Z**: paths rewritten in prose here and on the issue, label removed; re-pick on the next tick · **Owner**: Navigator plans, Pilot executes · **Related**: #5762 (executor side of GH-5756: auto-preserve push collides with the re-pick; separate PR, do not duplicate), TASK-508 (post-merge branch borrowing)
 
 ## Summary
 
-A branch audit on 2026-10-19 found **73 stale `pilot/GH-*` branches on `origin`** of `qf-studio/pilot`. Their breakdown is the design input:
+A branch audit on 2026-10-19 found **73 stale pilot/GH-* branches on origin** of the qf-studio/pilot repository. Their breakdown is the design input:
 
 | Class | Count | Why the existing post-merge delete never ran |
 |---|---|---|
@@ -12,7 +12,7 @@ A branch audit on 2026-10-19 found **73 stale `pilot/GH-*` branches on `origin`*
 | Closed (not merged) PR | 7 | GitHub's `delete_branch_on_merge` (on for this repo) only fires on merge. Autopilot's close paths skip the delete in some flows (`removePRTracking(pr, false)` at `controller.go:10707`, `:10742` for GH-4458 self-close). |
 | Merged PR, branch re-pushed or merged while daemon was down | 7 | Boot catch-up is limited to `startup_merged_pr_scan_window` (72h, `types.go:720`). Anything older is never revisited. |
 
-Cost of the pile-up is not cosmetic: a stale `pilot/GH-5756` made six executor retries fail `non-fast-forward` on 2026-10-19 (≈2 h box time, ≈$3.50 model spend; see #5762 and `.agent/knowledge/memories/pitfalls/auto-preserve-push-then-rewrite-non-ff-infra-repick-loop.md`). #5762 fixes the executor's push so it tolerates its own preserved SHA. This task closes the other half: **branches must not survive indefinitely on origin once no open PR references them.**
+Cost of the pile-up is not cosmetic: a stale remote branch named pilot/GH-5756 made six executor retries fail `non-fast-forward` on 2026-10-19 (≈2 h box time, ≈$3.50 model spend; see #5762 and `.agent/knowledge/memories/pitfalls/auto-preserve-push-then-rewrite-non-ff-infra-repick-loop.md`). #5762 fixes the executor's push so it tolerates its own preserved SHA. This task closes the other half: **branches must not survive indefinitely on origin once no open PR references them.**
 
 ## Scope
 
@@ -47,7 +47,7 @@ func (c *Client) ListBranches(ctx context.Context, owner, repo, prefix string) (
 
 To get a branch's age without N extra calls, use the commit date from `GetBranch` only for candidates that have no PR (the rare path); PR-backed candidates are decided from PR state alone.
 
-### Sweeper (`internal/autopilot/branch_sweeper.go`, new file)
+### Sweeper (a new file branch_sweeper.go under internal/autopilot)
 
 `func (c *Controller) sweepStaleBranches(ctx context.Context)`:
 
@@ -58,7 +58,7 @@ To get a branch's age without N extra calls, use the commit date from `GetBranch
    - autopilot currently tracks a PR on it (in-memory `c.prs`/tracking map — whatever `removePRTracking` reads);
    - it is the base of an open PR (`safeDeleteBranch` already does this, keep the call);
    - it has no PR and its tip commit is younger than `StaleBranchMinAge`;
-   - an execution for its task ID is still live (reuse the lookup the dispatcher uses for `pilot/GH-N` → task; `controller.go:5497` trims the prefix).
+   - an execution for its task ID is still live (reuse the lookup the dispatcher uses for a pilot/GH-N branch name → task; `controller.go:5497` trims the prefix).
 4. Otherwise call `safeDeleteBranch(ctx, name, prNumber)` (`controller.go:2220`). `prNumber` is the newest closed/merged PR on that head, or 0.
 5. Every failure is a `Warn` and the loop continues; never abort the sweep on one branch. 404/422 from `DeleteBranch` count as already gone.
 6. Log one summary line per sweep: `stale branch sweep: scanned=N deleted=M skipped_open=K skipped_young=J errors=E`. Add a counter metric `autopilot_stale_branches_deleted_total` next to the existing autopilot metrics.
@@ -67,17 +67,17 @@ Wire the ticker in the main loop beside `mergedScanTicker` (`controller.go:9886-
 
 ### Operator run on the box
 
-Once merged and released, the box's `~/.pilot/config.yaml` needs `autopilot.stale_branch_sweep: true` (operator step, not Pilot's).
+Once merged and released, the box's pilot config file (the one pilot start reads) needs `autopilot.stale_branch_sweep: true` (operator step, not Pilot's).
 
 ## Won't do
 
 - No executor changes (that is #5762).
 - No deletion of branches with an **open** PR, ever, regardless of age.
-- No deletion of non-`pilot/` branches.
+- No deletion of branches outside the pilot/ prefix.
 - No force-push, no ref rewriting.
 - No change to GitHub's `delete_branch_on_merge` setting.
 
-## Tests (table-driven, `internal/autopilot/branch_sweeper_test.go`)
+## Tests (table-driven, in a new branch_sweeper_test.go next to the sweeper)
 
 | Case | Expect |
 |---|---|

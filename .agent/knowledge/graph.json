@@ -8921,6 +8921,20 @@
         ],
         "created": "2026-10-19",
         "last_validated": "2026-10-19"
+      },
+      "verify-issue-premise-against-live-fleet-before-dispatch": {
+        "type": "learning",
+        "summary": "console#390 (10-13) was written on a premise the train had already fixed the same day (GH-5651 headless self-upgrade, v2.282.0): before dispatching a planning-era issue, check the release tag of any related fix (git tag --contains) and read the live tenant over SSM (pilot version + journalctl -u pilot | grep upgrade). The 10-20 check showed the tenant on 2.289.0 self-upgraded; #390 shrank to version visibility, and a real gap surfaced instead: the reconciler golden AMI bakes 2.277.4 (< v2.282.0) with no S3 override, so a new tenant boots a binary that never self-upgrades.",
+        "path": "memories/learnings/verify-issue-premise-against-live-fleet-before-dispatch.md",
+        "confidence": 0.95,
+        "concepts": [
+          "dispatch",
+          "issue-authoring",
+          "fleet",
+          "deployment"
+        ],
+        "created": "2026-10-20",
+        "last_validated": "2026-10-20"
       }
     }
   },
@@ -12784,6 +12798,11 @@
       "from": "org-runner-group-repo-access-needs-admin-org-scope",
       "to": "TASK-515",
       "type": "learned-from"
+    },
+    {
+      "from": "verify-issue-premise-against-live-fleet-before-dispatch",
+      "to": "TASK-405",
+      "type": "learned-from"
     }
   ],
   "concept_index": {
@@ -13835,7 +13854,8 @@
       "TASK-569",
       "TASK-576",
       "TASK-577",
-      "org-runner-group-repo-access-needs-admin-org-scope"
+      "org-runner-group-repo-access-needs-admin-org-scope",
+      "verify-issue-premise-against-live-fleet-before-dispatch"
     ],
     "dispatch": [
       "auto-preserved-wip-recover-by-cherry-pick-continuation",
@@ -13860,7 +13880,8 @@
       "sequential-gates-on-execution-not-merge-fastfollow-misbase",
       "stall-status-reused-as-hold-marker",
       "terminal-status-without-rearm-probe-kills-operator-recovery",
-      "issue-body-backticked-paths-not-on-main-trip-base-presence-hold"
+      "issue-body-backticked-paths-not-on-main-trip-base-presence-hold",
+      "verify-issue-premise-against-live-fleet-before-dispatch"
     ],
     "dispatcher": [
       "alert-engine-counts-operator-cancels",
@@ -14029,7 +14050,8 @@
       "s4-dashboard-only-clause-blocks-local-console",
       "fleet-env-doubles-as-environment-tag-value",
       "mem-199",
-      "tenants-do-not-self-upgrade-hosted-invariant"
+      "tenants-do-not-self-upgrade-hosted-invariant",
+      "verify-issue-premise-against-live-fleet-before-dispatch"
     ],
     "forensics": [
       "apply-script-silent-rollback-causes",
@@ -14241,7 +14263,8 @@
       "console-wire-contract-gate-needs-raw-body-strings-contains-test",
       "chat-filed-issues-cite-untracked-agent-scaffold",
       "issue-body-backticked-paths-not-on-main-trip-base-presence-hold",
-      "evidence-runner-pastes-nonzero-exit-under-passes-bullet"
+      "evidence-runner-pastes-nonzero-exit-under-passes-bullet",
+      "verify-issue-premise-against-live-fleet-before-dispatch"
     ],
     "knowledge": [
       "TASK-368",
@@ -15597,11 +15620,11 @@
       "rev-list-without-topo-order-breaks-oldest-first-reparent"
     ]
   },
-  "last_updated": "2026-10-19T20:50:19.888281+00:00",
+  "last_updated": "2026-10-20T07:46:12.192544+00:00",
   "stats": {
-    "total_nodes": 757,
-    "total_edges": 772,
-    "memory_count": 407
+    "total_nodes": 758,
+    "total_edges": 773,
+    "memory_count": 408
   },
   "metadata": {}
 }

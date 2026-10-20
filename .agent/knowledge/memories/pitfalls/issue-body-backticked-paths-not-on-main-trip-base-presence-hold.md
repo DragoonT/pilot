@@ -16,6 +16,8 @@ Before gh issue create, extract backticked path-like tokens from the body and gi
 
 **Recurrences 2026-10-15 (6th, 7th):** pilot#5708 held 48 min on a backticked *example* path with a leading slash inside a regex explanation (a path that never existed anywhere); pilot#5710 held 112 min on `~/.pilot/config.yaml` (a box config path, not a repo path). The gate probes every backticked token that looks like a path, including home-dir paths and git refs. Since then (TASK-569–573, 7 issues, zero holds): before `gh issue create`, run `grep -o '`[A-Za-z0-9_./-]*/[A-Za-z0-9_./-]*`' body.md | tr -d '`' | sed 's/:[0-9, -]*$//' | sort -u | while read p; do git cat-file -e origin/main:$p || echo MISS $p; done` and rewrite every MISS in prose — example paths, home paths, git refs (`origin/HEAD`, `origin/other`) included.
 
+**Recurrence 2026-10-19 (8th) — Navigator's own doc:** pilot#5770 (TASK-577, 1002-word body dispatched straight from the task doc) backticked the two NEW files it asks Pilot to create (`branch_sweeper.go` and its test under internal/autopilot) plus a branch name, a `~/.pilot/config.yaml` box path and `pilot/GH-N`. Held at pick (board: `skipped` 20:14Z), stale-label cleanup 21:41Z, **parked `pilot-needs-human` 21:53Z after max held cycles** — 11 h lost overnight. Fix 10-20 07:40Z: seven tokens rewritten in prose on the issue and in the task doc, label removed. The nav-pilot path that goes through a task doc skips the pre-flight grep just like a hand-written body does; run the loop on the doc too.
+
 ## Related
 - TASK-550
 - TASK-551
