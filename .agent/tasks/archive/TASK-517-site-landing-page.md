@@ -1,6 +1,6 @@
 # feat(site): landing page — ticket-to-green story (hero, Pilot at work, CI green, six feature cards, pricing, contact)
 
-**Status**: 🧑‍💻 BUILT LOCALLY 2026-10-11/12 by Navigator (founder iterating visually) on `feat/landing-story` in pilotcloud-site — NOT executed by Pilot; site#2 label `pilot` removed, issue kept as the spec of record. Spec below superseded in two places by the paper sketch (IMG_6027): no "Pilot at work" two-window stage — a kanban Board instead; no six-card feature grid — a steps/gates timeline + Triggers/Integrations/Gates columns instead. Tickets must be real, PM-readable, vendor-free. Next: PR closing #2.
+**Status**: ✅ 10-20: merged as site PR#4, site#2 closed; tracked under TASK-515. Archived. Prior: 🧑‍💻 BUILT LOCALLY 2026-10-11/12 by Navigator (founder iterating visually) on `feat/landing-story` in pilotcloud-site — NOT executed by Pilot; site#2 label `pilot` removed, issue kept as the spec of record. Spec below superseded in two places by the paper sketch (IMG_6027): no "Pilot at work" two-window stage — a kanban Board instead; no six-card feature grid — a steps/gates timeline + Triggers/Integrations/Gates columns instead. Tickets must be real, PM-readable, vendor-free. Next: PR closing #2.
 **Created**: 2026-10-09
 **Repo**: qf-studio/pilotcloud-site
 

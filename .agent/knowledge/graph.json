@@ -2352,7 +2352,7 @@
         ]
       },
       "TASK-464": {
-        "path": "/Users/aleks.petrov/Projects/startups/pilot/.agent/tasks/TASK-464-console-chat-proxy.md",
+        "path": "/Users/aleks.petrov/Projects/startups/pilot/.agent/tasks/archive/TASK-464-console-chat-proxy.md",
         "title": "C17 console leg \u2014 operator chat proxy to the tenant daemon (C14 idiom)",
         "status": "completed",
         "concepts": [
@@ -2918,7 +2918,7 @@
         ]
       },
       "TASK-516": {
-        "path": ".agent/tasks/TASK-516-site-scaffold.md",
+        "path": ".agent/tasks/archive/TASK-516-site-scaffold.md",
         "title": "Task 516 Site Scaffold",
         "status": "dispatched",
         "concepts": [
@@ -2932,7 +2932,7 @@
         ]
       },
       "TASK-517": {
-        "path": "/Users/aleks.petrov/Projects/startups/pilot/.agent/tasks/TASK-517-site-landing-page.md",
+        "path": "/Users/aleks.petrov/Projects/startups/pilot/.agent/tasks/archive/TASK-517-site-landing-page.md",
         "title": "Task 517 Site Landing Page",
         "status": "dispatched",
         "concepts": [
@@ -3272,7 +3272,7 @@
         ]
       },
       "TASK-577": {
-        "path": "/Users/aleks.petrov/Projects/startups/pilot/.agent/tasks/TASK-577-orphan-pilot-branch-sweeper.md",
+        "path": "/Users/aleks.petrov/Projects/startups/pilot/.agent/tasks/archive/TASK-577-orphan-pilot-branch-sweeper.md",
         "title": "Task 577 Orphan Pilot Branch Sweeper",
         "status": "dispatched",
         "concepts": [
