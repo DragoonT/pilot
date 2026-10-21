@@ -23,6 +23,7 @@ PR#5558/#5559/#5561/#5562/#5563 all reviewed APPROVE-w-notes with verdict commen
 
 ## Follow-ups (not in #5564)
 - Flake guard: re-run the failed job once before filing a post-merge fix issue; decline as flake if green (extend `maybeRetryPostMergeInfraFailure` to code-class). Unfiled.
+  - **Counter-evidence 2026-10-20:** GH-5784 (post-merge red on PR#5782's merge commit) was a pre-existing race in `runEpicParentPass`, not caused by #5782; the auto-fix PR#5786 fixed a real bug (review APPROVE-w-notes). A blind rerun-and-decline would have hidden it. Refine before filing: when the failing test does not cover the merged diff, file a separate "pre-existing flake exposed on merge commit" issue instead of attributing it to the PR.
 - Ownership check in `checkExternalMergeOrClose`: refuse a PR that merged before the issue was created (needs one `GetIssue` for `CreatedAt`). Unfiled.
 - Dedup against human-filed issues for the same failing test (`findExistingFixIssue` is exact-title only). Unfiled.
 - Operator: close #5551 by hand.
