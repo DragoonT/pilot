@@ -3321,6 +3321,22 @@
           "knowledge",
           "authentication"
         ]
+      },
+      "TASK-581": {
+        "path": "/Users/aleks.petrov/Projects/startups/pilot/.agent/tasks/TASK-581-bootstrap-unit-economics.md",
+        "title": "Bootstrap unit economics \u2014 measure deep-research cost per repo size, set the per-repo cap and the degrade path",
+        "status": "backlog",
+        "concepts": [
+          "frontend",
+          "deployment",
+          "testing",
+          "context",
+          "knowledge",
+          "authentication",
+          "skills",
+          "theory of mind",
+          "api"
+        ]
       }
     },
     "memories": {
@@ -9080,6 +9096,18 @@
         ],
         "created": "2026-10-21",
         "last_validated": "2026-10-21"
+      },
+      "mem-251": {
+        "type": "decision",
+        "summary": "Pilot Cloud positioning 2026-10-21: identity = \"hosted autonomous engineer, dedicated box, small teams with more tickets than engineers\" (outcome, not layer); research writes a spec for the executor \u2014 the execution feedback loop is what Claude Code cannot copy; proof leads with \"Pilot built Pilot\" (1,653/2,212 merged PRs from pilot/* branches); segments agencies \u2192 product teams \u2192 PM-only; offer \"$499/mo, 100 shipped tickets, no seats, your own box\"; no dollars on platform-key Run Story; research draws from fair-use pool, not tickets; bootstrap free once (unit economics OPEN). Canonical: .agent/system/project/project_pilot_cloud_positioning.md",
+        "path": "memories/decisions/mem-251.md",
+        "confidence": 1.0,
+        "concepts": [
+          "product-positioning",
+          "saas"
+        ],
+        "created": "2026-10-21",
+        "last_validated": "2026-10-21"
       }
     }
   },
@@ -13073,6 +13101,51 @@
       "from": "tag-push-runs-full-pre-push-gate",
       "to": "TASK-405",
       "type": "learned-from"
+    },
+    {
+      "from": "mem-251",
+      "to": "TASK-405",
+      "type": "learned-from"
+    },
+    {
+      "from": "TASK-581",
+      "to": "frontend",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-581",
+      "to": "deployment",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-581",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-581",
+      "to": "context",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-581",
+      "to": "knowledge",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-581",
+      "to": "authentication",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-581",
+      "to": "skills",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-581",
+      "to": "api",
+      "type": "implements"
     }
   ],
   "concept_index": {
@@ -13290,7 +13363,8 @@
       "TASK-569",
       "TASK-576",
       "TASK-577",
-      "github-matching-refs-ignores-per-page-and-page"
+      "github-matching-refs-ignores-per-page-and-page",
+      "TASK-581"
     ],
     "approval": [
       "approvals-off-stage-auto-merge",
@@ -13413,7 +13487,8 @@
       "TASK-571",
       "TASK-569",
       "TASK-578",
-      "TASK-580"
+      "TASK-580",
+      "TASK-581"
     ],
     "auto-merge": [
       "mem-103"
@@ -13769,7 +13844,8 @@
       "TASK-577",
       "TASK-578",
       "TASK-579",
-      "TASK-580"
+      "TASK-580",
+      "TASK-581"
     ],
     "conversational-bot": [
       "mem-036",
@@ -14146,7 +14222,8 @@
       "verify-issue-premise-against-live-fleet-before-dispatch",
       "TASK-578",
       "TASK-579",
-      "TASK-580"
+      "TASK-580",
+      "TASK-581"
     ],
     "dispatch": [
       "auto-preserved-wip-recover-by-cherry-pick-continuation",
@@ -14417,7 +14494,8 @@
       "mem-248",
       "mem-249",
       "mem-250",
-      "TASK-567"
+      "TASK-567",
+      "TASK-581"
     ],
     "gateway": [
       "TASK-01",
@@ -14685,7 +14763,8 @@
       "TASK-577",
       "TASK-578",
       "TASK-579",
-      "TASK-580"
+      "TASK-580",
+      "TASK-581"
     ],
     "labels": [
       "mem-100",
@@ -14902,7 +14981,8 @@
     ],
     "product-positioning": [
       "mem-080",
-      "payment-processor-is-paddle-not-stripe"
+      "payment-processor-is-paddle-not-stripe",
+      "mem-251"
     ],
     "prompt-injection": [
       "external-fork-pr-sweeps-stale-agent-state",
@@ -14972,7 +15052,8 @@
       "issue-body-literal-migration-version-collides-with-sibling-leg",
       "domain-pilotcloud-dev-keep-pilot-name",
       "trademark-clearance-pilot-us-2026-09",
-      "console-email-transport-ses-not-email-service-repo"
+      "console-email-transport-ses-not-email-service-repo",
+      "mem-251"
     ],
     "scheduler": [
       "mem-101",
@@ -15041,7 +15122,8 @@
       "mem-247",
       "mem-248",
       "mem-249",
-      "mem-250"
+      "mem-250",
+      "TASK-581"
     ],
     "social-engineering": [
       "mem-125"
@@ -15298,7 +15380,8 @@
       "TASK-577",
       "TASK-578",
       "TASK-579",
-      "TASK-580"
+      "TASK-580",
+      "TASK-581"
     ],
     "testing-quality": [
       "TASK-384",
@@ -15559,7 +15642,8 @@
       "TASK-517",
       "TASK-528",
       "TASK-546",
-      "TASK-549"
+      "TASK-549",
+      "TASK-581"
     ],
     "stage-semantics": [
       "stagefailed-conflates-healthy-handoff-with-terminal-failure"
@@ -15931,11 +16015,11 @@
       "gh5468-unlisted-check-failure-blocks-gate-but-evidence-still-allowlist-scoped"
     ]
   },
-  "last_updated": "2026-10-20T16:24:58.295347+00:00",
+  "last_updated": "2026-10-21T12:34:12.167170+00:00",
   "stats": {
-    "total_nodes": 770,
-    "total_edges": 798,
-    "memory_count": 416
+    "total_nodes": 772,
+    "total_edges": 807,
+    "memory_count": 417
   },
   "metadata": {}
 }

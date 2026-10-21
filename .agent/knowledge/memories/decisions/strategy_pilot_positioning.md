@@ -49,3 +49,5 @@ type: project
 - Boris Cherny built CC inside Anthropic
 - Pilot enriches CC from the outside — proving the ecosystem value
 - The benchmark score opens the door, the product keeps it open
+
+> **2026-10-21:** for Pilot Cloud copy, pricing and segment this memory is superseded by `.agent/system/project/project_pilot_cloud_positioning.md` (mem-251). The orchestration-layer line applies to the OSS/developer story only. The TB2.0 claim is scrubbed.
