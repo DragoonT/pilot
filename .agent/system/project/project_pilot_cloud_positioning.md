@@ -96,7 +96,12 @@ Offer:
   1.5–2× on a legacy customer repo; research turns and bootstrap are not in this data
   (TASK-581). Recheck after the first 5 tenants.
 - "No seats" needs an **invite endpoint** (an org is one person today) — first gap to close.
-- Packs and daily cap follow from the above (pricing v3, TASK-546).
+- **Pricing v3 closed 2026-10-21** (TASK-546 D-items): packs 25 tickets $99 / 100 tickets
+  $349, prepaid, expire in 90 days · daily cap 15 tickets per org, one-line notice on the
+  board when hit · own-key overage carries no fee (we earn on the plan, not the tokens) ·
+  no free tier — the free bootstrap is the trial, card entered before the first ticket ·
+  legal pages (TASK-515, parked) are unparked: they gate Paddle go-live (TASK-497 L7) and
+  therefore every sale.
 
 ## 5. Workflow
 
@@ -261,6 +266,101 @@ Rules: unlimited members, the price does not change · 20 invites per org per da
 
 Decisions: D1 three roles, Viewer project-scoped · D2 email link, 7-day expiry, GitHub sign-in
 · D3 unlimited members, 20 invites/day · D4 every lane action records the actor.
+
+### 8.5 Live log tail + redaction scrubber (decided 2026-10-21)
+
+Proof in real time, on a Running Run Story (8.1).
+
+Exists: the per-execution stage timeline (`GET /api/v1/executions/{id}/events`, GH-4749) —
+`detail` is served verbatim, no scrubber · secret-shape regexes in one package,
+`internal/executor/secretpatterns` (used by the acceptance-evidence redaction, GH-5437) ·
+a `/ws/dashboard` proxy is planned in S4 (`saas-roadmap.md`), not built.
+
+What the user sees: the stage timeline, live · one line per tool call in the Research-page
+sub-agent style — `read internal/foo.go` · `edit internal/foo.go +12 −3` ·
+`run go test ./... ✓` · **no raw transcript** (secrets and prompt internals).
+
+Scrubber: one function at the gateway edge, applied to event `detail` and to the stream —
+`secretpatterns` regexes + values of env vars whose name matches
+`(?i)token|key|secret|password|credential`. Same package as the evidence redaction, so the
+two never drift.
+
+Decisions: D1 stages + tool-call lines, no raw transcript in v1 · D2 scrub at the gateway edge
+(daemon leg in the pilot repo) · D3 transport = `/ws/dashboard` proxy · D4 stream ephemeral,
+tool-call lines persist 7 days, stage timeline persists as today.
+
+### 8.6 Marketing site — `pilotcloud.dev` (decided 2026-10-21)
+
+Exists: repo `pilotcloud-site` (Next.js 15 static export, Bun), 9 pages — landing, features,
+how-it-works, integrations, compare, self-hosted, terms, privacy, refunds. Hosting ready
+(Nelya I1: bucket `pilot-fleet-s3-site`, CloudFront `E39M9CANDXR187`). Deploy workflow = a
+PR Nelya still has to push. Legal pages parked on founder facts. Full state: TASK-515.
+
+Changes from this doc:
+1. **Hero** = the identity sentence (section 1). The "orchestration layer" line leaves Cloud copy.
+2. **Proof counter** — "Pilot built Pilot: 1,653 of 2,212 merged PRs" (section 3). Fetched at
+   build time by a script in `scripts/`, shown with a date, rebuilt weekly.
+3. **Pricing block** = section 4: `$499 a month · 100 shipped tickets · No seats · Your own
+   box`; packs below; "fair use" is the only token word. Price string pinned to the Paddle
+   catalog (`pri_01m4g870rh98m207cjwhjn8taq`).
+4. **Self-hosted page** keeps "your secrets never leave" for OSS; the Cloud column says
+   "a box only you use".
+5. **Product name** on the site: **Pilot Cloud**. "Console" is the app URL only.
+
+Order to ship: (1) founder supplies legal entity, address, contact email → legal pages
+unpark · (2) Nelya's workflow PR → review → first deploy · (3) Paddle resubmit (TASK-497 L7)
+· (4) copy update 1–5 rides the first or second deploy.
+
+Decisions: D1 hero A · D2 build-time counter · D3 pricing block · D4 OSS keeps the
+self-hosted claim · D5 name = Pilot Cloud.
+
+### 8.7 Briefs in the console (decided 2026-10-21)
+
+Exists: daemon daily brief (Slack, `orchestrator.daily_brief`), weekly brief (manual),
+receipts digest (Telegram only, 18:00, GH-5257), console bell popover (UI-5). A Cloud tenant
+with neither Slack nor Telegram gets nothing.
+
+One brief object, three channels: **console** (a Briefs page, newest first; the bell shows
+the unread one) · **email** (default — every tenant has one; instance-down alerts use the
+same channel) · **Slack / Telegram** via the Connections page, as today.
+
+Daily content, in order: (1) Shipped today — one Run Story line each, no cost on the
+platform key · (2) Review needed — items older than 24 h first · (3) pool meter, percent ·
+(4) Failed — reason class and `Retry`. The receipts digest folds into this; cost lines appear
+only for own-key tenants.
+
+Weekly, Monday: tickets shipped, median time to PR, merged count; opt-in share link (the
+proof of the week).
+
+Decisions: D1 one brief object, three channels, email default · D2 receipts digest folds in,
+cost lines only on own-key · D3 daily content as listed, tenant time + timezone, default
+18:00 · D4 weekly Monday with proof numbers and an opt-in share link.
+
+### 8.8 Security close-out (decided 2026-10-21)
+
+Exists: per-tenant VM/SG/IAM, KMS-encrypted EBS, SecureString secrets, gateway bearer ·
+executor env scrub + destructive-command hook on by default (TASK-491) · write-boundary hooks
+(TASK-551) · evidence redaction (GH-5437) · GitHub App installation tokens instead of
+long-lived PATs (TASK-461). Blast-radius statement: `saas-architecture.md:138`.
+
+Planned (S5), all three:
+1. **Hostile-ticket pen test** — a prompt-injected issue tries the env, the disk, SSM, the
+   network outside the allowlist, and another tenant. A repeatable harness: fixture repo,
+   issue bodies, assertions. Runs on the canary tenant before every AMI roll. **Hard gate
+   before the first tenant with a private repo.**
+2. **Egress allowlist proxy** on the tenant box — Anthropic, GitHub, tracker APIs, and the
+   package registries builds need (npm, Go proxy, PyPI). Registries stay an exfil path:
+   log all egress, disclose the residual.
+3. **Postgres RLS** in console-db — `FORCE ROW LEVEL SECURITY` + `app.current_tenant_id`.
+   Defense in depth, low effort.
+
+Customer-facing: a **Security page** on the site — the blast-radius statement verbatim,
+"a box only you use", the last pen-test summary with a date. Agencies with client repos
+ask this first.
+
+Decisions: D1 repeatable harness, canary before every AMI roll, hard gate before the first
+private-repo tenant · D2 allowlist with registries allowed, egress logged, residual disclosed
+· D3 RLS wired · D4 Security page with statement + pen-test summary.
 
 ## Copy changes implied
 
