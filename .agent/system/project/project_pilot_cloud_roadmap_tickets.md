@@ -113,7 +113,15 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 | F3 | 3 | Run the TASK-581 matrix on the box; pick the bootstrap cap | ⏳ after P12 |
 | F4 | 1 | Review Nelya's deploy PR (I4) | ⏳ |
 
-**Totals:** site 8 · console-ui 18 · console API 13 · daemon 14 · infra 4 · design 7 · founder 4 = **68**.
+## go-to-market (§11) — 3
+
+| # | Wave | Item | § | Size | Status |
+|---|---|---|---|---|---|
+| O1 | 1 | GitHub Marketplace listing for the Pilot GitHub App — listing copy from §1/§4, screenshots from the new design, install → console signup link; verified-creator requirements | 11 D1(b) | M (ops + site) | 📋 after S1–S7, U1–U2 |
+| O2 | 0 | Web deep-research: dev-agency market size (3–15 eng) and the channels agencies buy tools through; sourced report → §11 | 11 D3 | M (nav-deep-research) | 📋 |
+| O3 | 1 | Design-partner outreach: list of 20 agencies, one-page offer (proof counter, free bootstrap, $499 / 100 tickets), 5 signed | 11 D2 | founder | ⏳ after W0 |
+
+**Totals:** site 8 · console-ui 18 · console API 13 · daemon 14 · infra 4 · design 7 · founder 4 · go-to-market 3 = **71**.
 Launch-blocking (waves 0–1): S1–S7, U1–U9, U11–U12, C1–C3, C6–C8, P1, P9–P11, I2–I4, D1–D5, D7, F1, F2, F4 = **40**.
 
 Dispatch order inside wave 1: U1 → (U2–U5, U9) ‖ P1 → C1 → U6 → C2 → U7 ‖ C3 → U8 ‖ P9 → I3 → C6 → U11, U12 ‖ P11 → I2 ‖ C7, C8.

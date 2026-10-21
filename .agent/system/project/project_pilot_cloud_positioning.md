@@ -409,6 +409,27 @@ Pilot executes. No dates: Pilot throughput sets the pace (~10 issues/day across 
 Founder inputs that gate waves: legal entity / address / contact email (W0) · Nelya's
 deploy workflow PR (W0) · run TASK-581 and pick the cap (W3).
 
+## 11. Market and channels (decided 2026-10-21)
+
+The distribution plan of 2026-06 (`project_distribution_plan.md`) targets indie devs on
+X / Reddit / HN. Today's Cloud segment is agencies (section 4), who are not there.
+
+- **Who.** Dev agencies, 3–15 engineers, many client repos. **The count is not verified —
+  no market-size number goes in any doc or deck until a web deep-research produces one
+  with sources** (D3).
+- **Channels, split by product (D1).** OSS keeps the June plan (X / Reddit / HN, war
+  stories with receipts, Show HN). Cloud = (a) founder-direct outreach to 20 agencies with
+  the proof counter (section 3), (b) a **GitHub Marketplace listing** for the Pilot GitHub
+  App — agencies install tools where they already work (ticket O1 in the roadmap file),
+  (c) the OSS user base as the warm list.
+- **Sales motion (D2) — bootstrap-led.** "Give me one repo. You get 10 tickets and the
+  first PR." The free bootstrap (section 7) is the demo, the trial and the close. The first
+  5 agencies are design partners at full price ($499), each with one shared Run Story
+  (8.1 D3) as the case study.
+
+Decisions: D1 channel split as above · D2 bootstrap-led sales, 5 design-partner agencies ·
+D3 market size + agency channels via web deep-research before any number is published.
+
 ## Copy changes implied
 
 - `docs/content/index.mdx:73` "secrets never leave your environment" → dedicated-box wording.
