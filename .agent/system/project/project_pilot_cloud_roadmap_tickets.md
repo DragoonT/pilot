@@ -1,0 +1,119 @@
+---
+name: project_pilot_cloud_roadmap_tickets
+description: Pilot Cloud roadmap as tickets per repo (site, console-ui, console API, daemon, infra, design, founder) — wave, spec ref, size. Companion to project_pilot_cloud_positioning.md §10.
+type: project
+---
+
+# Pilot Cloud roadmap — tickets per project (2026-10-21)
+
+Source of truth for scope: `project_pilot_cloud_positioning.md` (§ refs below). Wave = §10.
+Size: S ≤ 1 Pilot run · M = 2–3 runs or an epic · L = epic with ≥4 sub-issues.
+Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. None filed yet except P12.
+
+## pilotcloud-site (`qf-studio/pilotcloud-site`) — 8
+
+| # | Wave | Ticket | § | Size | Status |
+|---|---|---|---|---|---|
+| S1 | 0 | feat(legal): terms, privacy, refunds with the legal entity, address, contact email | 8.6 | S | 📋 blocked: founder facts |
+| S2 | 0 | ci(deploy): land Nelya's `deploy-quantflow-aws.yml` (review her PR, first deploy, edge probe) | 8.6 | S | 📋 blocked: Nelya PR |
+| S3 | 0 | feat(landing): hero = identity sentence; drop the "orchestration layer" line | 8.6 D1 | S | 📋 |
+| S4 | 0 | feat(proof): build-time "Pilot built Pilot: N of M merged PRs" counter (script + section, dated, weekly rebuild) | 8.6 D2 | S | 📋 |
+| S5 | 0 | feat(pricing): `$499 a month · 100 shipped tickets · No seats · Your own box`; packs; "fair use" only; price id pinned | 8.6 D3 | S | 📋 |
+| S6 | 0 | feat(self-hosted): OSS keeps "secrets never leave"; Cloud column says "a box only you use" | 8.6 D4 | S | 📋 |
+| S7 | 0 | chore(copy): product name Pilot Cloud site-wide; "Console" only as the app URL | 8.6 D5 | S | 📋 |
+| S8 | 4 | feat(security): Security page — blast-radius statement verbatim + last pen-test summary with date | 8.8 D4 | S | 📋 after P11 |
+
+## pilot-console-ui (`qf-studio/pilot-console-ui`) — 18
+
+| # | Wave | Ticket | § | Size | Status |
+|---|---|---|---|---|---|
+| U1 | 1 | feat(design): tokens, type scale, grid and card primitives from Figma `7-2` (foundation for U2–U11) | 6 | M | 📋 first |
+| U2 | 1 | feat(dashboard): stat cards — Delivered N/100 · Review needed (count + open button) · Time to PR · Projects; header `Last shipped X min ago` + pool meter | 6.2, 6.5 | M | 📋 after U1 |
+| U3 | 1 | feat(dashboard): activity chart 1D/7D/30D | 6 | S | 📋 after U1 |
+| U4 | 1 | feat(queue): queue grouped by project with epic trees; rows show `duration · +a −b`, never tokens | 6.1 | M | 📋 after U1 |
+| U5 | 1 | feat(context): Context panel shows growth (`Memories 5.0K · +120 this week`), labeled health | 6.4 | S | 📋 after U1 |
+| U6 | 1 | feat(run-story): Run Story card on Done (expand) + ticket page: asked / changed / verified / time / outcome / model; 4 states; `Retry` on Failed | 8.1 | L | 📋 after C1 |
+| U7 | 1 | feat(run-story): share-link view, public, redacted, opt-in toggle | 8.1 D3 | S | 📋 after C2 |
+| U8 | 1 | feat(review): Review needed page — one list, oldest first, grouped by project; 3 item types with the "why" line; Approve / Reject with reason / Send back | 8.2 | L | 📋 after C3 |
+| U9 | 1 | feat(research): Research page per Figma `13-994` — sub-agent tree with DONE badges, report, Context-per-run panel (`Read 12 docs · 4 memories · Created 2`) | 6 research | M | 📋 after U1 |
+| U10 | 2 | feat(research): `Create tickets` under the report → drafts → lane; edit before approve; board input submits to this page | 8.3, 6.3 | M | 📋 after C5 |
+| U11 | 1 | feat(briefs): Briefs page newest first; bell shows the unread brief | 8.7 | M | 📋 after C6 |
+| U12 | 1 | feat(settings): brief channels (console / email / Slack / Telegram), time + timezone | 8.7 D3 | S | 📋 after C6 |
+| U13 | 4 | feat(run-story): live log tail on Running — stage timeline + tool-call lines, no transcript | 8.5 | M | 📋 after C9 |
+| U14 | 3 | feat(onboarding): new-project interview (≤5 questions with defaults) on the Research page → `Create tickets` | 7 | M | 📋 after P4 |
+| U15 | 3 | feat(onboarding): legacy path — scan progress + "add up to 3 external docs" (URL / upload) | 7 | M | 📋 after P5, P6 |
+| U16 | 5 | feat(members): Viewer role invite with project scope; "Approved by …" on lane items | 9.1 | M | 📋 after C11 |
+| U17 | 5 | feat(mobile): re-land `restore/GH-71-mobile` on the new design; Playwright 390×844 check | 9.6 | L | 📋 after U1–U11 |
+| U18 | 5 | feat(docs): edit + create `.agent/` docs from the Docs page, PR per change | 9.5 | M | 📋 |
+
+## pilot-console (API, `qf-studio/pilot-console`) — 13
+
+| # | Wave | Ticket | § | Size | Status |
+|---|---|---|---|---|---|
+| C1 | 1 | feat(run-story): `GET /orgs/{org}/cards/{id}/run-story` — aggregate executions + events + PR data; cost fields omitted on platform key | 8.1 | M | 📋 after P1 |
+| C2 | 1 | feat(run-story): share token (opt-in), redacted public payload | 8.1 D3 | S | 📋 after C1 |
+| C3 | 1 | feat(review): unified Review needed list — approvals + spec drafts + decisions; actions carry `actor_id` | 8.2 | M | 📋 |
+| C4 | 2 | feat(review): reject reason → learning write-through to the tenant daemon | 8.2 D2 | S | 📋 after P3 |
+| C5 | 2 | feat(drafts): ticket-draft store; approve → GitHub issue with the `pilot` label → Queued; edit before approve | 8.3 | M | 📋 after P2 |
+| C6 | 1 | feat(briefs): brief store + Briefs API; email channel (SES); tenant time + timezone | 8.7 | M | 📋 after P9, I3 |
+| C7 | 1 | feat(metering): pool meter endpoint (% of the $300 ceiling); USD hidden on platform key | 4 | S | 📋 |
+| C8 | 1 | feat(billing): $300 ceiling config; Paddle products for packs 25/$99 and 100/$349 (90-day expiry); daily cap 15 notice | 4 (v3) | M | 📋 |
+| C9 | 4 | feat(ws): `/ws/dashboard` proxy to the tenant gateway for the live log | 8.5 D3 | M | 📋 after P7, P8 |
+| C10 | 2 | chore(research): verify the daily research-turn cap (50) against the shipped chat-turn metering; adjust | 8.3 D4 | S | 📋 |
+| C11 | 5 | feat(viewer): `viewer` role with `project_ids` scope enforced on every read | 9.1 | M | 📋 |
+| C12 | 4 | feat(db): Postgres RLS — `FORCE ROW LEVEL SECURITY` + `app.current_tenant_id` | 8.8 D3 | M | 📋 |
+| C13 | 3 | feat(onboarding): bootstrap trigger per project, cost cap from TASK-581, status + result surface | 7 | M | 📋 after P5 |
+
+## pilot (daemon, `qf-studio/pilot`) — 14
+
+| # | Wave | Ticket | § | Size | Status |
+|---|---|---|---|---|---|
+| P1 | 1 | feat(gateway): run-story fields per execution — diff stats, tests passed/failed, evidence-gate result, issue→PR and PR→merge timings | 8.1 | M | 📋 |
+| P2 | 2 | feat(research): `Create tickets` — draft N tickets from a research report in SOP format (H2, Acceptance, `file:line`, `#N` deps); shippable check; epic split on failure | 8.3 | L | 📋 after TASK-518 leg 4 |
+| P3 | 2 | feat(memory): reject reason from the lane → learning memory + graph index | 8.2 D2 | S | 📋 |
+| P4 | 3 | feat(bootstrap): new-project interview (≤5 questions, defaults) → scaffold ticket + 5–10 first tickets per the onboarding SOP | 7 | L | 📋 |
+| P5 | 3 | feat(bootstrap): legacy scan — repo, README, `docs/`, open issues, last 50 merged PRs → proposed tickets; cost cap + degrade path | 7, TASK-549/581 | L | 📋 after P12 |
+| P6 | 3 | feat(bootstrap): external docs ingestion v1 — URL / upload → `.agent/system/`, indexed by Navigator | 7 | M | 📋 |
+| P7 | 4 | feat(gateway): redaction scrubber at the gateway edge — `secretpatterns` + env-name rule — on event `detail` and the stream | 8.5 D2 | M | 📋 |
+| P8 | 4 | feat(gateway): tool-call line events (`read` / `edit +a −b` / `run … ✓`), 7-day retention | 8.5 D1/D4 | M | 📋 |
+| P9 | 1 | feat(briefs): one brief object with a console payload + email payload; receipts digest folds in; cost lines only on own-key | 8.7 | M | 📋 |
+| P10 | 1 | feat(briefs): weekly Monday brief with proof numbers (tickets shipped, median time to PR, merged) | 8.7 D4 | S | 📋 |
+| P11 | 1 | test(security): hostile-ticket pen-test harness — fixture repo, injected issue bodies, assertions (env, disk, SSM, egress, cross-tenant) | 8.8 D1 | L | 📋 **hard gate** |
+| P12 | 3 | feat(bench): bootstrap cost harness + the 4-repo × 3-stage × 2-run matrix | TASK-581 | M | 🎫 #5788 |
+| P13 | 5 | feat(templates): deploy-template ticket sets — VPS (Compose + Actions over SSH), AWS | 9.2 | L | 📋 |
+| P14 | 5 | feat(pm-mode): preview URL on the Run Story + merge-on-green per project behind the evidence gates | 9.4 | L | 📋 |
+
+## infra (fleet, Nelya / `aws-infrastructure-pilot`) — 4
+
+| # | Wave | Ticket | § | Size | Status |
+|---|---|---|---|---|---|
+| I1 | 4 | egress domain-allowlist proxy on the tenant AMI (Anthropic, GitHub, trackers, npm / Go proxy / PyPI); egress logged | 8.8 D2 | L | 📋 |
+| I2 | 1 | pen-test run on the canary tenant before every AMI roll (uses P11) | 8.8 D1 | S | 📋 after P11 |
+| I3 | 1 | SES sender for brief email (per `console-email-transport-ses…` memory) | 8.7 | S | 📋 |
+| I4 | 0 | site deploy workflow PR to `pilotcloud-site` (Nelya) | 8.6 | S | 🚧 waiting on Nelya |
+
+## design (Figma `BfAqtVPBp0i4iWHg2jzAnB`, founder) — 7
+
+| # | Wave | Ticket | § | Status |
+|---|---|---|---|---|
+| D1 | 1 | Dashboard `7-2`: apply §6 — no-cost rows, pool meter, "Review needed" card + button, `Last shipped`, Context growth | 6 | 📋 |
+| D2 | 1 | Research page `13-994`: `Create tickets` exit, duration-only rows, Context-per-run panel | 6 | 📋 |
+| D3 | 1 | Review needed page: list, 3 item types, 3 actions | 8.2 | 📋 |
+| D4 | 1 | Ticket page with the Run Story (4 states, `Retry`, share toggle) | 8.1 | 📋 |
+| D5 | 1 | Briefs page + bell unread state | 8.7 | 📋 |
+| D6 | 3 | Onboarding: new-project interview + legacy scan + external docs step | 7 | 📋 |
+| D7 | 1 | Settings: brief channels, time/timezone, members with Viewer scope | 8.7, 9.1 | 📋 |
+
+## founder / ops — 4
+
+| # | Wave | Item | Status |
+|---|---|---|---|
+| F1 | 0 | Legal entity, address, contact email → unblocks S1 | ⏳ |
+| F2 | 0 | Paddle website resubmit after the first deploy (TASK-497 L7) | ⏳ after S1, S2 |
+| F3 | 3 | Run the TASK-581 matrix on the box; pick the bootstrap cap | ⏳ after P12 |
+| F4 | 1 | Review Nelya's deploy PR (I4) | ⏳ |
+
+**Totals:** site 8 · console-ui 18 · console API 13 · daemon 14 · infra 4 · design 7 · founder 4 = **68**.
+Launch-blocking (waves 0–1): S1–S7, U1–U9, U11–U12, C1–C3, C6–C8, P1, P9–P11, I2–I4, D1–D5, D7, F1, F2, F4 = **40**.
+
+Dispatch order inside wave 1: U1 → (U2–U5, U9) ‖ P1 → C1 → U6 → C2 → U7 ‖ C3 → U8 ‖ P9 → I3 → C6 → U11, U12 ‖ P11 → I2 ‖ C7, C8.
