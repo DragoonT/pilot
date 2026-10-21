@@ -1,6 +1,6 @@
 # feat(dashboard): group the queue panel by project — at most 3 projects × 3 tickets, run time + age on finished rows
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-20 as [#5783](https://github.com/qf-studio/pilot/issues/5783) (`pilot`, `no-decompose`)
+**Status**: ✅ MERGED 2026-10-20 16:36Z via [PR#5785](https://github.com/qf-studio/pilot/pull/5785) (5113cd038); post-merge review APPROVE (5/5 mutations killed). Rides the next train (after v2.290.0). Archived. Prior: 🚀 Dispatched to Pilot 2026-10-20 as [#5783](https://github.com/qf-studio/pilot/issues/5783) (`pilot`, `no-decompose`)
 **Task ID**: TASK-579 · **Owner**: Navigator plans, Pilot executes · **Design**: founder-approved mockup v2 (2026-10-20 session)
 
 ## Context

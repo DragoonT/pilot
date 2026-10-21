@@ -1,6 +1,6 @@
 # fix(test): PR #419 revision 2 — run every scratch-database migration under the base-DB advisory lock, mixed regression test, honest evidence
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-20 as [console#421](https://github.com/qf-studio/pilot-console/issues/421) → qf-studio/pilot-console, labels pilot + no-decompose, continues branch pilot/GH-418 (PR #419, held as draft).
+**Status**: ✅ MERGED 2026-10-20 17:37Z via PR #419 (a0cde12af). Review APPROVE on e48cf440: all four scratch sites under MigrateLocked; CI `test` green 3/3 on fresh Postgres (4m28s / 4m39s / 4m07s), no `tuple concurrently updated`. console#421 closed completed 10-21. Archived. Prior: 🚀 Dispatched to Pilot 2026-10-20 as [console#421](https://github.com/qf-studio/pilot-console/issues/421) → qf-studio/pilot-console, labels pilot + no-decompose, continues branch pilot/GH-418 (PR #419, held as draft).
 **Task ID**: TASK-580 · **Parent**: GH-418 (console), revision 1 = GH-420 (TASK-578) · **Owner**: Navigator plans, Pilot executes
 
 ## Context

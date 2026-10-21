@@ -1,6 +1,6 @@
 # fix(test): PR #419 revision — serialize first per-package migration under a base-DB advisory lock, route remaining openers, one shared testdb helper
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-20 as [console#420](https://github.com/qf-studio/pilot-console/issues/420) → qf-studio/pilot-console, labels pilot + no-decompose, continues branch pilot/GH-418 (PR #419, held as draft).
+**Status**: ✅ MERGED 2026-10-20 17:37Z via PR #419 (a0cde12af) after revision 2 (TASK-580); console#420 closed completed 10-21. Archived. Prior: 🚀 Dispatched to Pilot 2026-10-20 as [console#420](https://github.com/qf-studio/pilot-console/issues/420) → qf-studio/pilot-console, labels pilot + no-decompose, continues branch pilot/GH-418 (PR #419, held as draft).
 **Task ID**: TASK-578 · **Parent**: GH-418 (console) · **Owner**: Navigator plans, Pilot executes
 
 ## Context

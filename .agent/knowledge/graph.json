@@ -3285,7 +3285,7 @@
         ]
       },
       "TASK-578": {
-        "path": ".agent/tasks/TASK-578-console-419-revision-test-db-lock.md",
+        "path": ".agent/tasks/archive/TASK-578-console-419-revision-test-db-lock.md",
         "title": "Task 578 Console 419 Revision Test Db Lock",
         "status": "backlog",
         "concepts": [
@@ -3298,7 +3298,7 @@
         ]
       },
       "TASK-579": {
-        "path": ".agent/tasks/TASK-579-dashboard-queue-grouped-by-project.md",
+        "path": ".agent/tasks/archive/TASK-579-dashboard-queue-grouped-by-project.md",
         "title": "Task 579 Dashboard Queue Grouped By Project",
         "status": "dispatched",
         "concepts": [
@@ -3310,7 +3310,7 @@
         ]
       },
       "TASK-580": {
-        "path": ".agent/tasks/TASK-580-console-419-revision-2-scratch-migrate-lock.md",
+        "path": ".agent/tasks/archive/TASK-580-console-419-revision-2-scratch-migrate-lock.md",
         "title": "Task 580 Console 419 Revision 2 Scratch Migrate Lock",
         "status": "dispatched",
         "concepts": [
