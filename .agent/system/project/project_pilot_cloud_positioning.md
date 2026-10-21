@@ -129,6 +129,126 @@ Research page:
    This shows the feedback loop per run (section 2, row 3).
 4. **Keep the sub-agent tree with DONE badges.** Research is work with receipts.
 
+## 7. Onboarding — two paths after signup (decided 2026-10-21)
+
+Both paths end in the same object: a set of proposed tickets plus a `.agent/` context, which
+the human approves (Review needed → Queued). Only the input differs.
+
+**New project — interview, not scan.**
+- Pilot asks at most 5 questions on the Research page: what it is, the stack, the first user
+  flow, the deploy target, the constraints. Each question offers a default.
+- Output: one scaffold ticket, then 5–10 first tickets with `#N` deps, per
+  `.agent/sops/onboarding/new-project-issue-authoring.md`. The answer ends with `Create tickets`.
+- **Deploy templates.** The deploy-target question is a pick from templates, each a starter
+  ticket set (infra-as-code + CI deploy workflow + env pipeline + a Needs You step where the
+  customer supplies cloud credentials): **VPS** (Docker Compose + GitHub Actions over SSH) and
+  **AWS** first; **Azure** and **Google Cloud** later. Reuses Pilot's env pipelines and the
+  post-merge deployer.
+
+**Legacy project — scan first, then docs.**
+- Step 1: scan what is already connected — repo, README, `docs/`, open issues, the last ~50
+  merged PRs (PR history is the best doc a legacy repo has). TASK-549 covers this. The
+  TASK-581 cost cap applies.
+- Step 2: ask for up to 3 external sources. V1 accepts a URL or an upload; Pilot stores them
+  under `.agent/system/` so Navigator indexes them. Notion / Confluence connectors are not v1.
+- **OPEN — external docs ingestion** is a system of its own (URL fetch, upload, connectors).
+  Decide after the first 3 legacy tenants show what they actually have.
+
+## 8. Feature specs — launch cut for agencies
+
+Launch cut (section 4 segment 1): (1) Run Story · (2) Review needed lane · (3) Research page
+`Create tickets` · (4) Bootstrap (section 7) · (5) Invite endpoint. Everything else
+(provision, kanban, `pilot` label, autopilot merge) exists.
+
+### 8.1 Run Story (decided 2026-10-21)
+
+The card for one ticket. The proof unit.
+
+Fields:
+- Asked — ticket title, issue link.
+- Changed — PR link, files, `+184 −32`, one-line summary.
+- Verified — tests passed / failed, CI status, evidence-gate result (TASK-460).
+- Time — issue → PR, PR → merge.
+- Outcome — one of four states; model used (Sonnet / Opus).
+
+States: **Running** (current phase, live) · **Review needed** (PR open, waits on the human) ·
+**Merged** · **Failed** (reason class: CI / env / scope; `Retry` action via the TASK-485 path).
+
+Appears: the Done card on the board (expand on click) · the ticket page · the daily receipts
+digest (TASK-489 data) · a share link, opt-in per story, secrets redacted (the sales artifact).
+
+Never shows: tokens or dollars on the platform key (section 3) · judge names or versions.
+
+Decisions: D1 fields as above · D2 four states, `Retry` on Failed · D3 share link, opt-in per
+story · D4 model name shown, cost not.
+
+### 8.2 Review needed lane (decided 2026-10-21)
+
+The human's one job. Dashboard card "Review needed" shows the count and opens this list.
+
+Item types — each shows one line that says why it needs a human:
+- A PR Pilot opened, when the project runs in `prod` mode (merge needs approval).
+- A ticket Pilot wrote (bootstrap, research). The human approves the spec (section 2 D2).
+- A decision Pilot cannot make: credentials, ambiguous scope, a destructive action
+  (`irreversible-actions.md`, DecisionRecorder seam).
+
+Actions per item:
+- `Approve` → spec goes to Queued · PR merges · decision is recorded.
+- `Reject` with a reason → the reason is stored as a learning in `.agent/`.
+- `Send back` with a comment → Pilot revises the ticket or the PR (a revision, not a draft flip).
+
+Rules: one list, oldest first, grouped by project · the dashboard count is this list · nothing
+waits in silence — the daily brief lists items older than 24 h.
+
+Decisions: D1 three item types · D2 three actions, reject reason → learning · D3 oldest first,
+grouped by project, 24 h in the brief · D4 v1 is owner-only; roles come with the invite endpoint.
+
+### 8.3 Research page → `Create tickets` (decided 2026-10-21)
+
+Flow:
+1. The user asks, from the board input or the Research page. Modes: `Research` (sub-agents,
+   read-only) and `Docs` (answers from `.agent/`).
+2. Pilot answers: the sub-agent tree with DONE badges, then the report.
+3. `Create tickets` under the report → Pilot drafts N tickets from the report.
+4. Each draft goes to Review needed as a spec item (8.2). `Approve` creates the GitHub issue
+   with the `pilot` label → Queued. The user can edit a draft before approval.
+5. A rejected or sent-back draft becomes a learning.
+
+Draft format — the issue-authoring SOP (`.agent/sops/onboarding/new-project-issue-authoring.md`):
+H2 sections, an `## Acceptance` list, `file:line` evidence, `#N` deps. Every required change is
+under Acceptance. No claim without evidence — Pilot copies issue claims verbatim (learning
+mem-203), so a wrong claim ships.
+
+Shippable check per draft: one PR · a testable Acceptance list · evidence-linked claims only.
+A draft that fails is split into an epic with sub-issues (epic decomposition exists).
+
+Rules: no draft becomes an issue without approval (section 2 D2) · research draws from the
+fair-use pool, not from the 100 tickets; a ticket counts when its PR opens · a daily cap on
+research turns per org protects the pool.
+
+Decisions: D1 SOP draft format · D2 shippable check, epic split on failure · D3 edit before
+approve · D4 50 research turns per day per org, tunable.
+
+### 8.4 Invite endpoint — "No seats" (decided 2026-10-21)
+
+"No seats" is a pricing-page promise; today an org is one person (TASK-546). This closes the gap.
+
+Roles:
+- **Owner** — billing, provision, delete the org, invite.
+- **Member** — everything in Review needed, the queue, research. Can invite Members and Viewers.
+- **Viewer** — read-only, scoped to named projects. For an agency this is the client: they see
+  their board and Run Stories, nothing else. A selling point, not a cost.
+
+Invite flow: an Owner or Member enters an email and a role (a Viewer invite also names the
+projects) → Pilot sends a link → the link expires in 7 days → the invitee signs in with GitHub
+and joins the org.
+
+Rules: unlimited members, the price does not change · 20 invites per org per day (abuse guard)
+· every Review needed action records the actor (required once two people act).
+
+Decisions: D1 three roles, Viewer project-scoped · D2 email link, 7-day expiry, GitHub sign-in
+· D3 unlimited members, 20 invites/day · D4 every lane action records the actor.
+
 ## Copy changes implied
 
 - `docs/content/index.mdx:73` "secrets never leave your environment" → dedicated-box wording.
