@@ -86,6 +86,15 @@ Offer:
 - Unit sold is a **ticket**, not tokens, not seats. The $300 fair-use ceiling is the only
   token word on the page.
 - A ticket counts when its PR opens (TASK-546 definition). Keep.
+- **Fair-use ceiling: $300 / tenant / month (decided 2026-10-21, was $100 since 10-01).**
+  Ledger evidence (box DB `executions`, 2026-09-21 → 10-21, 324 runs, 6 repos): $311 total,
+  mean $0.96 / run, p50 $0.52, p90 $2.32, max $16.10; Sonnet 5.5 mean $0.89; 100 runs ≈ $96.
+  At $100 a tenant that uses all 100 tickets hits the dollar cap at the same time — one retry
+  or one p90 ticket breaks the "100 tickets" promise. At $300 the cap is 3× the mean: the
+  ticket counter is the real limit, the dollar cap only stops abuse. Worst-case margin
+  $499 − $300 − ~$50 box ≈ $149. Caveats: our repos are Go with Navigator context — expect
+  1.5–2× on a legacy customer repo; research turns and bootstrap are not in this data
+  (TASK-581). Recheck after the first 5 tenants.
 - "No seats" needs an **invite endpoint** (an org is one person today) — first gap to close.
 - Packs and daily cap follow from the above (pricing v3, TASK-546).
 
@@ -231,7 +240,11 @@ approve · D4 50 research turns per day per org, tunable.
 
 ### 8.4 Invite endpoint — "No seats" (decided 2026-10-21)
 
-"No seats" is a pricing-page promise; today an org is one person (TASK-546). This closes the gap.
+"No seats" is a pricing-page promise. **Correction 2026-10-21 (inventory):** org invites, the
+accept page and the Members page are already shipped (TASK-564/565/566, ui#231); TASK-546's
+unchecked boxes are stale. The remaining gaps are the project-scoped **Viewer** role and
+**actor tracking** on lane actions (D1, D4 below). D2/D3 are verification items against the
+shipped code, not new work.
 
 Roles:
 - **Owner** — billing, provision, delete the org, invite.
