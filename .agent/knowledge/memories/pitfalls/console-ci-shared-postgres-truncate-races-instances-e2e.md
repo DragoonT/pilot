@@ -29,5 +29,6 @@ the E2E failure.
 - Autopilot's CI-fix size guard (200 production lines) refuses a fix issue on
   a PR this size and re-parks it `pilot-needs-human`; a green rerun on the
   same head does not revive it (redrive needs a new head) → manual merge.
-- Durable fix (not filed): per-package schema/search_path, or `-p 1` for the
-  DB-backed packages, in the console repo.
+- Durable fix SHIPPED 2026-10-20: console#418 → PR#419 (a0cde12af), per-package
+  databases + one base-DB advisory lock for every test migration. See
+  [[test-db-migrations-race-on-cluster-wide-roles-need-base-db-advisory-lock]].

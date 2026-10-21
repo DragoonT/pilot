@@ -9008,7 +9008,7 @@
       },
       "console-ci-shared-postgres-truncate-races-instances-e2e": {
         "type": "pitfall",
-        "summary": "pilot-console CI runs go test ./... against ONE Postgres service; internal/fleet reconciler_test.go TRUNCATEs instances/instance_events while internal/instances provision_e2e_test.go runs in parallel, so TestProvisionDeprovisionRowTransitions_E2E can fail with 'GetInstance after provision: fleet: not found' on an unrelated change (PR#417 head 94e2bea, 2026-10-20; green on rerun). A 'db down' ERROR line nearby is a fake-store error path from another test, not the cause. Rerun first; durable fix = per-package schema or -p 1 for DB packages.",
+        "summary": "pilot-console CI runs go test ./... against ONE Postgres service; internal/fleet reconciler_test.go TRUNCATEs instances/instance_events while internal/instances provision_e2e_test.go runs in parallel, so TestProvisionDeprovisionRowTransitions_E2E can fail with 'GetInstance after provision: fleet: not found' on an unrelated change (PR#417 head 94e2bea, 2026-10-20; green on rerun). A 'db down' ERROR line nearby is a fake-store error path from another test, not the cause. Rerun first; durable fix = per-package schema or -p 1 for DB packages. RESOLVED 2026-10-20: PR#419 (a0cde12af) gives each DB package its own database; see test-db-migrations-race-on-cluster-wide-roles-need-base-db-advisory-lock.",
         "path": "memories/pitfalls/console-ci-shared-postgres-truncate-races-instances-e2e.md",
         "confidence": 0.9,
         "concepts": [
@@ -9017,7 +9017,69 @@
           "fleet"
         ],
         "created": "2026-10-20",
-        "last_validated": "2026-10-20"
+        "last_validated": "2026-10-21"
+      },
+      "test-db-migrations-race-on-cluster-wide-roles-need-base-db-advisory-lock": {
+        "type": "pitfall",
+        "summary": "Per-package test databases (pilot-console PR#419) made migration 0014 run in ~10 databases at once; its ALTER ROLE <current_user> BYPASSRLS updates one cluster-wide pg_authid row, so concurrent applies fail with 'tuple concurrently updated' and leave the DB dirty at v14. Every test-time migration (package DBs AND scratch DBs, incl. up/down sequences) must hold one pg_advisory_lock on the BASE database \u2014 advisory lock keys are per-database.",
+        "path": "memories/pitfalls/test-db-migrations-race-on-cluster-wide-roles-need-base-db-advisory-lock.md",
+        "confidence": 0.9,
+        "concepts": [
+          "ci",
+          "database",
+          "concurrency"
+        ],
+        "created": "2026-10-21",
+        "last_validated": "2026-10-21"
+      },
+      "executor-box-has-no-postgres-db-test-evidence-invalid": {
+        "type": "pitfall",
+        "summary": "The Pilot executor environment on the founder box has no Postgres: DB-backed test evidence pasted into PR bodies is a failing run (dial unix /tmp/.s.PGSQL.5432) under a passes-style heading, and revisions do not rewrite the PR body. For DB-test PRs, evidence = CI reruns (each gets a fresh Postgres service) or a reviewer's local fresh-server run.",
+        "path": "memories/pitfalls/executor-box-has-no-postgres-db-test-evidence-invalid.md",
+        "confidence": 0.9,
+        "concepts": [
+          "executor",
+          "ci",
+          "false-success"
+        ],
+        "created": "2026-10-21",
+        "last_validated": "2026-10-21"
+      },
+      "post-merge-fix-blames-merged-pr-for-preexisting-flake": {
+        "type": "pitfall",
+        "summary": "Autopilot's post-merge CI fix flow attributes any red on a merge commit to the merged PR: GH-5784 'resolve post-merge CI failure from PR #5782' was a pre-existing race in runEpicParentPass (TestEpicParentPass_DeadlineLogsAndCounts), unrelated to #5782's log-level diff. The fix (PR#5786) was real but titled fix(ci) while changing production controller.go. A blind rerun-and-decline flake guard would have hidden it.",
+        "path": "memories/pitfalls/post-merge-fix-blames-merged-pr-for-preexisting-flake.md",
+        "confidence": 0.85,
+        "concepts": [
+          "autopilot",
+          "ci",
+          "error-classification"
+        ],
+        "created": "2026-10-21",
+        "last_validated": "2026-10-21"
+      },
+      "nav-task-id-generator-ignores-archive-returns-used-id": {
+        "type": "pitfall",
+        "summary": "Navigator's nav-task task_id_generator.py (task_id_source: local) scans only .agent/tasks/, not .agent/tasks/archive/; right after TASK-577 was archived it returned TASK-577 again. Before using a generated ID, check the max ID across tasks/ and tasks/archive/.",
+        "path": "memories/pitfalls/nav-task-id-generator-ignores-archive-returns-used-id.md",
+        "confidence": 0.85,
+        "concepts": [
+          "workflow-discipline"
+        ],
+        "created": "2026-10-21",
+        "last_validated": "2026-10-21"
+      },
+      "tag-push-runs-full-pre-push-gate": {
+        "type": "learning",
+        "summary": "Pushing a release tag (git push origin vX.Y.Z) runs the FULL pre-push gate (go test -short -race ./..., ~4-5 min) \u2014 the docs-only fast path does not apply to tag pushes. Run the push in the background; the tag reaches GitHub only after the gate passes. Out-of-band release = tag the exact main SHA after CI is green; goreleaser publishes (never gh release create).",
+        "path": "memories/learnings/tag-push-runs-full-pre-push-gate.md",
+        "confidence": 0.9,
+        "concepts": [
+          "release",
+          "git"
+        ],
+        "created": "2026-10-21",
+        "last_validated": "2026-10-21"
       }
     }
   },
@@ -12986,6 +13048,31 @@
       "from": "TASK-580",
       "to": "context",
       "type": "implements"
+    },
+    {
+      "from": "test-db-migrations-race-on-cluster-wide-roles-need-base-db-advisory-lock",
+      "to": "TASK-580",
+      "type": "learned-from"
+    },
+    {
+      "from": "executor-box-has-no-postgres-db-test-evidence-invalid",
+      "to": "TASK-580",
+      "type": "learned-from"
+    },
+    {
+      "from": "post-merge-fix-blames-merged-pr-for-preexisting-flake",
+      "to": "TASK-508",
+      "type": "learned-from"
+    },
+    {
+      "from": "nav-task-id-generator-ignores-archive-returns-used-id",
+      "to": "TASK-578",
+      "type": "learned-from"
+    },
+    {
+      "from": "tag-push-runs-full-pre-push-gate",
+      "to": "TASK-405",
+      "type": "learned-from"
     }
   ],
   "concept_index": {
@@ -13403,7 +13490,8 @@
       "stagefailed-conflates-healthy-handoff-with-terminal-failure",
       "terminal-status-without-rearm-probe-kills-operator-recovery",
       "github-matching-refs-ignores-per-page-and-page",
-      "gh5468-unlisted-check-failure-blocks-gate-but-evidence-still-allowlist-scoped"
+      "gh5468-unlisted-check-failure-blocks-gate-but-evidence-still-allowlist-scoped",
+      "post-merge-fix-blames-merged-pr-for-preexisting-flake"
     ],
     "aws": [
       "absolute-state-paths-bypass-cutover-shim",
@@ -13460,7 +13548,10 @@
       "console-wire-contract-gate-needs-raw-body-strings-contains-test",
       "autopilot-held-prs-redrive-only-for-size-guard-holds",
       "goreleaser-rerun-on-published-tag-fails-422-push-formula-by-hand",
-      "console-ci-shared-postgres-truncate-races-instances-e2e"
+      "console-ci-shared-postgres-truncate-races-instances-e2e",
+      "test-db-migrations-race-on-cluster-wide-roles-need-base-db-advisory-lock",
+      "executor-box-has-no-postgres-db-test-evidence-invalid",
+      "post-merge-fix-blames-merged-pr-for-preexisting-flake"
     ],
     "ci-gates": [
       "bake-workflow-tee-masked-failure-promoted-source-ami"
@@ -13480,7 +13571,8 @@
     "concurrency": [
       "mem-101",
       "mem-102",
-      "mem-218"
+      "mem-218",
+      "test-db-migrations-race-on-cluster-wide-roles-need-base-db-advisory-lock"
     ],
     "config": [
       "TASK-477",
@@ -13820,7 +13912,8 @@
       "mem-249",
       "mem-250",
       "TASK-578",
-      "TASK-580"
+      "TASK-580",
+      "test-db-migrations-race-on-cluster-wide-roles-need-base-db-advisory-lock"
     ],
     "decomposition": [
       "decomposer-narrative-bullets-as-subtask-boundaries",
@@ -14143,7 +14236,8 @@
     ],
     "error-classification": [
       "bare-exit-137-mislabeled-oom",
-      "model-refusal-looks-like-exit-status-1"
+      "model-refusal-looks-like-exit-status-1",
+      "post-merge-fix-blames-merged-pr-for-preexisting-flake"
     ],
     "executor": [
       "TASK-03",
@@ -14221,7 +14315,8 @@
       "terminal-status-without-rearm-probe-kills-operator-recovery",
       "test-asserts-on-pre-rewrite-sha-is-vacuous",
       "tui-subtask-ghost-rows",
-      "workflow-yaml-requires-front-matter"
+      "workflow-yaml-requires-front-matter",
+      "executor-box-has-no-postgres-db-test-evidence-invalid"
     ],
     "external-contributor": [
       "external-fork-pr-sweeps-stale-agent-state"
@@ -14235,7 +14330,8 @@
       "mem-211",
       "test-fake-daemon-more-permissive-than-real-route-hides-400",
       "executor-swallowed-rejected-push-as-success-branch-exists-is-not-pushed",
-      "smoke-new-user-flows-with-a-fresh-account-registration-side-effects"
+      "smoke-new-user-flows-with-a-fresh-account-registration-side-effects",
+      "executor-box-has-no-postgres-db-test-evidence-invalid"
     ],
     "flag-cutover": [
       "absolute-state-paths-bypass-cutover-shim",
@@ -14340,7 +14436,8 @@
       "mem-177",
       "rev-list-without-topo-order-breaks-oldest-first-reparent",
       "runselfreview-runs-in-repo-root-phantom-reimplementation",
-      "test-asserts-on-pre-rewrite-sha-is-vacuous"
+      "test-asserts-on-pre-rewrite-sha-is-vacuous",
+      "tag-push-runs-full-pre-push-gate"
     ],
     "git-operations": [
       "mem-011",
@@ -14846,7 +14943,8 @@
       "mem-159",
       "release-tick-retry-with-backoff-and-alert",
       "mem-202",
-      "goreleaser-rerun-on-published-tag-fails-422-push-formula-by-hand"
+      "goreleaser-rerun-on-published-tag-fails-422-push-formula-by-hand",
+      "tag-push-runs-full-pre-push-gate"
     ],
     "repo-onboarding-x": [
       "config-env-expansion-eats-dollar-vars-in-commands",
@@ -15405,7 +15503,8 @@
       "issue-body-literal-migration-version-collides-with-sibling-leg",
       "use-nav-research-agent-for-all-project-research",
       "ccd-slack-connector-off-by-default-enable-per-session",
-      "slack-connector-returns-text-only-colleague-attachments-need-a-pr"
+      "slack-connector-returns-text-only-colleague-attachments-need-a-pr",
+      "nav-task-id-generator-ignores-archive-returns-used-id"
     ],
     "worktree": [
       "auto-preserved-wip-recover-by-cherry-pick-continuation",
@@ -15834,9 +15933,9 @@
   },
   "last_updated": "2026-10-20T16:24:58.295347+00:00",
   "stats": {
-    "total_nodes": 765,
-    "total_edges": 793,
-    "memory_count": 411
+    "total_nodes": 770,
+    "total_edges": 798,
+    "memory_count": 416
   },
   "metadata": {}
 }
