@@ -362,6 +362,53 @@ Decisions: D1 repeatable harness, canary before every AMI roll, hard gate before
 private-repo tenant · D2 allowlist with registries allowed, egress logged, residual disclosed
 · D3 RLS wired · D4 Security page with statement + pen-test summary.
 
+## 9. Post-launch scopes (one paragraph each, 2026-10-21)
+
+1. **Viewer role + actor tracking** (8.4 gap). Add `viewer` to the org roles with a
+   `project_ids` scope; viewers read the board, Run Stories and briefs for those projects
+   only, no actions. Every Review needed action (8.2) stores `actor_id` and shows "Approved
+   by …" on the item. Done when an agency invites a client as Viewer on one project and the
+   client sees nothing of the other projects.
+2. **Deploy templates** (section 7). A template = a starter ticket set (infra-as-code + CI
+   deploy workflow + env pipeline + a Needs You step for cloud credentials), picked in the
+   new-project interview. Order: VPS (Docker Compose + GitHub Actions over SSH), AWS, then
+   Azure, Google Cloud. Done when a new project reaches a deployed `main` from the template
+   tickets alone, with no hand edits.
+3. **External docs ingestion** (section 7, OPEN). V1: a URL or an upload lands under
+   `.agent/system/` so Navigator indexes it; the bootstrap and research turns read it.
+   Connectors (Notion, Confluence) only after the first 3 legacy tenants show what they
+   actually have. Done when a research answer cites an uploaded doc by path.
+4. **PM-only mode** (segment 3). Per project: autopilot merge-on-green + the evidence gates
+   (TASK-460) + a preview URL on the Run Story. The PM approves specs (8.2) and reviews the
+   result, not the code. Gated on the evidence gates. Done when a project runs one week
+   with no engineer in the lane and no false success in the ledger.
+5. **Docs manage/edit** (TASK-466 idea). The console Docs page gets edit + create for
+   `.agent/` files through the existing daemon gate, with a PR per change (no direct
+   writes to `main`). Done when a tenant edits a system doc from the console and the change
+   lands as a reviewed PR.
+6. **Mobile v1** (TASK-478 UI-12, stalled since 08-15). Re-land the preserved branch
+   (`restore/GH-71-mobile`) on the new design (section 6): 4-tab bar, home glance tiles,
+   Review needed sheet, chat full-bleed. Done when the Playwright 390×844 check passes on
+   the new design.
+
+## 10. Roadmap — waves (2026-10-21)
+
+Order by dependency and by what unblocks a sale. Tracks run in parallel per repo
+(site · console-ui · console-api · daemon · infra); Navigator writes a task doc per leg,
+Pilot executes. No dates: Pilot throughput sets the pace (~10 issues/day across repos).
+
+| Wave | Goal | Legs (spec) | Repos | Gate / dependency |
+|---|---|---|---|---|
+| **0 — Unblock the sale** | A public site, legal pages, Paddle live | legal facts → legal pages · Nelya deploy PR → first deploy · Paddle resubmit · site copy 1–5 (8.6) | pilotcloud-site, ops | founder facts; Nelya PR |
+| **1 — Design update + proof surface** | The new console (section 6) with the proof unit | Figma re-skin: dashboard + Research page (no-cost rows, pool meter, Review needed card, Last shipped, Context growth) · Run Story card + ticket page (8.1) · Briefs page + email channel (8.7) · pen-test harness (8.8 D1) in parallel on the daemon/infra track | console-ui, console-api, pilot, infra | pen test is a **hard gate** before the first private-repo tenant — agencies have private repos, so it is launch-blocking |
+| **2 — Research → tickets** | The thesis (section 2) on the wire | `Create tickets` + drafts in the lane (8.3) · spec items + actor tracking + reject→learning (8.2) · daily research cap check | pilot, console-api, console-ui | TASK-518 leg 4 |
+| **3 — Onboarding** | Both signup paths (section 7) | bootstrap with cost cap · new-project interview · legacy scan + external docs v1 (upload/URL) | pilot, console-ui | TASK-581 result (cost cap) |
+| **4 — Trust close-out** | Real-time proof + security | live log tail + scrubber (8.5) · egress allowlist + RLS (8.8 D2/D3) · Security page (8.8 D4) | pilot, console-api, console-ui, infra, site | — |
+| **5 — Post-launch** | Section 9 | Viewer role · deploy templates · docs ingestion v2 · PM-only mode · docs edit · mobile | all | first 5 tenants' data |
+
+Founder inputs that gate waves: legal entity / address / contact email (W0) · Nelya's
+deploy workflow PR (W0) · run TASK-581 and pick the cap (W3).
+
 ## Copy changes implied
 
 - `docs/content/index.mdx:73` "secrets never leave your environment" → dedicated-box wording.
