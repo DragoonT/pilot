@@ -1,6 +1,6 @@
 # TASK-589: Daemon-owned daily ticket cap — one hold at `Begin`, console renders the cap and shows the notice
 
-**Status**: 📋 PLANNED 2026-10-22 — design 3 chosen by the founder after nav-research (see § Context). Legs written, **not dispatched**. Dispatch order: P16 first; C14 and U19 are held until P16 merges and a daemon release carries it.
+**Status**: 🚀 P16 DISPATCHED 2026-10-22 → pilot#5794. Design 3 chosen by the founder after nav-research (see § Context). Dispatch order: P16 first; C14 and U19 are held until P16 merges and a daemon release carries it.
 **Spec refs**: positioning §4 (pricing v3: daily cap 15), §8.7; roadmap rows P16, C14, U19.
 **Origin**: post-merge review of console PR#425 (GH-424, 2026-10-22), defect D1.
 
@@ -117,4 +117,4 @@ The board API returns `notice` on the cards response while the org's daily ticke
 
 ## Refs
 
-(filled by the dispatch script)
+- P16 → https://github.com/qf-studio/pilot/issues/5794
