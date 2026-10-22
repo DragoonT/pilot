@@ -10,7 +10,7 @@ Source of truth for scope: `project_pilot_cloud_positioning.md` (§ refs below).
 Size: S ≤ 1 Pilot run · M = 2–3 runs or an epic · L = epic with ≥4 sub-issues.
 Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 18 filed 2026-10-22; P16/C14/U19 added 10-22 (TASK-589, daily cap owner) (TASK-582 wave 0, TASK-583 wave 1); P12 = #5788. Execution plan for everything else: TASK-584.
 
-## pilotcloud-site (`qf-studio/pilotcloud-site`) — 8
+## pilotcloud-site (`qf-studio/pilotcloud-site`) — 9
 
 | # | Wave | Ticket | § | Size | Status |
 |---|---|---|---|---|---|
@@ -22,6 +22,7 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 | S6 | 0 | feat(self-hosted): OSS keeps "secrets never leave"; Cloud column says "a box only you use" | 8.6 D4 | S | ✅ site#15 → PR#20 merged 13:35Z, reviewed APPROVE-w-notes (10-22) |
 | S7 | 0 | chore(copy): product name Pilot Cloud site-wide; "Console" only as the app URL | 8.6 D5 | S | ✅ site#16 → PR#21 closed (test red) → PR#23 merged 13:59Z, unreviewed; price constants in `lib/site.ts` still duplicated (10-22) |
 | S8 | 4 | feat(security): Security page — blast-radius statement verbatim + last pen-test summary with date | 8.8 D4 | S | 📋 after P11 |
+| S9 | 0 | docs(cloud): docs site copy — why-pilot research line, dedicated-box wording next to the self-hosted claim, Pilot Cloud name, §3 proof line (repo: pilot `docs/content/`) | 8.6, 3 | S | 🎫 pilot#5820 (10-22) |
 
 ## pilot-console-ui (`qf-studio/pilot-console-ui`) — 19
 
@@ -66,11 +67,11 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 | C13 | 3 | feat(onboarding): bootstrap trigger per project, cost cap from TASK-581, status + result surface | 7 | M | 📋 after P5 |
 | C14 | 1 | feat(fleet): daily ticket cap owned by the daemon — render cap + timezone into tenant config, standing → board notice, delete both console gates, pack draw at ledger ingest | TASK-589 (PR#425 D1) | M | 📋 held: after P16 in a daemon release |
 
-## pilot (daemon, `qf-studio/pilot`) — 17
+## pilot (daemon, `qf-studio/pilot`) — 18
 
 | # | Wave | Ticket | § | Size | Status |
 |---|---|---|---|---|---|
-| P1 | 1 | feat(gateway): run-story fields per execution — diff stats, tests passed/failed, evidence-gate result, issue→PR and PR→merge timings | 8.1 | M | 🎫 pilot#5790 (10-22) |
+| P1 | 1 | feat(gateway): run-story fields per execution — diff stats, tests passed/failed, evidence-gate result, issue→PR and PR→merge timings | 8.1 | M | 🚧 pilot#5790 → PR#5805 **held `needs-manual-rebase`** (conflicts in `run_story.go`, `server.go`, FEATURE-MATRIX, task doc — non-Go surface, held by design); blocks C1→C2→U6→U7 (10-22) |
 | P2 | 2 | feat(research): `Create tickets` — draft N tickets from a research report in SOP format (H2, Acceptance, `file:line`, `#N` deps); shippable check; epic split on failure | 8.3 | L | 📋 after TASK-518 leg 4 |
 | P3 | 2 | feat(memory): reject reason from the lane → learning memory + graph index | 8.2 D2 | S | 📋 |
 | P4 | 3 | feat(bootstrap): new-project interview (≤5 questions, defaults) → scaffold ticket + 5–10 first tickets per the onboarding SOP | 7 | L | 📋 |
@@ -84,6 +85,7 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 | P12 | 3 | feat(bench): bootstrap cost harness + the 4-repo × 3-stage × 2-run matrix | TASK-581 | M | ✅ #5788 → PR#5789 (10-22) |
 | P13 | 5 | feat(templates): deploy-template ticket sets — VPS (Compose + Actions over SSH), AWS | 9.2 | L | 📋 |
 | P14 | 5 | feat(pm-mode): preview URL on the Run Story + merge-on-green per project behind the evidence gates | 9.4 | L | 📋 |
+| P15 | 1 | fix(executor): `modelPricing` — Opus 5.5 $4/$20, Sonnet 5.5 + Sonnet 5 $2/$10, Haiku 5.5 $0.10/$0.50, cache-read rate per model (TASK-581 § Found) | 4 | S | 🎫 pilot#5821 (10-22) |
 | P16 | 1 | feat(executor): daily ticket cap held at `ExecutionLifecycle.Begin` — `executor.daily_ticket_cap` + timezone keys, org-local day, `GET /api/v1/executions/daily-cap` standing | TASK-589 | M | 🎫 pilot#5794 (10-22) |
 | P17 | 1 | feat(web): `subagent` + `context` chat events (`durationMs`, `docsRead`, `memoriesRead`, `memoriesCreated`) for the Research page — U9 renders `—` until then | 6 research | M | 🎫 pilot#5810, needs design (10-22) |
 | P18 | 1 | feat(gateway): docs + graph summary read (`created/updated this week`, memory totals, graph nodes/edges/updatedAt) for the Context panel — U5 renders `—` until then | 6.4 | M | 🎫 pilot#5816 (10-22) |

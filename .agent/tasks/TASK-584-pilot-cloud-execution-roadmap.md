@@ -27,11 +27,11 @@ Mechanics reused throughout (no new tooling):
 
 ## Phase A — close-out of the session (today, ~1 h, this session)
 
-1. **File the docs-site copy issue** on `qf-studio/pilot` (`docs/content/`): why-pilot "Not a
+1. ✅ 10-22 17:50Z → pilot#5820 (S9). **File the docs-site copy issue** on `qf-studio/pilot` (`docs/content/`): why-pilot "Not a
    researcher" → "Ask about your code. Turn the answer into a ticket."; `index.mdx:73` secrets claim →
    OSS-only wording + "a box only you use" for Cloud; "Pilot Console" → "Pilot Cloud"; add the
    §3 proof line. Add row **S9** to the roadmap file (repo: pilot/docs).
-2. **File the `modelPricing` bug** on `qf-studio/pilot` (found by the TASK-581 session: Opus 5.5 /
+2. ✅ 10-22 17:50Z → pilot#5821 (P15; also Sonnet 5 and Haiku 5.5 wrong, cache-read per model). **File the `modelPricing` bug** on `qf-studio/pilot` (found by the TASK-581 session: Opus 5.5 /
    Sonnet 5.5 priced ~25–50% high in the executor's cost estimate; cite the file the session named in
    TASK-581 § Found). Label `pilot`. Add roadmap row **P15**.
 3. **Graph memories** (4): decision `$300 ceiling, ledger evidence` · decision `no dollars on
