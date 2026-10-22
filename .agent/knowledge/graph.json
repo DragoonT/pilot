@@ -3337,6 +3337,38 @@
           "theory of mind",
           "api"
         ]
+      },
+      "TASK-582": {
+        "path": "/Users/aleks.petrov/Projects/startups/pilot/.agent/tasks/TASK-582-wave0-site-unblock-the-sale.md",
+        "title": "Wave 0 \u2014 pilotcloud.dev copy update (unblock the sale)",
+        "status": "unknown",
+        "concepts": [
+          "deployment",
+          "authentication",
+          "theory of mind",
+          "knowledge",
+          "testing",
+          "api",
+          "context",
+          "frontend"
+        ]
+      },
+      "TASK-583": {
+        "path": "/Users/aleks.petrov/Projects/startups/pilot/.agent/tasks/TASK-583-wave1-design-update-proof-surface.md",
+        "title": "Wave 1 \u2014 design update + proof surface (Run Story, Review needed, briefs, pen test)",
+        "status": "blocked",
+        "concepts": [
+          "markers",
+          "database",
+          "deployment",
+          "context",
+          "authentication",
+          "theory of mind",
+          "testing",
+          "api",
+          "knowledge",
+          "frontend"
+        ]
       }
     },
     "memories": {
@@ -13146,6 +13178,86 @@
       "from": "TASK-581",
       "to": "api",
       "type": "implements"
+    },
+    {
+      "from": "TASK-582",
+      "to": "deployment",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-582",
+      "to": "authentication",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-582",
+      "to": "knowledge",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-582",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-582",
+      "to": "api",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-582",
+      "to": "context",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-582",
+      "to": "frontend",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-583",
+      "to": "markers",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-583",
+      "to": "database",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-583",
+      "to": "deployment",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-583",
+      "to": "context",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-583",
+      "to": "authentication",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-583",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-583",
+      "to": "api",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-583",
+      "to": "knowledge",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-583",
+      "to": "frontend",
+      "type": "implements"
     }
   ],
   "concept_index": {
@@ -13364,7 +13476,9 @@
       "TASK-576",
       "TASK-577",
       "github-matching-refs-ignores-per-page-and-page",
-      "TASK-581"
+      "TASK-581",
+      "TASK-582",
+      "TASK-583"
     ],
     "approval": [
       "approvals-off-stage-auto-merge",
@@ -13488,7 +13602,9 @@
       "TASK-569",
       "TASK-578",
       "TASK-580",
-      "TASK-581"
+      "TASK-581",
+      "TASK-582",
+      "TASK-583"
     ],
     "auto-merge": [
       "mem-103"
@@ -13845,7 +13961,9 @@
       "TASK-578",
       "TASK-579",
       "TASK-580",
-      "TASK-581"
+      "TASK-581",
+      "TASK-582",
+      "TASK-583"
     ],
     "conversational-bot": [
       "mem-036",
@@ -13989,7 +14107,8 @@
       "mem-250",
       "TASK-578",
       "TASK-580",
-      "test-db-migrations-race-on-cluster-wide-roles-need-base-db-advisory-lock"
+      "test-db-migrations-race-on-cluster-wide-roles-need-base-db-advisory-lock",
+      "TASK-583"
     ],
     "decomposition": [
       "decomposer-narrative-bullets-as-subtask-boundaries",
@@ -14223,7 +14342,9 @@
       "TASK-578",
       "TASK-579",
       "TASK-580",
-      "TASK-581"
+      "TASK-581",
+      "TASK-582",
+      "TASK-583"
     ],
     "dispatch": [
       "auto-preserved-wip-recover-by-cherry-pick-continuation",
@@ -14495,7 +14616,9 @@
       "mem-249",
       "mem-250",
       "TASK-567",
-      "TASK-581"
+      "TASK-581",
+      "TASK-582",
+      "TASK-583"
     ],
     "gateway": [
       "TASK-01",
@@ -14764,7 +14887,9 @@
       "TASK-578",
       "TASK-579",
       "TASK-580",
-      "TASK-581"
+      "TASK-581",
+      "TASK-582",
+      "TASK-583"
     ],
     "labels": [
       "mem-100",
@@ -14831,7 +14956,8 @@
       "TASK-505",
       "TASK-515",
       "TASK-573",
-      "TASK-579"
+      "TASK-579",
+      "TASK-583"
     ],
     "memory": [
       "TASK-358",
@@ -15381,7 +15507,9 @@
       "TASK-578",
       "TASK-579",
       "TASK-580",
-      "TASK-581"
+      "TASK-581",
+      "TASK-582",
+      "TASK-583"
     ],
     "testing-quality": [
       "TASK-384",
@@ -15643,7 +15771,9 @@
       "TASK-528",
       "TASK-546",
       "TASK-549",
-      "TASK-581"
+      "TASK-581",
+      "TASK-582",
+      "TASK-583"
     ],
     "stage-semantics": [
       "stagefailed-conflates-healthy-handoff-with-terminal-failure"
@@ -16015,10 +16145,10 @@
       "gh5468-unlisted-check-failure-blocks-gate-but-evidence-still-allowlist-scoped"
     ]
   },
-  "last_updated": "2026-10-21T12:34:12.167170+00:00",
+  "last_updated": "2026-10-22T08:55:48.896988+00:00",
   "stats": {
-    "total_nodes": 772,
-    "total_edges": 807,
+    "total_nodes": 774,
+    "total_edges": 823,
     "memory_count": 417
   },
   "metadata": {}
