@@ -1,6 +1,8 @@
 # TASK-583: Wave 1 — design update + proof surface (Run Story, Review needed, briefs, pen test)
 
 **Status**: 🚀 DISPATCHING 2026-10-22 — first batch filed: U1 + U2–U5, U9 (blocked by U1) on `pilot-console-ui`; P1, P9, P10 (blocked by P9), P11 on `pilot`; C3, C7, C8 on `pilot-console`. Held until upstream merges (cross-repo deps are not machine-readable): U6/U7 (after C1), U8 (after C3), U11/U12 (after C6), C1/C2 (after P1), C6 (after P9 + I3). Design legs D1–D5, D7 and infra I2/I3 are founder / Nelya items. Roadmap: `.agent/system/project/project_pilot_cloud_roadmap_tickets.md`; decisions: `.agent/system/project/project_pilot_cloud_positioning.md` §6, §8.1, §8.2, §8.7, §8.8, §4.
+
+**P11 hard gate (10-22 review):** PR#5795 merged with a report of 8 PASS, but every executor run had failed in ~2 s (`exit status 1`) and the harness only errors on a nil result → false-success. Fix filed as #5798; the gate stays open until a real run with agent turns is archived.
 **Created**: 2026-10-22
 **Assignee**: Pilot (U/C/P legs) · founder (D1–D5, D7 in Figma; F4) · Nelya (I2, I3)
 

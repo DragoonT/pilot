@@ -80,7 +80,7 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 | P8 | 4 | feat(gateway): tool-call line events (`read` / `edit +a −b` / `run … ✓`), 7-day retention | 8.5 D1/D4 | M | 📋 |
 | P9 | 1 | feat(briefs): one brief object with a console payload + email payload; receipts digest folds in; cost lines only on own-key | 8.7 | M | 🎫 pilot#5791 (10-22) |
 | P10 | 1 | feat(briefs): weekly Monday brief with proof numbers (tickets shipped, median time to PR, merged) | 8.7 D4 | S | 🎫 pilot#5792 (10-22) |
-| P11 | 1 | test(security): hostile-ticket pen-test harness — fixture repo, injected issue bodies, assertions (env, disk, SSM, egress, cross-tenant) | 8.8 D1 | L | ✅ pilot#5793 → PR#5795 (10-22, unreviewed) |
+| P11 | 1 | test(security): hostile-ticket pen-test harness — fixture repo, injected issue bodies, assertions (env, disk, SSM, egress, cross-tenant) | 8.8 D1 | L | 🚧 pilot#5793 → PR#5795 merged but REQUEST-CHANGES: harness scored 8 backend failures as PASS → fix #5798; hard gate NOT met (10-22) |
 | P12 | 3 | feat(bench): bootstrap cost harness + the 4-repo × 3-stage × 2-run matrix | TASK-581 | M | ✅ #5788 → PR#5789 (10-22) |
 | P13 | 5 | feat(templates): deploy-template ticket sets — VPS (Compose + Actions over SSH), AWS | 9.2 | L | 📋 |
 | P14 | 5 | feat(pm-mode): preview URL on the Run Story + merge-on-green per project behind the evidence gates | 9.4 | L | 📋 |
