@@ -1,16 +1,20 @@
 ---
 name: executor-box-has-no-postgres-db-test-evidence-invalid
-description: The Pilot executor environment on the founder box has no Postgres: DB-backed test evidence pasted into PR bodies is a failing run (dial unix /tmp/.s.PGSQL.5432) under a passes-style heading, and revisions do not rewrite the PR body. For DB-test PRs, evidence = CI reruns (each gets a fresh Postgres service) or a reviewer's local fresh-server run.
+description: CORRECTED 2026-10-22 — the founder box HAS a shared Postgres (pilot-console-pg, the daemon runs with DATABASE_URL and the quality gate uses it); only the executor's in-session shell lacks DATABASE_URL, so DB-backed evidence pasted into PR bodies is still a failing run (dial unix /tmp/.s.PGSQL.5432). The gate's real hazard is the SHARED per-package test databases (pilot_test_<pkg>) that sibling worktrees on different bases drive to different schema versions.
 type: pitfall
 ---
 
-# Executor has no Postgres — DB-test evidence in Pilot PRs is not evidence
+# Executor box: shared Postgres, env-scrubbed session — two different hazards
 
-**Seen 2026-10-20 (pilot-console PR#419, GH-418/420/421):** the PR body's "Evidence" for `go test -count=3 ./...` showed `--- FAIL ... dial unix /tmp/.s.PGSQL.5432: connect: no such file or directory` for every DB package. The heading itself said FAILS. Two revisions later the body still carried the first pass's block — revisions do not regenerate it.
+**Correction (2026-10-22, nav-research on the day's failures):** the earlier wording "the executor box has no Postgres" was wrong and was repeated in four reviews. Facts:
+
+- The daemon process has `DATABASE_URL`; a shared Postgres (`pilot-console-pg`, :5432) is up on the box; the console quality gate (`make test`, required) runs against it and passes (GH-424 gate 11:20Z, GH-422 gate 12:02Z).
+- The Claude Code session the executor spawns does NOT have `DATABASE_URL` (env scrub). So the "Evidence" block the session pastes into the PR body (`go test ./...` → `dial unix /tmp/.s.PGSQL.5432`) is still a failing run under a passes-style heading. That part of the old rule stands.
+- The gate hazard: `internal/testdb/testdb.go` names databases `pilot_test_<pkg>` and reuses them. GH-424's gate applied migration 0033 to them; GH-423's worktree (older base) then failed three gates with `no migration found for version 33`, auto-preserved and stalled. Fix: per-run prefix (`PILOT_CONSOLE_TESTDB_PREFIX`, console#428) + box gate command.
 
 ## Rules
-- Do not accept a DB-test acceptance criterion as met from the PR body.
-- Evidence path: `gh run rerun <run> --job <test-job-id>` 2–3 times on the same head (fresh `postgres:16-alpine` service each time), or a local fresh container on a random port (`-p 127.0.0.1::5432`; a fixed port can hit another container).
-- Write DB-test issue bodies so the executor states "not run locally (no Postgres)" instead of pasting a failing run.
+- Do not accept a DB-test acceptance criterion as met from the PR body; CI reruns (fresh `postgres:16-alpine`) or a reviewer's fresh-server run are the evidence.
+- When a console gate fails on `no migration found for version N`, check which sibling task last migrated the shared test DBs before blaming the PR.
+- Do not write "the box has no Postgres" anywhere again; say "the executor session has no DATABASE_URL".
 
-Related: evidence-runner-pastes-nonzero-exit-under-passes-bullet.
+Related: evidence-runner-pastes-nonzero-exit-under-passes-bullet, mem-267.

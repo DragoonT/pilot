@@ -25,7 +25,7 @@ Dispatch paths that never pass the board gate: a `pilot` label set directly in t
 
 - Base-presence gate: a backticked path that is not on `origin/main` of the target repo parks the issue `pilot-needs-human`. New files are named in prose only.
 - Cross-repo `Blocked by:` is not understood by the poller; cross-repo order is handled by holding legs in this doc.
-- Pilot's `make test` on the executor box fails in `internal/fleet` (no Postgres); CI on fresh Postgres is the evidence.
+- The executor session has no `DATABASE_URL`, so DB-backed `make test` evidence pasted into a PR body is a failing run; CI on fresh Postgres is the evidence. The box gate itself uses the shared Postgres (prefix fix: console#428).
 - The console test fake for the daemon has been more permissive than the real route (mem: `test-fake-daemon-more-permissive-than-real-route-hides-400`): the standing endpoint needs a wire-contract test on both sides.
 
 ## Legs — pilot (daemon)

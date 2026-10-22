@@ -49,6 +49,17 @@ Recovery depends on state: if no execution row exists yet, `gh issue edit` clear
 
 `detectEpic` (`internal/executor/complexity.go`) fires on structural markers (`##`, "phase", "stage", "step") plus >200 words even with zero checkboxes; GH-5527/5529/5530 (bug reports in the Problem/Fix/Acceptance/Refs shape) were all classified `epic` and entered planning mode. For any issue meant to ship as ONE PR: add the `no-decompose` label at creation (`gh issue create --label pilot --label no-decompose`), or keep the body under 200 words. Recovery when it already fired: `pilot task cancel` refuses running rows — kill the Claude child, let the row go terminal, add `no-decompose`, then cycle the `pilot` label (a fresh label event re-arms a canceled/failed GH task; the retry reads live labels and logs `decomposition skipped: no-decompose label`).
 
+### Rule 3d — Pin the premise with `probe:` lines (2026-10-22)
+
+Two wave-1 legs merged with design defects because the premise was never checked against the counterpart repo: C8 added a second enforcer of `daily_ticket_cap` (the fleet reconciler already had one), C3 decoded `kind`/`mode`/`reason`/`title` that the daemon's approvals route never emits. `scripts/nav-dispatch-legs.py` now accepts probe lines inside a `### LEG` body; they are checked with `git grep -E` on that repo's `origin/main` during pre-flight and stripped from the filed body:
+
+```
+probe: absent  qf-studio/pilot-console enforceDailyTicketCap
+probe: present qf-studio/pilot         json:"kind"
+```
+
+`present` needs a match, `absent` needs none; a mismatch aborts the run. Write one probe per claim the leg rests on ("no enforcer exists yet", "the producer emits this field", "this helper exists"). Every probed repo needs a `--checkout`.
+
 ## Rule 4 — Serialize anything that touches shared root files
 
 The parallel scope-overlap guard keys on **directories** named in issue bodies; two issues that both create root files (`package.json`, `tsconfig.json`, lockfiles) are NOT detected as overlapping. Until that's fixed in code, chain such issues with `Blocked by: #N` so they run one at a time.
@@ -112,6 +123,8 @@ In `~/.pilot/config.yaml` for the new project:
 2026-07-16 incident (`qf-studio/pointer`, first cycle): PRs #5/#6/#7 all timed out at `waiting_ci` after 30m with green checks (`gh pr checks` passing). Root cause: the new repo had no `required_checks` and `ci_checks.mode: auto` — GitHub Actions only ever writes check-runs, never legacy commit statuses, so the CI watcher's fallback to the combined-status endpoint saw a permanent `state=pending`/`total_count=0` for that repo. Fixed in `internal/autopilot/ci_monitor.go` (`checkAutoDiscoveredRuns`): once check-runs have been discovered for a SHA, completion is always evaluated from those discovered check-runs — the legacy combined-status endpoint is never consulted again for that SHA, even on a transient empty check-runs read. Established repos with a non-empty `required_checks`/`ci_checks.required` allowlist were unaffected (see GH-4333→#4342). No config action needed post-fix, but if a new repo still hits `waiting_ci` timeouts with green checks, check `daemon.log` for "CI checks discovered" vs a "using commit-status API" line for the same SHA — the latter after the former is the regression signature.
 
 ## Pre-flight checklist (before adding the `pilot` label)
+
+- [ ] Every premise the leg rests on has a `probe:` line (Rule 3d); the dispatch dry run is clean.
 
 - [ ] Scaffold issue merged to `main` (Rule 1) — or this IS the scaffold issue
 - [ ] Body has H2 `## Context` / `## Acceptance` / `## Implementation` (Rule 2)

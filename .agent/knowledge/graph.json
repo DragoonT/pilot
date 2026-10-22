@@ -1245,6 +1245,11 @@
         "name": "Navigator",
         "aliases": [],
         "domain": "general"
+      },
+      "quality-gate": {
+        "name": "Quality-Gate",
+        "aliases": [],
+        "domain": "general"
       }
     },
     "tasks": {
@@ -9107,7 +9112,7 @@
       },
       "executor-box-has-no-postgres-db-test-evidence-invalid": {
         "type": "pitfall",
-        "summary": "The Pilot executor environment on the founder box has no Postgres: DB-backed test evidence pasted into PR bodies is a failing run (dial unix /tmp/.s.PGSQL.5432) under a passes-style heading, and revisions do not rewrite the PR body. For DB-test PRs, evidence = CI reruns (each gets a fresh Postgres service) or a reviewer's local fresh-server run.",
+        "summary": "CORRECTED 2026-10-22: the founder box HAS a shared Postgres (daemon has DATABASE_URL; the console gate uses it); only the executor's in-session shell lacks DATABASE_URL, so DB evidence pasted into PR bodies is a failing run. Real gate hazard: shared pilot_test_<pkg> databases that sibling worktrees drive to different schema versions (GH-423 vs GH-424, 'no migration found for version 33'). Fix: per-run prefix, console#428.",
         "path": "memories/pitfalls/executor-box-has-no-postgres-db-test-evidence-invalid.md",
         "confidence": 0.9,
         "concepts": [
@@ -9116,7 +9121,7 @@
           "false-success"
         ],
         "created": "2026-10-21",
-        "last_validated": "2026-10-21"
+        "last_validated": "2026-10-22"
       },
       "post-merge-fix-blames-merged-pr-for-preexisting-flake": {
         "type": "pitfall",
@@ -9357,6 +9362,75 @@
         "confidence": 0.9,
         "concepts": [
           "executor",
+          "pilot-dispatch"
+        ],
+        "created": "2026-10-22",
+        "last_validated": "2026-10-22"
+      },
+      "mem-268": {
+        "type": "pitfall",
+        "summary": "Shared test databases collide across worktrees (2026-10-22): pilot-console tests use persistent per-package databases pilot_test_<pkg> on the box's shared Postgres (internal/testdb/testdb.go const Prefix). GH-424's gate applied migration 0033; GH-423's worktree on an older base then failed 3 gates with 'no migration found for version 33', auto-preserved and stalled. Any two sibling tasks with different migration sets collide. Fix: per-run prefix PILOT_CONSOLE_TESTDB_PREFIX (console#428) in the box gate command.",
+        "path": "memories/pitfalls/mem-268.md",
+        "confidence": 0.85,
+        "concepts": [
+          "pilot-console",
+          "quality-gate"
+        ],
+        "created": "2026-10-22",
+        "last_validated": "2026-10-22"
+      },
+      "mem-269": {
+        "type": "pitfall",
+        "summary": "Effort classifier 429 noise (2026-10-22): internal/executor/effort_classifier.go picks the first of PILOT_CLASSIFIER_API_KEY, ANTHROPIC_API_KEY, ANTHROPIC_AUTH_TOKEN, CLAUDE_CODE_OAUTH_TOKEN; the box has only the OAuth token, so every direct Messages API call returns 429 {message:Error} (23/23 today) and falls back to the subprocess (~5 s per task). Direct mode is disabled only on 401 (GH-5344). These 429s are not an account rate limit and do not correlate with concurrency; do not read them as pool exhaustion. Fix: pilot#5802.",
+        "path": "memories/pitfalls/mem-269.md",
+        "confidence": 0.8,
+        "concepts": [
+          "executor"
+        ],
+        "created": "2026-10-22",
+        "last_validated": "2026-10-22"
+      },
+      "mem-270": {
+        "type": "pitfall",
+        "summary": "Repick policy burns runs on a bad spec (2026-10-22): executor 'declined' and no_op-with-error ('no new commit produced') are not terminal-done for HasTerminalCompletion (internal/memory/store.go:1440), so the dispatcher re-picks them with 30s*2^n backoff up to dispatcherRepickHardCap=5 (dispatcher.go:1393). site#15 ran 5x in 40 min on a premise that did not match the page. Stop by hand: remove the pilot label (a label cycle later re-arms). Fix: cap 2 for these outcomes, pilot#5800.",
+        "path": "memories/pitfalls/mem-270.md",
+        "confidence": 0.85,
+        "concepts": [
+          "dispatcher",
+          "pilot-dispatch"
+        ],
+        "created": "2026-10-22",
+        "last_validated": "2026-10-22"
+      },
+      "mem-271": {
+        "type": "pattern",
+        "summary": "CI-fix size guard parks big PRs for good (2026-10-22): when a tracked PR's CI goes red and the PR has more production additions than max_ci_fix_pr_size (200), controller.go escalateAndHold('CI fix size guard fired') sets StageFailed + pilot-needs-human and spawns no fix issue, even for a flaky unrelated test (console PR#426, 407 additions). Nothing revives it when a rerun goes green on the same SHA; the only redrives are reAdoptHeldRebasePR and redriveFailedPRForBaseRetarget. Recovery today: review + hand squash-merge + label cleanup. Fix: pilot#5801.",
+        "path": "memories/patterns/mem-271.md",
+        "confidence": 0.8,
+        "concepts": [
+          "autopilot"
+        ],
+        "created": "2026-10-22",
+        "last_validated": "2026-10-22"
+      },
+      "mem-272": {
+        "type": "pitfall",
+        "summary": "Non-Go merge conflicts are a hard hold (2026-10-22): autopilot's mechanical conflict resolution covers go.mod/go.sum only; a conflict in any other file sets RebaseHoldActive + needs-manual-rebase + pilot-needs-human and waits for a pushed head SHA. ui PR#253 conflicted with the sibling epic (ui#240 \u2192 PRs 250-252) on six Vue/TS files. Recovery: close the PR, delete the branch, strip the three labels, cycle pilot so the task re-runs from fresh main. Sibling legs that touch the same files should be chained with Blocked by, not filed in parallel.",
+        "path": "memories/pitfalls/mem-272.md",
+        "confidence": 0.8,
+        "concepts": [
+          "autopilot"
+        ],
+        "created": "2026-10-22",
+        "last_validated": "2026-10-22"
+      },
+      "mem-273": {
+        "type": "pattern",
+        "summary": "Probe lines pin a leg's premise (added 2026-10-22, commit after 7dc8c993b): inside a ### LEG body, 'probe: present|absent owner/repo <regex>' lines are checked by scripts/nav-dispatch-legs.py pre-flight with git grep -E on that repo's origin/main and stripped from the filed body. Use one per premise: no enforcer exists yet (absent), the producer emits the field (present), the helper exists (present). Motivated by PR#425 (second daily-cap enforcer) and PR#426 (decoded fields the daemon never emits). SOP new-project-issue-authoring Rule 3d.",
+        "path": "memories/patterns/mem-273.md",
+        "confidence": 0.75,
+        "concepts": [
+          "navigator",
           "pilot-dispatch"
         ],
         "created": "2026-10-22",
@@ -13554,6 +13628,36 @@
       "from": "mem-267",
       "to": "TASK-583",
       "type": "learned-from"
+    },
+    {
+      "from": "mem-268",
+      "to": "TASK-583",
+      "type": "learned-from"
+    },
+    {
+      "from": "mem-269",
+      "to": "TASK-583",
+      "type": "learned-from"
+    },
+    {
+      "from": "mem-270",
+      "to": "TASK-583",
+      "type": "learned-from"
+    },
+    {
+      "from": "mem-271",
+      "to": "TASK-583",
+      "type": "learned-from"
+    },
+    {
+      "from": "mem-272",
+      "to": "TASK-583",
+      "type": "learned-from"
+    },
+    {
+      "from": "mem-273",
+      "to": "TASK-583",
+      "type": "learned-from"
     }
   ],
   "concept_index": {
@@ -13982,7 +14086,9 @@
       "terminal-status-without-rearm-probe-kills-operator-recovery",
       "github-matching-refs-ignores-per-page-and-page",
       "gh5468-unlisted-check-failure-blocks-gate-but-evidence-still-allowlist-scoped",
-      "post-merge-fix-blames-merged-pr-for-preexisting-flake"
+      "post-merge-fix-blames-merged-pr-for-preexisting-flake",
+      "mem-271",
+      "mem-272"
     ],
     "aws": [
       "absolute-state-paths-bypass-cutover-shim",
@@ -14710,7 +14816,8 @@
       "pilot-stalled-status-is-retry-not-cancel",
       "poller-labels-in-progress-before-dispatcher-claim-wedge",
       "reconcile-timeout-counts-queue-wait",
-      "stall-status-reused-as-hold-marker"
+      "stall-status-reused-as-hold-marker",
+      "mem-270"
     ],
     "docs-site-infra": [
       "mem-067"
@@ -14827,7 +14934,8 @@
       "tui-subtask-ghost-rows",
       "workflow-yaml-requires-front-matter",
       "executor-box-has-no-postgres-db-test-evidence-invalid",
-      "mem-267"
+      "mem-267",
+      "mem-269"
     ],
     "external-contributor": [
       "external-fork-pr-sweeps-stale-agent-state"
@@ -15391,7 +15499,8 @@
       "console-wire-contract-gate-needs-raw-body-strings-contains-test",
       "test-fake-daemon-more-permissive-than-real-route-hides-400",
       "mem-265",
-      "mem-266"
+      "mem-266",
+      "mem-268"
     ],
     "pilot-task-command": [
       "TASK-03",
@@ -16232,7 +16341,9 @@
       "spec-rerouting-a-platform-must-rewrite-composed-tests-of-the-old-flow",
       "mem-264",
       "mem-265",
-      "mem-267"
+      "mem-267",
+      "mem-270",
+      "mem-273"
     ],
     "acceptance-evidence": [
       "mem-203",
@@ -16488,14 +16599,18 @@
     ],
     "navigator": [
       "mem-263",
-      "mem-264"
+      "mem-264",
+      "mem-273"
+    ],
+    "quality-gate": [
+      "mem-268"
     ]
   },
-  "last_updated": "2026-10-22T13:40:28.031971+00:00",
+  "last_updated": "2026-10-22T14:07:49.269372+00:00",
   "stats": {
-    "total_nodes": 793,
-    "total_edges": 838,
-    "memory_count": 433
+    "total_nodes": 800,
+    "total_edges": 844,
+    "memory_count": 439
   },
   "metadata": {}
 }
