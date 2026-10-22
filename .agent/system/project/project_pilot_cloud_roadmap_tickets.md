@@ -71,7 +71,7 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 
 | # | Wave | Ticket | § | Size | Status |
 |---|---|---|---|---|---|
-| P1 | 1 | feat(gateway): run-story fields per execution — diff stats, tests passed/failed, evidence-gate result, issue→PR and PR→merge timings | 8.1 | M | 🚧 pilot#5790 → PR#5805 **held `needs-manual-rebase`** (conflicts in `run_story.go`, `server.go`, FEATURE-MATRIX, task doc — non-Go surface, held by design); blocks C1→C2→U6→U7 (10-22) |
+| P1 | 1 | feat(gateway): run-story fields per execution — diff stats, tests passed/failed, evidence-gate result, issue→PR and PR→merge timings | 8.1 | M | 🚧 pilot#5790 → PR#5805 held `needs-manual-rebase` (non-Go conflicts) → closed 18:05Z, issue re-armed (`pilot-retry-ready`); Pilot rebuilds on current main; blocks C1→C2→U6→U7 (10-22) |
 | P2 | 2 | feat(research): `Create tickets` — draft N tickets from a research report in SOP format (H2, Acceptance, `file:line`, `#N` deps); shippable check; epic split on failure | 8.3 | L | 📋 after TASK-518 leg 4 |
 | P3 | 2 | feat(memory): reject reason from the lane → learning memory + graph index | 8.2 D2 | S | 📋 |
 | P4 | 3 | feat(bootstrap): new-project interview (≤5 questions, defaults) → scaffold ticket + 5–10 first tickets per the onboarding SOP | 7 | L | 📋 |
