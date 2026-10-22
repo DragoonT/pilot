@@ -8,7 +8,7 @@ type: project
 
 Source of truth for scope: `project_pilot_cloud_positioning.md` (§ refs below). Wave = §10.
 Size: S ≤ 1 Pilot run · M = 2–3 runs or an epic · L = epic with ≥4 sub-issues.
-Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 18 filed 2026-10-22 (TASK-582 wave 0, TASK-583 wave 1); P12 = #5788. Execution plan for everything else: TASK-584.
+Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 18 filed 2026-10-22; P16/C14/U19 added 10-22 (TASK-589, daily cap owner) (TASK-582 wave 0, TASK-583 wave 1); P12 = #5788. Execution plan for everything else: TASK-584.
 
 ## pilotcloud-site (`qf-studio/pilotcloud-site`) — 8
 
@@ -23,7 +23,7 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 | S7 | 0 | chore(copy): product name Pilot Cloud site-wide; "Console" only as the app URL | 8.6 D5 | S | 🎫 site#16 (10-22) |
 | S8 | 4 | feat(security): Security page — blast-radius statement verbatim + last pen-test summary with date | 8.8 D4 | S | 📋 after P11 |
 
-## pilot-console-ui (`qf-studio/pilot-console-ui`) — 18
+## pilot-console-ui (`qf-studio/pilot-console-ui`) — 19
 
 | # | Wave | Ticket | § | Size | Status |
 |---|---|---|---|---|---|
@@ -45,8 +45,9 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 | U16 | 5 | feat(members): Viewer role invite with project scope; "Approved by …" on lane items | 9.1 | M | 📋 after C11 |
 | U17 | 5 | feat(mobile): re-land `restore/GH-71-mobile` on the new design; Playwright 390×844 check | 9.6 | L | 📋 after U1–U11 |
 | U18 | 5 | feat(docs): edit + create `.agent/` docs from the Docs page, PR per change | 9.5 | M | 📋 |
+| U19 | 1 | feat(board): daily cap banner from the cards response `notice`; `daily_cap_reached` toast names the resume time | TASK-589 | S | 📋 held: after C14 |
 
-## pilot-console (API, `qf-studio/pilot-console`) — 13
+## pilot-console (API, `qf-studio/pilot-console`) — 14
 
 | # | Wave | Ticket | § | Size | Status |
 |---|---|---|---|---|---|
@@ -63,8 +64,9 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 | C11 | 5 | feat(viewer): `viewer` role with `project_ids` scope enforced on every read | 9.1 | M | 📋 |
 | C12 | 4 | feat(db): Postgres RLS — `FORCE ROW LEVEL SECURITY` + `app.current_tenant_id` | 8.8 D3 | M | 📋 |
 | C13 | 3 | feat(onboarding): bootstrap trigger per project, cost cap from TASK-581, status + result surface | 7 | M | 📋 after P5 |
+| C14 | 1 | feat(fleet): daily ticket cap owned by the daemon — render cap + timezone into tenant config, standing → board notice, delete both console gates, pack draw at ledger ingest | TASK-589 (PR#425 D1) | M | 📋 held: after P16 in a daemon release |
 
-## pilot (daemon, `qf-studio/pilot`) — 14
+## pilot (daemon, `qf-studio/pilot`) — 15
 
 | # | Wave | Ticket | § | Size | Status |
 |---|---|---|---|---|---|
@@ -79,9 +81,10 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 | P9 | 1 | feat(briefs): one brief object with a console payload + email payload; receipts digest folds in; cost lines only on own-key | 8.7 | M | 🎫 pilot#5791 (10-22) |
 | P10 | 1 | feat(briefs): weekly Monday brief with proof numbers (tickets shipped, median time to PR, merged) | 8.7 D4 | S | 🎫 pilot#5792 (10-22) |
 | P11 | 1 | test(security): hostile-ticket pen-test harness — fixture repo, injected issue bodies, assertions (env, disk, SSM, egress, cross-tenant) | 8.8 D1 | L | 🎫 pilot#5793 (10-22) |
-| P12 | 3 | feat(bench): bootstrap cost harness + the 4-repo × 3-stage × 2-run matrix | TASK-581 | M | 🎫 #5788 |
+| P12 | 3 | feat(bench): bootstrap cost harness + the 4-repo × 3-stage × 2-run matrix | TASK-581 | M | ✅ #5788 → PR#5789 (10-22) |
 | P13 | 5 | feat(templates): deploy-template ticket sets — VPS (Compose + Actions over SSH), AWS | 9.2 | L | 📋 |
 | P14 | 5 | feat(pm-mode): preview URL on the Run Story + merge-on-green per project behind the evidence gates | 9.4 | L | 📋 |
+| P16 | 1 | feat(executor): daily ticket cap held at `ExecutionLifecycle.Begin` — `executor.daily_ticket_cap` + timezone keys, org-local day, `GET /api/v1/executions/daily-cap` standing | TASK-589 | M | 📋 ready to file |
 
 ## infra (fleet, Nelya / `aws-infrastructure-pilot`) — 4
 
