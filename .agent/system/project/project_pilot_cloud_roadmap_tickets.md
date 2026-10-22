@@ -19,8 +19,8 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 | S3 | 0 | feat(landing): hero = identity sentence; drop the "orchestration layer" line | 8.6 D1 | S | ✅ site#12 → PR#17 (10-22) |
 | S4 | 0 | feat(proof): build-time "Pilot built Pilot: N of M merged PRs" counter (script + section, dated, weekly rebuild) | 8.6 D2 | S | ✅ site#13 → PR#18 (10-22) |
 | S5 | 0 | feat(pricing): `$499 a month · 100 shipped tickets · No seats · Your own box`; packs; "fair use" only; price id pinned | 8.6 D3 | S | ✅ site#14 → PR#19 (10-22) |
-| S6 | 0 | feat(self-hosted): OSS keeps "secrets never leave"; Cloud column says "a box only you use" | 8.6 D4 | S | 🚧 site#15 → PR#20 (rescoped 10-22) |
-| S7 | 0 | chore(copy): product name Pilot Cloud site-wide; "Console" only as the app URL | 8.6 D5 | S | 🎫 site#16 (10-22) |
+| S6 | 0 | feat(self-hosted): OSS keeps "secrets never leave"; Cloud column says "a box only you use" | 8.6 D4 | S | ✅ site#15 → PR#20 merged 13:35Z, reviewed APPROVE-w-notes (10-22) |
+| S7 | 0 | chore(copy): product name Pilot Cloud site-wide; "Console" only as the app URL | 8.6 D5 | S | ✅ site#16 → PR#21 closed (test red) → PR#23 merged 13:59Z, unreviewed; price constants in `lib/site.ts` still duplicated (10-22) |
 | S8 | 4 | feat(security): Security page — blast-radius statement verbatim + last pen-test summary with date | 8.8 D4 | S | 📋 after P11 |
 
 ## pilot-console-ui (`qf-studio/pilot-console-ui`) — 19
@@ -28,14 +28,14 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 | # | Wave | Ticket | § | Size | Status |
 |---|---|---|---|---|---|
 | U1 | 1 | feat(design): tokens, type scale, grid and card primitives from Figma `7-2` (foundation for U2–U11) | 6 | M | ✅ ui#239 → PR#245 (10-22) |
-| U2 | 1 | feat(dashboard): stat cards — Delivered N/100 · Review needed (count + open button) · Time to PR · Projects; header `Last shipped X min ago` + pool meter | 6.2, 6.5 | M | ✅ ui#240 → epic ui#247–249 / PR#250–252 (10-22) |
-| U3 | 1 | feat(dashboard): activity chart 1D/7D/30D | 6 | S | ✅ ui#241 → PR#254 (10-22) |
-| U4 | 1 | feat(queue): queue grouped by project with epic trees; rows show `duration · +a −b`, never tokens | 6.1 | M | 🚧 ui#242 re-run (PR#253 closed, conflict) (10-22) |
-| U5 | 1 | feat(context): Context panel shows growth (`Memories 5.0K · +120 this week`), labeled health | 6.4 | S | 🎫 ui#243 (10-22) |
+| U2 | 1 | feat(dashboard): stat cards — Delivered N/100 · Review needed (count + open button) · Time to PR · Projects; header `Last shipped X min ago` + pool meter | 6.2, 6.5 | M | ✅ ui#240 → epic ui#247–249 / PR#250–252; **reviewed REQUEST-CHANGES** (header bound to 4 dashboard fields no backend sends; StatCard variants unused) → fix ui#262; USD-absent handling ui#263 (10-22) |
+| U3 | 1 | feat(dashboard): activity chart 1D/7D/30D | 6 | S | ✅ ui#241 → PR#254, reviewed APPROVE-w-defects (two charts, 50-event cap, rolling buckets) → ui#264 + console#430 (10-22) |
+| U4 | 1 | feat(queue): queue grouped by project with epic trees; rows show `duration · +a −b`, never tokens | 6.1 | M | ✅ ui#242 → epic ui#256–258; PR#261 (stacked superset) merged 14:34Z carrying the component; PR#260 leftover DIRTY, ui#257 needs-human; unreviewed (10-22) |
+| U5 | 1 | feat(context): Context panel shows growth (`Memories 5.0K · +120 this week`), labeled health | 6.4 | S | ✅ ui#243 → PR#255 merged 13:41Z, unreviewed (10-22) |
 | U6 | 1 | feat(run-story): Run Story card on Done (expand) + ticket page: asked / changed / verified / time / outcome / model; 4 states; `Retry` on Failed | 8.1 | L | 📋 after C1 |
 | U7 | 1 | feat(run-story): share-link view, public, redacted, opt-in toggle | 8.1 D3 | S | 📋 after C2 |
 | U8 | 1 | feat(review): Review needed page — one list, oldest first, grouped by project; 3 item types with the "why" line; Approve / Reject with reason / Send back | 8.2 | L | 📋 after C3 |
-| U9 | 1 | feat(research): Research page per Figma `13-994` — sub-agent tree with DONE badges, report, Context-per-run panel (`Read 12 docs · 4 memories · Created 2`) | 6 research | M | ✅ ui#244 → PR#246 (10-22) |
+| U9 | 1 | feat(research): Research page per Figma `13-994` — sub-agent tree with DONE badges, report, Context-per-run panel (`Read 12 docs · 4 memories · Created 2`) | 6 research | M | ✅ ui#244 → PR#246, reviewed APPROVE-w-defects (mobile chat lost confirmation cards → ui#265; tree/Context bind to events the daemon never emits → P17; mode pills inert → ui#266 decision) (10-22) |
 | U10 | 2 | feat(research): `Create tickets` under the report → drafts → lane; edit before approve; board input submits to this page | 8.3, 6.3 | M | 📋 after C5 |
 | U11 | 1 | feat(briefs): Briefs page newest first; bell shows the unread brief | 8.7 | M | 📋 after C6 |
 | U12 | 1 | feat(settings): brief channels (console / email / Slack / Telegram), time + timezone | 8.7 D3 | S | 📋 after C6 |
@@ -57,7 +57,7 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 | C4 | 2 | feat(review): reject reason → learning write-through to the tenant daemon | 8.2 D2 | S | 📋 after P3 |
 | C5 | 2 | feat(drafts): ticket-draft store; approve → GitHub issue with the `pilot` label → Queued; edit before approve | 8.3 | M | 📋 after P2 |
 | C6 | 1 | feat(briefs): brief store + Briefs API; email channel (SES); tenant time + timezone | 8.7 | M | 📋 after P9, I3 |
-| C7 | 1 | feat(metering): pool meter endpoint (% of the $300 ceiling); USD hidden on platform key | 4 | S | ✅ console#423 → PR#427 recovery (10-22) |
+| C7 | 1 | feat(metering): pool meter endpoint (% of the $300 ceiling); USD hidden on platform key | 4 | S | ✅ console#423 → PR#427 recovery, reviewed APPROVE-w-notes → console#431 (proxy /metrics USD gap), console#432 (hygiene), ui#263 (10-22) |
 | C8 | 1 | feat(billing): $300 ceiling config; Paddle products for packs 25/$99 and 100/$349 (90-day expiry); daily cap 15 notice | 4 (v3) | M | ✅ console#424 → PR#425, D1 → TASK-589 (10-22) |
 | C9 | 4 | feat(ws): `/ws/dashboard` proxy to the tenant gateway for the live log | 8.5 D3 | M | 📋 after P7, P8 |
 | C10 | 2 | chore(research): verify the daily research-turn cap (50) against the shipped chat-turn metering; adjust | 8.3 D4 | S | 📋 |
@@ -66,7 +66,7 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 | C13 | 3 | feat(onboarding): bootstrap trigger per project, cost cap from TASK-581, status + result surface | 7 | M | 📋 after P5 |
 | C14 | 1 | feat(fleet): daily ticket cap owned by the daemon — render cap + timezone into tenant config, standing → board notice, delete both console gates, pack draw at ledger ingest | TASK-589 (PR#425 D1) | M | 📋 held: after P16 in a daemon release |
 
-## pilot (daemon, `qf-studio/pilot`) — 15
+## pilot (daemon, `qf-studio/pilot`) — 16
 
 | # | Wave | Ticket | § | Size | Status |
 |---|---|---|---|---|---|
@@ -78,13 +78,14 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 | P6 | 3 | feat(bootstrap): external docs ingestion v1 — URL / upload → `.agent/system/`, indexed by Navigator | 7 | M | 📋 |
 | P7 | 4 | feat(gateway): redaction scrubber at the gateway edge — `secretpatterns` + env-name rule — on event `detail` and the stream | 8.5 D2 | M | 📋 |
 | P8 | 4 | feat(gateway): tool-call line events (`read` / `edit +a −b` / `run … ✓`), 7-day retention | 8.5 D1/D4 | M | 📋 |
-| P9 | 1 | feat(briefs): one brief object with a console payload + email payload; receipts digest folds in; cost lines only on own-key | 8.7 | M | 🎫 pilot#5791 (10-22) |
+| P9 | 1 | feat(briefs): one brief object with a console payload + email payload; receipts digest folds in; cost lines only on own-key | 8.7 | M | ✅ pilot#5791 → PR#5799, in v2.293.0 (14:27Z), unreviewed (10-22) |
 | P10 | 1 | feat(briefs): weekly Monday brief with proof numbers (tickets shipped, median time to PR, merged) | 8.7 D4 | S | 🎫 pilot#5792 (10-22) |
 | P11 | 1 | test(security): hostile-ticket pen-test harness — fixture repo, injected issue bodies, assertions (env, disk, SSM, egress, cross-tenant) | 8.8 D1 | L | 🚧 pilot#5793 → PR#5795 merged but REQUEST-CHANGES: harness scored 8 backend failures as PASS → fix #5798; hard gate NOT met (10-22) |
 | P12 | 3 | feat(bench): bootstrap cost harness + the 4-repo × 3-stage × 2-run matrix | TASK-581 | M | ✅ #5788 → PR#5789 (10-22) |
 | P13 | 5 | feat(templates): deploy-template ticket sets — VPS (Compose + Actions over SSH), AWS | 9.2 | L | 📋 |
 | P14 | 5 | feat(pm-mode): preview URL on the Run Story + merge-on-green per project behind the evidence gates | 9.4 | L | 📋 |
 | P16 | 1 | feat(executor): daily ticket cap held at `ExecutionLifecycle.Begin` — `executor.daily_ticket_cap` + timezone keys, org-local day, `GET /api/v1/executions/daily-cap` standing | TASK-589 | M | 🎫 pilot#5794 (10-22) |
+| P17 | 1 | feat(web): `subagent` + `context` chat events (`durationMs`, `docsRead`, `memoriesRead`, `memoriesCreated`) for the Research page — U9 renders `—` until then | 6 research | M | 🎫 pilot#5810, needs design (10-22) |
 
 ## infra (fleet, Nelya / `aws-infrastructure-pilot`) — 4
 

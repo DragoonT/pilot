@@ -9435,6 +9435,19 @@
         ],
         "created": "2026-10-22",
         "last_validated": "2026-10-22"
+      },
+      "mem-274": {
+        "type": "pitfall",
+        "summary": "UI legs bind to wire fields the counterpart API never sends (2026-10-22, second instance in one day): ui PR#252 (U2) read orgName/lastShippedAt/poolPercentUsed/timeToPrMinutes from GET /api/v1/dashboard whose console DTO has only window/stats{shipped,needsYou}/activity/projects, so the header rendered dashes on every tenant while CI stayed green (unit tests mock the adapter). Same class as console PR#426 decoding kind/mode/reason/title the daemon never emits. Pilot copies a spec's assumed contract into types and fixtures; nothing fails. Guard: every cross-repo field in a LEG gets a 'probe: present owner/repo <regex>' line (mem-273); the review checks the producer's DTO on origin/main, not the consumer's fixture; the spec must say 'name the missing field in the PR body' and the review must verify the body does.",
+        "path": "memories/pitfalls/mem-274.md",
+        "confidence": 0.85,
+        "concepts": [
+          "pilot-dispatch",
+          "testing-quality",
+          "console-ui"
+        ],
+        "created": "2026-10-22",
+        "last_validated": "2026-10-22"
       }
     }
   },
@@ -13658,6 +13671,11 @@
       "from": "mem-273",
       "to": "TASK-583",
       "type": "learned-from"
+    },
+    {
+      "from": "mem-274",
+      "to": "TASK-583",
+      "type": "learned-from"
     }
   ],
   "concept_index": {
@@ -15960,7 +15978,8 @@
       "mem-163",
       "mem-164",
       "mem-165",
-      "unwired-config-field-validated-but-dead"
+      "unwired-config-field-validated-but-dead",
+      "mem-274"
     ],
     "theory-of-mind": [
       "TASK-394",
@@ -16343,7 +16362,8 @@
       "mem-265",
       "mem-267",
       "mem-270",
-      "mem-273"
+      "mem-273",
+      "mem-274"
     ],
     "acceptance-evidence": [
       "mem-203",
@@ -16563,7 +16583,8 @@
       "smoke-new-user-flows-with-a-fresh-account-registration-side-effects"
     ],
     "console-ui": [
-      "smoke-new-user-flows-with-a-fresh-account-registration-side-effects"
+      "smoke-new-user-flows-with-a-fresh-account-registration-side-effects",
+      "mem-274"
     ],
     "self-close": [
       "autopilot-selfclose-handoff-leaves-original-task-repickable"
@@ -16606,11 +16627,11 @@
       "mem-268"
     ]
   },
-  "last_updated": "2026-10-22T14:07:49.269372+00:00",
+  "last_updated": "2026-10-22T14:45:33.958570+00:00",
   "stats": {
-    "total_nodes": 800,
-    "total_edges": 844,
-    "memory_count": 439
+    "total_nodes": 801,
+    "total_edges": 845,
+    "memory_count": 440
   },
   "metadata": {}
 }

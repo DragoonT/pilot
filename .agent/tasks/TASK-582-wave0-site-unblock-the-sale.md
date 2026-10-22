@@ -1,6 +1,6 @@
 # TASK-582: Wave 0 — pilotcloud.dev copy update (unblock the sale)
 
-**Status**: 🚧 10-22 pm — S3/S4/S5 MERGED (site PR#17/#18/#19, reviewed APPROVE); S6 rescoped after 5 no-op runs → PR#20 open; S7 blocked on #15. Was: 🚀 DISPATCHING 2026-10-22 — legs S3–S7 filed on `qf-studio/pilotcloud-site` (URLs in § Refs). S1 held (founder legal facts), S2 held (Nelya's workflow PR). Full roadmap: `.agent/system/project/project_pilot_cloud_roadmap_tickets.md`; decisions: `.agent/system/project/project_pilot_cloud_positioning.md` §1, §3, §4, §8.6.
+**Status**: ✅ S3–S7 ALL MERGED 10-22 — S3/S4/S5 (PR#17/#18/#19, reviewed APPROVE) · S6 (PR#20 merged 13:35Z, reviewed 16:00Z APPROVE-w-notes) · S7 (PR#21 test red → autopilot fix PR#23 merged 13:59Z, unreviewed; `lib/site.ts` price constants still duplicated — fold in a later copy pass). Held: S1 (founder legal facts), S2 (Nelya PR). Was: 🚀 DISPATCHING 2026-10-22 — legs S3–S7 filed on `qf-studio/pilotcloud-site` (URLs in § Refs). S1 held (founder legal facts), S2 held (Nelya's workflow PR). Full roadmap: `.agent/system/project/project_pilot_cloud_roadmap_tickets.md`; decisions: `.agent/system/project/project_pilot_cloud_positioning.md` §1, §3, §4, §8.6.
 **Created**: 2026-10-22
 **Assignee**: Pilot (S3–S7) · founder (F1 legal facts, F2 Paddle resubmit, F4 review Nelya's PR) · Nelya (I4 deploy workflow)
 
