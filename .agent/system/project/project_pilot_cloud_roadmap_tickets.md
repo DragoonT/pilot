@@ -8,7 +8,7 @@ type: project
 
 Source of truth for scope: `project_pilot_cloud_positioning.md` (§ refs below). Wave = §10.
 Size: S ≤ 1 Pilot run · M = 2–3 runs or an epic · L = epic with ≥4 sub-issues.
-Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 18 filed 2026-10-22 (TASK-582 wave 0, TASK-583 wave 1); P12 = #5788.
+Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 18 filed 2026-10-22 (TASK-582 wave 0, TASK-583 wave 1); P12 = #5788. Execution plan for everything else: TASK-584.
 
 ## pilotcloud-site (`qf-studio/pilotcloud-site`) — 8
 
@@ -117,7 +117,7 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 
 | # | Wave | Item | § | Size | Status |
 |---|---|---|---|---|---|
-| O1 | 1 | GitHub Marketplace listing for the Pilot GitHub App — listing copy from §1/§4, screenshots from the new design, install → console signup link; verified-creator requirements | 11 D1(b) | M (ops + site) | 📋 after S1–S7, U1–U2 |
+| O1 | 1 | GitHub Marketplace listing for the Pilot GitHub App — listing copy from §1/§4, screenshots from the new design, install → console signup link; verified-creator requirements. **Research 10-22: a paid listing needs 100 installs first — ship the free listing first.** | 11 D1(b) | M (ops + site) | 📋 after S1–S7, U1–U2 |
 | O2 | 0 | Web deep-research: dev-agency market size (3–15 eng) and the channels agencies buy tools through; sourced report → §11 | 11 D3 | M (nav-deep-research) | ✅ `.agent/research/many-software-development-agencies-3-15/report.md` (2026-10-22) |
 | O3 | 1 | Design-partner outreach: list of 20 agencies, one-page offer (proof counter, free bootstrap, $499 / 100 tickets), 5 signed | 11 D2 | founder | ⏳ after W0 |
 
