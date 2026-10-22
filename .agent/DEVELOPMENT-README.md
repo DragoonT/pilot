@@ -156,6 +156,7 @@ Disable via config: `executor.navigator.auto_init: false`
 ### Research Reports (research/)
 
 - `research/ai-coding-agent-products-price-extra/report.md` — Cost-plus 1-4% per ticket loses money; keep Pilot's flat plan (47 sources, 2026-10-13)
+- `research/many-software-development-agencies-3-15/report.md` — Small software agencies: founder-bought tools, cheap seats, consent-gated agent adoption (45 sources, 2026-10-22)
 
 ## Current State
 

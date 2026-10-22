@@ -430,6 +430,27 @@ X / Reddit / HN. Today's Cloud segment is agencies (section 4), who are not ther
 Decisions: D1 channel split as above · D2 bootstrap-led sales, 5 design-partner agencies ·
 D3 market size + agency channels via web deep-research before any number is published.
 
+### Research findings (2026-10-22)
+
+Report: `.agent/research/many-software-development-agencies-3-15/report.md` (45 sources, gate
+passed). No source counts the 3–15-engineer band; these are the bracketing statistics.
+
+- **EU27 2023, NACE J62:** 146,289 firms with 2–9 persons, 21,249 with 10–19 (includes IT
+  consultancies) — https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sbs_sc_ovw?geo=EU27_2020&nace_r2=J62&indic_sbs=ENT_NR&time=2023&format=JSON&lang=EN
+- **US 2023, NAICS 541511:** 68,051 establishments; 49,009 under 5 employees, 6,850 with 5–9,
+  4,795 with 10–19 — https://naicscodes.org/code/541511-custom-computer-programming-services/
+- **Agency proxies:** >200k digital agencies worldwide, ~71k North America, pure-play dev shops
+  11% (a floor; blended agencies dominate) — https://prometheanresearch.com/digital-agency-industry-report/
+- **Buying:** agencies at 81% AI-tool adoption, median $63/seat/month, 48% switched primary
+  tool in 12 months, 34% have a formal AI policy, 61% run agentic tools in production —
+  https://www.digitalapplied.com/blog/ai-coding-tool-adoption-2026-developer-survey
+- **Channels:** GitHub Marketplace 1,088 listings — https://appmarketplace.com/marketplaces/github-marketplace/ ;
+  a paid plan needs 100 installs — https://docs.github.com/en/apps/github-marketplace/creating-apps-for-github-marketplace/requirements-for-listing-an-app ;
+  Clutch sponsorship $1,000–5,000+/month, 12-month terms — https://agencyreview.dev/marketplace-reviews/clutch-review ;
+  Agency Hackers targets 15–60-staff agencies — https://www.agencyhackers.com/what-we-do/
+- **Billing:** 27% of agencies got AI-discount requests; 13% of those cut prices — https://techbullion.com/the-discounting-myth-why-most-agencies-arent-losing-money-to-ai-competition/
+- **Objections:** 73% of agency MSAs have no AI clause — https://www.numonic.ai/blog/ai-clauses-agency-contracts-2026
+
 ## Copy changes implied
 
 - `docs/content/index.mdx:73` "secrets never leave your environment" → dedicated-box wording.

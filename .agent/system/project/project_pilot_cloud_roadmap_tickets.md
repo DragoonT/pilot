@@ -118,7 +118,7 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 | # | Wave | Item | § | Size | Status |
 |---|---|---|---|---|---|
 | O1 | 1 | GitHub Marketplace listing for the Pilot GitHub App — listing copy from §1/§4, screenshots from the new design, install → console signup link; verified-creator requirements | 11 D1(b) | M (ops + site) | 📋 after S1–S7, U1–U2 |
-| O2 | 0 | Web deep-research: dev-agency market size (3–15 eng) and the channels agencies buy tools through; sourced report → §11 | 11 D3 | M (nav-deep-research) | 📋 |
+| O2 | 0 | Web deep-research: dev-agency market size (3–15 eng) and the channels agencies buy tools through; sourced report → §11 | 11 D3 | M (nav-deep-research) | ✅ `.agent/research/many-software-development-agencies-3-15/report.md` (2026-10-22) |
 | O3 | 1 | Design-partner outreach: list of 20 agencies, one-page offer (proof counter, free bootstrap, $499 / 100 tickets), 5 signed | 11 D2 | founder | ⏳ after W0 |
 
 **Totals:** site 8 · console-ui 18 · console API 13 · daemon 14 · infra 4 · design 7 · founder 4 · go-to-market 3 = **71**.

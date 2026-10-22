@@ -9140,6 +9140,112 @@
         ],
         "created": "2026-10-21",
         "last_validated": "2026-10-21"
+      },
+      "mem-252": {
+        "type": "learning",
+        "summary": "No official statistic counts 3\u201315-engineer agencies; the bracketing classes are Eurostat J62 2\u201319 persons (167,538 EU firms) and CBP 541511 under 20 employees (60,654 US establishments). [https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sbs_sc_ovw?geo=EU27_2020&nace_r2=J62&indic_sbs=ENT_NR&time=2023&format=JSON&lang=EN (fetched 2026-10-22, sha256 79074497214b), https://naicscodes.org/code/541511-custom-computer-programming-services/ (fetched 2026-10-22, sha256 566cf36a0a6b), https://www.census.gov/newsroom/press-releases/2025/2023-county-business-patterns.html (fetched 2026-10-22, sha256 4148b9322c16)]",
+        "path": "memories/learnings/mem-252.md",
+        "confidence": 0.7,
+        "concepts": [
+          "api",
+          "code-style",
+          "deployment"
+        ],
+        "created": "2026-10-22",
+        "last_validated": "2026-10-22"
+      },
+      "mem-253": {
+        "type": "pitfall",
+        "summary": "Statistical classes overstate the agency market, but Promethean's dev-shop share is a floor, not the count: pure-play dev shops are 11% of about 71k North American digital agencies, while Blended agencies spanning design, development and marketing dominate the rest (about 64% by subtraction from the 6% design, 11% dev and 19% marketing shares; writer's arithmetic), against 68,051 US 541511 establishments. [https://prometheanresearch.com/digital-agency-industry-report/ (fetched 2026-10-22, sha256 51db4a639e31), https://naicscodes.org/code/541511-custom-computer-programming-services/ (fetched 2026-10-22, sha256 566cf36a0a6b)]",
+        "path": "memories/pitfalls/mem-253.md",
+        "confidence": 0.7,
+        "concepts": [
+          "api",
+          "deployment"
+        ],
+        "created": "2026-10-22",
+        "last_validated": "2026-10-22"
+      },
+      "mem-254": {
+        "type": "pattern",
+        "summary": "In shops under 10 FTE the founder holds every key seat, so the tool buyer is most likely the owner paying by card (writer's inference; no source surveys agency procurement), with developers influencing the choice. [https://prometheanresearch.com/digital-agency-industry-report/ (fetched 2026-10-22, sha256 51db4a639e31), https://madewithlove.com/blog/pricing-strategies-in-the-era-of-ai-why-hourly-billing-no-longer-works/ (fetched 2026-10-22, sha256 931d0c6cb1b6), https://survey.stackoverflow.co/2025/work (fetched 2026-10-22, sha256 b41f4fba9712)]",
+        "path": "memories/patterns/mem-254.md",
+        "confidence": 0.7,
+        "concepts": [
+          "deployment"
+        ],
+        "created": "2026-10-22",
+        "last_validated": "2026-10-22"
+      },
+      "mem-255": {
+        "type": "pattern",
+        "summary": "Agencies report a median $63/month per AI coding seat, while Claude Code averages $150\u2013250 per developer per month, so usage, not seats, drives real cost. [https://www.digitalapplied.com/blog/ai-coding-tool-adoption-2026-developer-survey (fetched 2026-10-22, sha256 fd5417a322cc), https://docs.claude.com/en/docs/claude-code/costs (fetched 2026-10-22, sha256 1b64ee365d8c), https://getdx.com/blog/ai-coding-assistant-pricing/ (fetched 2026-10-22, sha256 b04fa5f3b6aa)]",
+        "path": "memories/patterns/mem-255.md",
+        "confidence": 0.7,
+        "concepts": [
+          "deployment"
+        ],
+        "created": "2026-10-22",
+        "last_validated": "2026-10-22"
+      },
+      "mem-256": {
+        "type": "pattern",
+        "summary": "Agencies bill AI-assisted work on unchanged T&M/fixed/retainer mixes and mostly hold rates; AI-discount requests reach about a third but rarely force cuts. [https://prometheanresearch.com/digital-agency-industry-report/ (fetched 2026-10-22, sha256 51db4a639e31), https://productive.io/blog/agencies-in-the-ai-era/ (fetched 2026-10-22, sha256 98740707cc35), https://techbullion.com/the-discounting-myth-why-most-agencies-arent-losing-money-to-ai-competition/ (fetched 2026-10-22, sha256 51f731bdb240)]",
+        "path": "memories/patterns/mem-256.md",
+        "confidence": 0.7,
+        "concepts": [
+          "deployment"
+        ],
+        "created": "2026-10-22",
+        "last_validated": "2026-10-22"
+      },
+      "mem-257": {
+        "type": "learning",
+        "summary": "Clutch is the default software-agency directory but paid placement costs $1,000\u20135,000+/month on 12-month terms with declining traffic. [https://agencyreview.dev/marketplace-reviews/clutch-review (fetched 2026-10-22, sha256 9a5dd0541c42), https://www.trustpilot.com/review/clutch.co?page=2 (fetched 2026-10-22, sha256 0b15fc8afa35)]",
+        "path": "memories/learnings/mem-257.md",
+        "confidence": 0.7,
+        "concepts": [
+          "general"
+        ],
+        "created": "2026-10-22",
+        "last_validated": "2026-10-22"
+      },
+      "mem-258": {
+        "type": "learning",
+        "summary": "The best-documented agency-owner community, Agency Hackers, targets independent agencies of 15\u201360 staff across advertising, creative, e-commerce, SEO and PR, and the 2026 owner conferences are mostly US-based and agency-general; none is dev-specific. [https://www.agencyhackers.com/what-we-do/ (fetched 2026-10-22, sha256 fbe7c6beec7a), https://sakasandcompany.com/agency-conferences-2026/ (fetched 2026-10-22, sha256 91949612599f), https://thedigitalprojectmanager.com/agency-management/agency-owner-conferences/ (fetched 2026-10-22, sha256 e23a885f88df)]",
+        "path": "memories/learnings/mem-258.md",
+        "confidence": 0.7,
+        "concepts": [
+          "deployment",
+          "testing"
+        ],
+        "created": "2026-10-22",
+        "last_validated": "2026-10-22"
+      },
+      "mem-259": {
+        "type": "decision",
+        "summary": "An agent on client repos should run on a commercial provider tier under a DPA with specific written client consent, because most \"no-AI\" clauses target consumer tools or training. [https://dev.to/layerz/your-clients-contract-says-no-ai-what-you-can-still-do-50aa (fetched 2026-10-22, sha256 443f6fa3a28c), https://www.anthropic.com/legal/commercial-terms (fetched 2026-10-22, sha256 af0a11d196a0), https://www.numonic.ai/blog/ai-clauses-agency-contracts-2026 (fetched 2026-10-22, sha256 fba8ea00eedb)]",
+        "path": "memories/decisions/mem-259.md",
+        "confidence": 0.7,
+        "concepts": [
+          "deployment",
+          "testing"
+        ],
+        "created": "2026-10-22",
+        "last_validated": "2026-10-22"
+      },
+      "mem-260": {
+        "type": "pitfall",
+        "summary": "Agent incidents such as the Replit production-database deletion and unsolved prompt injection make destructive-action guardrails a precondition for client trust. [https://incidentdatabase.ai/cite/1152/ (fetched 2026-10-22, sha256 5de8d6366ce3), https://www.fiddler.ai/blog/ai-coding-agent-security (fetched 2026-10-22, sha256 d4991a477ee9), https://www.digitalapplied.com/blog/ai-coding-tool-adoption-2026-developer-survey (fetched 2026-10-22, sha256 fd5417a322cc)]",
+        "path": "memories/pitfalls/mem-260.md",
+        "confidence": 0.7,
+        "concepts": [
+          "database",
+          "deployment",
+          "security"
+        ],
+        "created": "2026-10-22",
+        "last_validated": "2026-10-22"
       }
     }
   },
@@ -13478,7 +13584,9 @@
       "github-matching-refs-ignores-per-page-and-page",
       "TASK-581",
       "TASK-582",
-      "TASK-583"
+      "TASK-583",
+      "mem-252",
+      "mem-253"
     ],
     "approval": [
       "approvals-off-stage-auto-merge",
@@ -14108,7 +14216,8 @@
       "TASK-578",
       "TASK-580",
       "test-db-migrations-race-on-cluster-wide-roles-need-base-db-advisory-lock",
-      "TASK-583"
+      "TASK-583",
+      "mem-260"
     ],
     "decomposition": [
       "decomposer-narrative-bullets-as-subtask-boundaries",
@@ -14344,7 +14453,15 @@
       "TASK-580",
       "TASK-581",
       "TASK-582",
-      "TASK-583"
+      "TASK-583",
+      "mem-252",
+      "mem-253",
+      "mem-254",
+      "mem-255",
+      "mem-256",
+      "mem-258",
+      "mem-259",
+      "mem-260"
     ],
     "dispatch": [
       "auto-preserved-wip-recover-by-cherry-pick-continuation",
@@ -15210,7 +15327,8 @@
       "mem-128",
       "required-checks-allowlist-makes-other-gates-decorative",
       "runselfreview-runs-in-repo-root-phantom-reimplementation",
-      "allowedtools-inert-under-dangerously-skip-permissions"
+      "allowedtools-inert-under-dangerously-skip-permissions",
+      "mem-260"
     ],
     "ship-test": [
       "bake-workflow-tee-masked-failure-promoted-source-ami",
@@ -15509,7 +15627,9 @@
       "TASK-580",
       "TASK-581",
       "TASK-582",
-      "TASK-583"
+      "TASK-583",
+      "mem-258",
+      "mem-259"
     ],
     "testing-quality": [
       "TASK-384",
@@ -16093,7 +16213,8 @@
       "mem-238",
       "mem-240",
       "mem-241",
-      "mem-243"
+      "mem-243",
+      "mem-257"
     ],
     "test-fakes": [
       "test-fake-daemon-more-permissive-than-real-route-hides-400"
@@ -16143,13 +16264,16 @@
     ],
     "ci-monitor": [
       "gh5468-unlisted-check-failure-blocks-gate-but-evidence-still-allowlist-scoped"
+    ],
+    "code-style": [
+      "mem-252"
     ]
   },
-  "last_updated": "2026-10-22T08:55:48.896988+00:00",
+  "last_updated": "2026-10-22T09:13:19.564856+00:00",
   "stats": {
-    "total_nodes": 774,
+    "total_nodes": 783,
     "total_edges": 823,
-    "memory_count": 417
+    "memory_count": 426
   },
   "metadata": {}
 }
