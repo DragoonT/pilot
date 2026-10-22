@@ -10,9 +10,11 @@ Issue-level H2 sections (## Context, ## Scope, ## Acceptance, ## Out of scope, .
 belong to the body. Only doc-level headings end a leg: "## Legs…", "## Held…",
 "## Refs", "## Dispatched…", "## Known pitfalls…".
 
-Bodies may reference earlier legs as `#{{ID}}`; the script files legs in document
+Bodies may reference other legs as `#{{ID}}`; the script files legs in document
 order and substitutes the issue number once the referenced leg is filed (same repo
-only — cross-repo refs are rejected). Before filing, every backticked path span that
+only — cross-repo refs are rejected). A leg already filed in an earlier run resolves
+from the doc's `## Refs` block (`- ID → https://github.com/owner/repo/issues/N`), so
+`--only` re-runs can reference it. Before filing, every backticked path span that
 matches the executor's referenced-path rule (contains "/", not a URL, no whitespace,
 no glob chars, a dot after the last slash) is checked against `origin/main` of the
 local checkout given by --checkout owner/repo=path; a missing path aborts the run
@@ -33,6 +35,7 @@ from pathlib import Path
 
 LEG_RE = re.compile(r"^### LEG (?P<id>[A-Z]+\d+) — repo: (?P<repo>[\w.-]+/[\w.-]+) — title: (?P<title>.+)$")
 REF_RE = re.compile(r"#\{\{([A-Z]+\d+)\}\}")
+REFS_LINE_RE = re.compile(r"^- ([A-Z]+\d+) → (https://github\.com/([\w.-]+/[\w.-]+)/issues/(\d+))$", re.M)
 DOC_SECTION_RE = re.compile(r"^## (Legs|Held|Refs|Dispatched|Known pitfalls)\b")
 SPAN_RE = re.compile(r"`([^`\s]+)`")
 URL_RE = re.compile(r"^[a-z]+://")
@@ -54,6 +57,14 @@ def parse_legs(text: str):
     for leg in legs:
         leg["body"] = "\n".join(leg["body"]).strip() + "\n"
     return legs
+
+
+def parse_refs(text: str):
+    """Legs filed by earlier runs: id -> (repo, number, url) from the `## Refs` block."""
+    if "## Refs" not in text:
+        return {}
+    block = text.split("## Refs", 1)[1]
+    return {lid: (repo, int(num), url) for lid, url, repo, num in REFS_LINE_RE.findall(block)}
 
 
 def referenced_paths(body: str):
@@ -89,7 +100,9 @@ def main() -> int:
     only = {s.strip() for s in args.only.split(",") if s.strip()}
 
     doc = Path(args.doc)
-    legs = parse_legs(doc.read_text())
+    text = doc.read_text()
+    filed = parse_refs(text)
+    legs = parse_legs(text)
     if only:
         legs = [l for l in legs if l["id"] in only]
     if not legs:
@@ -107,18 +120,22 @@ def main() -> int:
             if not path_exists_on_main(co, rel):
                 problems.append(f"{leg['id']}: backticked path not on origin/main: {rel}")
     ids_by_order = [l["id"] for l in legs]
-    repo_by_id = {l["id"]: l["repo"] for l in legs}
+    repo_by_id = {lid: repo for lid, (repo, _, _) in filed.items()}
+    repo_by_id.update({l["id"]: l["repo"] for l in legs})
     for leg in legs:
+        if leg["id"] in filed:
+            problems.append(f"{leg['id']}: already filed as {filed[leg['id']][2]} (drop it from --only)")
         for ref in REF_RE.findall(leg["body"]):
-            if ref not in ids_by_order or ids_by_order.index(ref) >= ids_by_order.index(leg["id"]):
-                problems.append(f"{leg['id']}: ref {{{{{ref}}}}} is not an earlier leg in this run")
+            in_run = ref in ids_by_order and ids_by_order.index(ref) < ids_by_order.index(leg["id"])
+            if not in_run and ref not in filed:
+                problems.append(f"{leg['id']}: ref {{{{{ref}}}}} is neither an earlier leg in this run nor in ## Refs")
             elif repo_by_id.get(ref) != leg["repo"]:
                 problems.append(f"{leg['id']}: ref {{{{{ref}}}}} is in another repo")
     if problems:
         print("PRE-FLIGHT FAILED:\n  " + "\n  ".join(problems), file=sys.stderr)
         return 2
 
-    numbers: dict[str, int] = {}
+    numbers: dict[str, int] = {lid: num for lid, (_, num, _) in filed.items()}
     urls: dict[str, str] = {}
     for leg in legs:
         body = REF_RE.sub(lambda m: f"#{numbers[m.group(1)]}", leg["body"])
@@ -145,7 +162,13 @@ def main() -> int:
         lines = [f"- {lid} → {urls[lid]}" for lid in ids_by_order if lid in urls]
         marker = "(filled by the dispatch script)"
         block = "\n".join(lines)
-        text = text.replace(marker, block, 1) if marker in text else text.rstrip() + "\n\n## Refs\n\n" + block + "\n"
+        if marker in text:
+            text = text.replace(marker, block, 1)
+        elif filed:
+            last = list(REFS_LINE_RE.finditer(text))[-1]
+            text = text[:last.end()] + "\n" + block + text[last.end():]
+        else:
+            text = text.rstrip() + "\n\n## Refs\n\n" + block + "\n"
         doc.write_text(text)
         print(f"Refs written to {doc}")
     return 0
