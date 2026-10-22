@@ -87,20 +87,29 @@ Pricing v3 was decided 2026-10-21. The site must show one plan with the ticket a
 ## Out of scope
 Paddle checkout wiring, the refunds page text.
 
-### LEG S6 — repo: qf-studio/pilotcloud-site — title: feat(self-hosted): OSS keeps "secrets never leave your environment"; Cloud column says "a box only you use"
+### LEG S6 — repo: qf-studio/pilotcloud-site — title: feat(self-hosted): "Self-hosted or Pilot Cloud" block — your code stays in your environment vs a dedicated box only you use; who reviews the PR
 
 ## Context
-The self-hosted page compares the terminal/OSS Pilot with the hosted product. The OSS claim "your secrets never leave your environment" stays. The hosted column must not contradict it: Pilot Cloud runs each tenant on a dedicated instance, so its wording is "a box only you use".
+Rescoped 2026-10-22 after five no-op runs: the self-hosted page has no OSS-vs-Cloud comparison and no "secrets never leave" sentence, so the first version of this issue had nothing to change. The page (`app/self-hosted/page.tsx`) is: install cards → "Where it runs" (`targets`) → "What stays yours" (`safeguards`, a two-column `CardGrid`) → "License" → `PageCta`. Content lives in `lib/content/self-hosted.ts` as `Card` objects (`title`, `text`, `doc`) rendered by `CardGrid` from `components/page/blocks.tsx`. The hero lead already says "Your code stays in your environment." and stays as it is.
+
+Pilot Cloud runs each tenant on a dedicated instance, so the hosted wording must not contradict the OSS claim: OSS = your environment; Cloud = a box only you use.
 
 ## Scope
-- On `app/self-hosted/page.tsx` (and `app/compare/page.tsx` if it has the same comparison): the OSS/terminal column keeps its secrets claim; the hosted column's equivalent row reads exactly **Your code and keys stay on a dedicated box only you use. We never share compute between customers.**
-- Add one row to the comparison, verbatim: **Who reviews the PR** — OSS: **You** · Cloud: **You, from the Review needed lane**.
-- No other copy or layout changes.
+- Add one section to `app/self-hosted/page.tsx` directly after the "What stays yours" section and before "License", using the same `nextSection` spacing and `SectionHead`:
+  - `SectionHead` title **Self-hosted or Pilot Cloud**, lead **The same Pilot. Run it yourself, or let us run it for you on a box only you use.**
+  - Below it a two-column `CardGrid` (`cols={2}`) rendered from a new export `comparison` in `lib/content/self-hosted.ts` with exactly two cards:
+    1. title **Self-hosted** — text, verbatim: **Your code stays in your environment. Who reviews the PR: you.**
+    2. title **Pilot Cloud** — text, verbatim: **Your code and keys stay on a dedicated box only you use. We never share compute between customers. Who reviews the PR: you, from the Review needed lane.**
+  - Neither card links to a doc. If the `Card` type requires `doc`, make it optional and have the card renderer skip the link when it is absent; `safeguards` and `targets` keep their links.
+- No other copy, layout or page changes. The compare page is out of scope.
 
 ## Acceptance
-- [ ] The hosted column shows the sentence above and the new row on both pages that have the comparison.
-- [ ] A test asserts the hosted-column sentence.
+- [ ] The self-hosted page renders the section title, the lead and both card texts verbatim, in that order after "What stays yours".
+- [ ] `tests/pages.test.tsx` (or a new test next to it) renders `SelfHostedPage` and asserts both card texts verbatim.
 - [ ] `make build` and `make test` pass — paste the output into the PR body.
+
+## Out of scope
+Pricing, product-name rename (#16), the compare page, the docs site.
 
 ### LEG S7 — repo: qf-studio/pilotcloud-site — title: chore(copy): product name "Pilot Cloud" site-wide; "Console" only as the app URL
 
