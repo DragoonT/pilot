@@ -1,6 +1,6 @@
 # TASK-591: Pilot post-merge reviewer — the daemon reviews each merged Pilot PR against its issue and posts a verdict
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-26 → pilot#5861 (`pilot`+`no-decompose`) → qf-studio/pilot, labels pilot + no-decompose.
+**Status**: 🚀 PR#5868 hand-opened 2026-10-26 18:10Z from the gate-passed head 3d8f958 of run 2 (both runs died at PR create on the expired task ctx — #5867); `pilot` label removed, queued row canceled; autopilot adopted PR#5868 18:17Z (stage → merges on green). **Post-merge: tier-1 hand review, then flip autopilot.post_merge_review.enabled on the box.** Was: dispatched → pilot#5861 (`pilot`+`no-decompose`).
 **Spec refs**: TASK-460 (delivery-evidence audit: green CI is not proof the requested change shipped); pitfall mem-274; existing secondary-model idiom `internal/executor/intent_judge.go`.
 **Origin**: founder call 2026-10-26 — "why are we reviewing PRs all the time": autopilot merges on green CI; manual post-merge reviews found 3 REQUEST-CHANGES and 26 follow-ups on 10 merges (10-22). Move the review into the daemon; the human reads verdicts.
 

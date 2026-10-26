@@ -53,6 +53,9 @@ probe: absent  qf-studio/pilot evidence budget exhausted
 - The re-pick lease over a stale head (#5864) and the self-upgrade drain that cancels running tasks.
 - Changing which commands the evidence allowlist accepts.
 
+## Salvage done 2026-10-26 18:10Z
+- #5861 → PR#5868 (head 3d8f958) and #5864 → PR#5869 (head 2d4e152) opened by hand; `pilot` labels removed; the two queued rows canceled with `pilot task cancel --project /Users/aleks.petrov/Projects/startups/pilot` (the CLI needs placeholder values for every `${VAR}` in config.yaml to load, and the project flag — without it "No execution found"). Autopilot's reconciler adopted both within 10 min ("adopting untracked open PR").
+
 ## Refs
 - Box evidence: daemon.log 2026-10-26 lines for GH-5861 (15:17:40 → 16:17:41) and GH-5864 (16:17:54 → 17:17:54); executions rows with error "pr-create failed after 3 attempt(s)".
 - F1 → - F1 → https://github.com/qf-studio/pilot/issues/5867
