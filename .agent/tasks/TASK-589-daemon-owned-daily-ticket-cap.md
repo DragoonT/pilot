@@ -1,6 +1,6 @@
 # TASK-589: Daemon-owned daily ticket cap — one hold at `Begin`, console renders the cap and shows the notice
 
-**Status**: 🚀 C14 REFILED 2026-10-26 → console#449 (`pilot`+`no-decompose`). First filing console#441 was auto-decomposed into #443–#447: #443 (migration) failed at the repick cap (work auto-preserved as 4e855fc on branch pilot/GH-443), #447 `declined-preflight` (depends on sibling subtasks), #444–#446 ran without the migration → epic cancelled, all six closed. Lesson: a multi-part console leg goes out `no-decompose`. Was: 🚀 C14 DISPATCHED 2026-10-26 → console#441 (P16 pilot#5794 → #5807/#5808/#5809 all merged, PR#5835 10-23 12:38Z, in v2.294.0; box on v2.294.1). U19 held until C14 merges. Was: 🚀 P16 DISPATCHED 2026-10-22 → pilot#5794. Design 3 chosen by the founder after nav-research (see § Context). Dispatch order: P16 first; C14 and U19 are held until P16 merges and a daemon release carries it.
+**Status**: 🚀 ALL THREE LEGS DISPATCHED — C14 console#449 → PR#451 **MERGED 10-26** (post-merge review APPROVE-w-notes posted); **U19 → ui#280** (`pilot`+`no-decompose`, leg rewritten to the C14 contract: cards response `{cards, notice}`, no 429 path). Was: 🚀 C14 REFILED 2026-10-26 → console#449 (`pilot`+`no-decompose`). First filing console#441 was auto-decomposed into #443–#447: #443 (migration) failed at the repick cap (work auto-preserved as 4e855fc on branch pilot/GH-443), #447 `declined-preflight` (depends on sibling subtasks), #444–#446 ran without the migration → epic cancelled, all six closed. Lesson: a multi-part console leg goes out `no-decompose`. Was: 🚀 C14 DISPATCHED 2026-10-26 → console#441 (P16 pilot#5794 → #5807/#5808/#5809 all merged, PR#5835 10-23 12:38Z, in v2.294.0; box on v2.294.1). U19 held until C14 merges. Was: 🚀 P16 DISPATCHED 2026-10-22 → pilot#5794. Design 3 chosen by the founder after nav-research (see § Context). Dispatch order: P16 first; C14 and U19 are held until P16 merges and a daemon release carries it.
 **Spec refs**: positioning §4 (pricing v3: daily cap 15), §8.7; roadmap rows P16, C14, U19.
 **Origin**: post-merge review of console PR#425 (GH-424, 2026-10-22), defect D1.
 
@@ -91,32 +91,44 @@ The daemon now holds dispatches at the cap (pilot leg TASK-589 P16, standing on 
 - The UI banner (separate issue).
 - Changing the cap value or the plan rows.
 
-## Legs — pilot-console-ui — HELD until C14 merges
+## Legs — pilot-console-ui — dispatched 10-26 → ui#280
 
-### LEG U19 — repo: qf-studio/pilot-console-ui — title: feat(board): daily cap banner from the cards response notice; daily_cap_reached toast names the resume time
+### LEG U19 — repo: qf-studio/pilot-console-ui — title: feat(board): daily cap banner from the cards response notice
 
 ## Context
-The board API returns `notice` on the cards response while the org's daily ticket cap is reached ("Daily cap reached — resumes at 00:00 <tz>"). The UI drops it today: a grep finds no `daily_cap_reached` and `src/views/BoardView.vue` toasts the generic error message. After the console change the hold happens on the daemon, so the banner is the only signal the user gets.
+Since pilot-console C14 (PR#451, merged 2026-10-26) the board list GET /api/v1/board/cards returns an object with two keys: cards (the array the UI already reads) and notice, a string while the org's daily ticket cap is reached ("Daily cap reached — resumes at 00:00 Europe/Berlin", the zone from the org) and null otherwise. The console no longer answers 429 daily_cap_reached on dispatch; the hold is in the tenant daemon, and the board only shows the notice. GET /api/v1/billing/allowance also carries daily_cap, dispatched_today and timezone. The UI drops notice today: a grep finds no reader for it and the board renders cards only.
+
+probe: present qf-studio/pilot-console "notice": h.dailyCapNotice
+probe: present qf-studio/pilot-console json:"dispatched_today"
+probe: absent  qf-studio/pilot-console daily_cap_reached
+probe: present qf-studio/pilot-console-ui getCardExecution\(cardId: string\)
+probe: absent  qf-studio/pilot-console-ui notice\?: string \| null
 
 ## Scope
-- `src/lib/api/httpAdapter.ts`: surface `notice` from the cards response on the board model; map a 429 body with `code` `daily_cap_reached` (still possible from an older console) to a typed error carrying `notice` and `resumes_at`.
-- `src/views/BoardView.vue`: render `notice` as a one-line banner above the columns using the SectionHeader and Chip primitives from the 2026-10 tokens; hide it when `notice` is null. The toast for the typed error shows `notice`, not the generic message.
+- `src/lib/api/httpAdapter.ts` and `src/lib/api/types.ts`: the cards wire type gains notice (string or null) next to cards; the board model exposes it; `src/lib/api/mockAdapter.ts` returns a notice in one fixture and null in the rest.
+- `src/views/BoardView.vue`: render notice as a one-line banner above the columns using the SectionHeader and Chip primitives from the 2026-10 tokens; hide it when notice is null. The banner text is the wire string verbatim; the UI composes nothing.
+- No 429 mapping: the console never returns daily_cap_reached now; do not add a handler for it.
 - No layout change beyond the banner row.
 
 ## Acceptance
-- [ ] A component test renders the banner for a non-null `notice` and nothing for null.
-- [ ] An adapter test maps the 429 `daily_cap_reached` body to the typed error with `notice` and `resumes_at`.
+- [ ] A wire-contract test decodes a fixture that is the exact JSON of GET /api/v1/board/cards as pilot-console internal/boardapi/handlers.go emits (cards plus notice) and asserts notice round-trips as a string and as null. Rename the fixture key notice to banner -> cardsWireContract fails.
+- [ ] A component test renders the banner for a non-null notice with the verbatim text and nothing for null.
 - [ ] `npm run build`, `npm test`, `npm run lint` pass — paste the output into the PR body.
+
+## Out of scope
+- Any dispatch-time error mapping (none exists).
+- The allowance page numbers (daily_cap, dispatched_today) — separate leg if wanted.
 
 ## Held legs
 
 | Leg | Repo | After | Why held |
 |---|---|---|---|
 | C14 | pilot-console | P16 merged and in a daemon release on the fleet AMI / self-upgrade train | needs the standing route on tenants |
-| U19 | pilot-console-ui | C14 merged | needs `notice` sourced from the daemon |
+| U19 | pilot-console-ui | C14 merged 10-26 (PR#451) — dispatched, see Refs | needs `notice` sourced from the daemon |
 
 ## Refs
 
 - P16 → https://github.com/qf-studio/pilot/issues/5794
 - C14 → https://github.com/qf-studio/pilot-console/issues/449
+- U19 → https://github.com/qf-studio/pilot-console-ui/issues/280
 - C14 (epic, cancelled 10-26) → https://github.com/qf-studio/pilot-console/issues/441
