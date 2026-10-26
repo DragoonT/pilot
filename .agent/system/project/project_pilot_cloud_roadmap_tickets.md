@@ -32,7 +32,7 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 | U2 | 1 | feat(dashboard): stat cards — Delivered N/100 · Review needed (count + open button) · Time to PR · Projects; header `Last shipped X min ago` + pool meter | 6.2, 6.5 | M | ✅ ui#240 → epic ui#247–249 / PR#250–252; **reviewed REQUEST-CHANGES** (header bound to 4 dashboard fields no backend sends; StatCard variants unused) → fix ui#262; USD-absent handling ui#263 (10-22) |
 | U3 | 1 | feat(dashboard): activity chart 1D/7D/30D | 6 | S | ✅ ui#241 → PR#254, reviewed APPROVE-w-defects (two charts, 50-event cap, rolling buckets) → ui#264 + console#430 (10-22) |
 | U4 | 1 | feat(queue): queue grouped by project with epic trees; rows show `duration · +a −b`, never tokens | 6.1 | M | ✅ ui#242 → epic ui#256–258; PR#261 (stacked superset) merged 14:34Z carrying the component; PR#260 closed as duplicate, ui#257 closed pilot-done 16:20Z; **reviewed REQUEST-CHANGES** (groups/trees/meta bind to `project`/`parentId`/`durationMs` the console never sends; N+1 fetch) → ui#272 + console#436 (10-22) |
-| U5 | 1 | feat(context): Context panel shows growth (`Memories 5.0K · +120 this week`), labeled health | 6.4 | S | ✅ ui#243 → PR#255 merged 13:41Z; **reviewed REQUEST-CHANGES** (no Needs-API list; Memory card ignores served `counts`; Graph card = dead prop; no `ds-*` tokens) → ui#271 + pilot#5816 (P18) (10-22) |
+| U5 | 1 | feat(context): Context panel shows growth (`Memories 5.0K · +120 this week`), labeled health | 6.4 | S | ✅ ui#243 → PR#255 merged 13:41Z; **reviewed REQUEST-CHANGES** (no Needs-API list; Memory card ignores served `counts`; Graph card = dead prop; no `ds-*` tokens) → ui#271 + pilot#5857 (refiled from #5816) (P18) (10-22) |
 | U6 | 1 | feat(run-story): Run Story card on Done (expand) + ticket page: asked / changed / verified / time / outcome / model; 4 states; `Retry` on Failed | 8.1 | L | 📋 after C1 |
 | U7 | 1 | feat(run-story): share-link view, public, redacted, opt-in toggle | 8.1 D3 | S | 📋 after C2 |
 | U8 | 1 | feat(review): Review needed page — one list, oldest first, grouped by project; 3 item types with the "why" line; Approve / Reject with reason / Send back | 8.2 | L | 🎫 ui#275 (10-26, `no-decompose`) |
@@ -52,9 +52,9 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 
 | # | Wave | Ticket | § | Size | Status |
 |---|---|---|---|---|---|
-| C1 | 1 | feat(run-story): `GET /orgs/{org}/cards/{id}/run-story` — aggregate executions + events + PR data; cost fields omitted on platform key | 8.1 | M | 🎫 console#440 (10-26, `no-decompose`) |
+| C1 | 1 | feat(run-story): `GET /orgs/{org}/cards/{id}/run-story` — aggregate executions + events + PR data; cost fields omitted on platform key | 8.1 | M | 🚧 console#440 → PR#442 red on the wire-contract check → revision console#448 (10-26) |
 | C2 | 1 | feat(run-story): share token (opt-in), redacted public payload | 8.1 D3 | S | 📋 after C1 |
-| C3 | 1 | feat(review): unified Review needed list — approvals + spec drafts + decisions; actions carry `actor_id` | 8.2 | M | ✅ console#422 → PR#426 hand-merged, D1 → pilot#5797 (10-22) |
+| C3 | 1 | feat(review): unified Review needed list — approvals + spec drafts + decisions; actions carry `actor_id` | 8.2 | M | ✅ console#422 → PR#426 hand-merged, D1 → pilot#5858 (refiled from #5797) (10-22) |
 | C4 | 2 | feat(review): reject reason → learning write-through to the tenant daemon | 8.2 D2 | S | 📋 after P3 |
 | C5 | 2 | feat(drafts): ticket-draft store; approve → GitHub issue with the `pilot` label → Queued; edit before approve | 8.3 | M | 📋 after P2 |
 | C6 | 1 | feat(briefs): brief store + Briefs API; email channel (SES); tenant time + timezone | 8.7 | M | 📋 after P9, I3 |
@@ -88,7 +88,7 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 | P15 | 1 | fix(executor): `modelPricing` — Opus 5.5 $4/$20, Sonnet 5.5 + Sonnet 5 $2/$10, Haiku 5.5 $0.10/$0.50, cache-read rate per model (TASK-581 § Found) | 4 | S | 🎫 pilot#5821 (10-22) |
 | P16 | 1 | feat(executor): daily ticket cap held at `ExecutionLifecycle.Begin` — `executor.daily_ticket_cap` + timezone keys, org-local day, `GET /api/v1/executions/daily-cap` standing | TASK-589 | M | ✅ pilot#5794 epic → #5807/#5809 (10-22) + #5808 → PR#5835 merged 10-23 12:38Z, unreviewed; in v2.294.0 |
 | P17 | 1 | feat(web): `subagent` + `context` chat events (`durationMs`, `docsRead`, `memoriesRead`, `memoriesCreated`) for the Research page — U9 renders `—` until then | 6 research | M | 🎫 pilot#5810, needs design (10-22) |
-| P18 | 1 | feat(gateway): docs + graph summary read (`created/updated this week`, memory totals, graph nodes/edges/updatedAt) for the Context panel — U5 renders `—` until then | 6.4 | M | 🎫 pilot#5816 (10-22) |
+| P18 | 1 | feat(gateway): docs + graph summary read (`created/updated this week`, memory totals, graph nodes/edges/updatedAt) for the Context panel — U5 renders `—` until then | 6.4 | M | 🎫 pilot#5857 (refiled from #5816) (10-22) |
 
 ## infra (fleet, Nelya / `aws-infrastructure-pilot`) — 4
 
