@@ -35,7 +35,7 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 | U5 | 1 | feat(context): Context panel shows growth (`Memories 5.0K · +120 this week`), labeled health | 6.4 | S | ✅ ui#243 → PR#255 merged 13:41Z; **reviewed REQUEST-CHANGES** (no Needs-API list; Memory card ignores served `counts`; Graph card = dead prop; no `ds-*` tokens) → ui#271 + pilot#5816 (P18) (10-22) |
 | U6 | 1 | feat(run-story): Run Story card on Done (expand) + ticket page: asked / changed / verified / time / outcome / model; 4 states; `Retry` on Failed | 8.1 | L | 📋 after C1 |
 | U7 | 1 | feat(run-story): share-link view, public, redacted, opt-in toggle | 8.1 D3 | S | 📋 after C2 |
-| U8 | 1 | feat(review): Review needed page — one list, oldest first, grouped by project; 3 item types with the "why" line; Approve / Reject with reason / Send back | 8.2 | L | 📋 after C3 |
+| U8 | 1 | feat(review): Review needed page — one list, oldest first, grouped by project; 3 item types with the "why" line; Approve / Reject with reason / Send back | 8.2 | L | 🎫 ui#275 (10-26, `no-decompose`) |
 | U9 | 1 | feat(research): Research page per Figma `13-994` — sub-agent tree with DONE badges, report, Context-per-run panel (`Read 12 docs · 4 memories · Created 2`) | 6 research | M | ✅ ui#244 → PR#246, reviewed APPROVE-w-defects (mobile chat lost confirmation cards → ui#265; tree/Context bind to events the daemon never emits → P17; mode pills inert → ui#266 decision) (10-22) |
 | U10 | 2 | feat(research): `Create tickets` under the report → drafts → lane; edit before approve; board input submits to this page | 8.3, 6.3 | M | 📋 after C5 |
 | U11 | 1 | feat(briefs): Briefs page newest first; bell shows the unread brief | 8.7 | M | 📋 after C6 |

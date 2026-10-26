@@ -1,6 +1,6 @@
 # TASK-583: Wave 1 — design update + proof surface (Run Story, Review needed, briefs, pen test)
 
-**Status**: 🚀 10-26 — **C1 DISPATCHED → console#440** (`pilot`+`no-decompose`; relays the daemon `run_story` via the history-row → `GET /api/v1/executions/{id}` path, fills the reserved `linesAdded`/`linesRemoved` on the execution join) and **C14 → console#441** (TASK-589). P1 #5790 → PR#5828 (10-22 21:29Z) and P16 #5807/#5808/#5809 → PR#5835 (10-23 12:38Z) merged unreviewed, both in v2.294.1 on the box. Next after C1 merges: C2, U6; after C14: U19. Was: 🚧 10-22 pm (16:00Z) — MERGED: U1 (PR#245) · U2 (epic ui#247–249, PR#250–252) · U3 (PR#254) · U4 (epic ui#256–258 via stacked PR#261; PR#260 leftover) · U5 (PR#255) · U9 (PR#246) · C3 (PR#426, D1 → pilot#5797) · C7 (PR#427) · C8 (PR#425, D1 → TASK-589) · P9 (PR#5799, v2.293.0) · P11 (PR#5795 REQUEST-CHANGES → #5798, gate open). REVIEWED 16:00Z: C7 APPROVE-w-notes → console#431/#432, ui#263 · U3 APPROVE-w-defects → ui#264, console#430 · U9 APPROVE-w-defects → ui#265, pilot#5810 (P17, design), ui#266 (decision) · **U2 REQUEST-CHANGES → ui#262** (header bound to invented dashboard fields; StatCard variants unused). REVIEWED 17:30Z: **U4 REQUEST-CHANGES → ui#272 + console#436** (Queue binds to `project`/`parentId`/`durationMs` the console never sends; N+1 fetch) · **U5 REQUEST-CHANGES → ui#271 + pilot#5816 (P18)** (Memory card ignores served `counts`; Graph card dead prop; no `ds-*`) · P9 APPROVE-w-defects → pilot#5812/#5813/#5814. All wave-1 merges are now reviewed. Three of six UI PRs (#252, #259/#261, #255) bound to unsent or unsupplied fields → mem-274. P10 MERGED 19:25Z (PR#5822), reviewed APPROVE-w-defects → #5837/#5838. P1: PR#5805 closed (manual-rebase hold), #5790 re-armed and queued. Was: 🚀 DISPATCHING 2026-10-22 — first batch filed: U1 + U2–U5, U9 (blocked by U1) on `pilot-console-ui`; P1, P9, P10 (blocked by P9), P11 on `pilot`; C3, C7, C8 on `pilot-console`. Held until upstream merges (cross-repo deps are not machine-readable): U6/U7 (after C1), U8 (after C3), U11/U12 (after C6), C1/C2 (after P1), C6 (after P9 + I3). Design legs D1–D5, D7 and infra I2/I3 are founder / Nelya items. Roadmap: `.agent/system/project/project_pilot_cloud_roadmap_tickets.md`; decisions: `.agent/system/project/project_pilot_cloud_positioning.md` §6, §8.1, §8.2, §8.7, §8.8, §4.
+**Status**: 🚀 10-26 — **U8 DISPATCHED → ui#275** (`pilot`+`no-decompose`; Review needed page on C3's `GET /api/v1/review`, send_back + comment on decideCard, dashboard card → /review) · **C1 DISPATCHED → console#440** (`pilot`+`no-decompose`; relays the daemon `run_story` via the history-row → `GET /api/v1/executions/{id}` path, fills the reserved `linesAdded`/`linesRemoved` on the execution join) and **C14 → console#441** (TASK-589). P1 #5790 → PR#5828 (10-22 21:29Z) and P16 #5807/#5808/#5809 → PR#5835 (10-23 12:38Z) merged unreviewed, both in v2.294.1 on the box. Next after C1 merges: C2, U6; after C14: U19. Was: 🚧 10-22 pm (16:00Z) — MERGED: U1 (PR#245) · U2 (epic ui#247–249, PR#250–252) · U3 (PR#254) · U4 (epic ui#256–258 via stacked PR#261; PR#260 leftover) · U5 (PR#255) · U9 (PR#246) · C3 (PR#426, D1 → pilot#5797) · C7 (PR#427) · C8 (PR#425, D1 → TASK-589) · P9 (PR#5799, v2.293.0) · P11 (PR#5795 REQUEST-CHANGES → #5798, gate open). REVIEWED 16:00Z: C7 APPROVE-w-notes → console#431/#432, ui#263 · U3 APPROVE-w-defects → ui#264, console#430 · U9 APPROVE-w-defects → ui#265, pilot#5810 (P17, design), ui#266 (decision) · **U2 REQUEST-CHANGES → ui#262** (header bound to invented dashboard fields; StatCard variants unused). REVIEWED 17:30Z: **U4 REQUEST-CHANGES → ui#272 + console#436** (Queue binds to `project`/`parentId`/`durationMs` the console never sends; N+1 fetch) · **U5 REQUEST-CHANGES → ui#271 + pilot#5816 (P18)** (Memory card ignores served `counts`; Graph card dead prop; no `ds-*`) · P9 APPROVE-w-defects → pilot#5812/#5813/#5814. All wave-1 merges are now reviewed. Three of six UI PRs (#252, #259/#261, #255) bound to unsent or unsupplied fields → mem-274. P10 MERGED 19:25Z (PR#5822), reviewed APPROVE-w-defects → #5837/#5838. P1: PR#5805 closed (manual-rebase hold), #5790 re-armed and queued. Was: 🚀 DISPATCHING 2026-10-22 — first batch filed: U1 + U2–U5, U9 (blocked by U1) on `pilot-console-ui`; P1, P9, P10 (blocked by P9), P11 on `pilot`; C3, C7, C8 on `pilot-console`. Held until upstream merges (cross-repo deps are not machine-readable): U6/U7 (after C1), U8 (after C3), U11/U12 (after C6), C1/C2 (after P1), C6 (after P9 + I3). Design legs D1–D5, D7 and infra I2/I3 are founder / Nelya items. Roadmap: `.agent/system/project/project_pilot_cloud_roadmap_tickets.md`; decisions: `.agent/system/project/project_pilot_cloud_positioning.md` §6, §8.1, §8.2, §8.7, §8.8, §4.
 
 **P11 hard gate (10-22 review):** PR#5795 merged with a report of 8 PASS, but every executor run had failed in ~2 s (`exit status 1`) and the harness only errors on a nil result → false-success. Fix filed as #5798; the gate stays open until a real run with agent turns is archived.
 **Created**: 2026-10-22
@@ -315,6 +315,43 @@ probe: absent  qf-studio/pilot-console cards/\{id\}/run-story
 - Any UI change (U6, U7).
 - Aggregating several executions of the same task: the daemon's task read already returns the newest execution; the console relays that one.
 
+## Legs — pilot-console-ui (after C3 merged, 10-26)
+
+### LEG U8 — repo: qf-studio/pilot-console-ui — title: feat(review): Review needed page — one list from GET /api/v1/review, oldest first, grouped by project, with the why line; Approve, Reject with reason, Send back
+
+## Context
+C3 shipped the unified list on pilot-console (PR#426, GH-422): GET /api/v1/review returns an object with one key, items, an array already grouped by project and ordered oldest first (groups ordered by their oldest item). Each item has snake_case fields: id, type, project, title, why, created_at, card_id, actions. type is pr_approval or decision (draft is reserved and not emitted yet). card_id is null and actions is empty when the item joins no board card, so there is nothing to act through. The decision verb is the existing POST /api/v1/board/cards/{id}/decision with a body of decision and comment; decision is approve, reject or send_back; comment is required for send_back and ignored otherwise. The daemon fields kind, mode, reason and title on the approvals route are NOT emitted yet (pilot#5797 is parked), so the why line is whatever the console derives; render it as given and never invent one.
+
+In this repo the adapter has no review list method and `src/lib/api/types.ts` types decideCard as approve or reject only. The dashboard's Review needed StatCard links to the board's needs-you lane (`src/views/DashboardView.vue`, test in `src/views/__tests__/DashboardView.spec.ts`). The 2026-10 primitives exist: ListRow, SectionHeader, Chip, Pill, StatCard. `src/composables/useCardDecision.ts` holds the never-optimistic decision rule: a needs-you state only clears from a 200 response. Spec: positioning section 8.2 (D1 three item types, D2 three actions, D3 oldest first grouped by project, D4 owner-only in v1).
+
+probe: present qf-studio/pilot-console json:"why"
+probe: present qf-studio/pilot-console decisionSendBack = "send_back"
+probe: present qf-studio/pilot-console "items": groupReviewItems
+probe: present qf-studio/pilot-console-ui data-review-needed
+probe: present qf-studio/pilot-console-ui decideCard\(cardId: string, decision: 'approve' \| 'reject'\)
+probe: absent  qf-studio/pilot-console-ui api/v1/review
+
+## Scope
+- Adapter (`src/lib/api/types.ts`, `src/lib/api/httpAdapter.ts`, `src/lib/api/mockAdapter.ts`): add a WireReviewItem type with exactly the eight snake_case fields above (card_id nullable, actions a string array) and a listReview method that GETs /api/v1/review and returns the items in server order. Extend decideCard to accept send_back and an optional comment, sending the body decision plus comment; keep the existing error translation. The mock adapter returns three items across two projects, one with card_id null.
+- Route: add /review named review in `src/router/index.ts`, authenticated like board.
+- View: new file src/views/ReviewView.vue. One list in server order (do not re-sort or re-group on the client). A SectionHeader opens each project group where project changes in server order. Each item is a ListRow with a Chip for the type (PR for pr_approval, Decision for decision), the title, the why line, and the age from created_at. Actions on the row, only when card_id is not null: Approve; Reject, which opens a reason TextArea and sends decision reject with the reason as comment (the console ignores the comment on reject today; storing it as a learning is a console follow-up, not this leg); Send back, which requires a comment and sends decision send_back. An item with card_id null renders no buttons and a muted "no card on the board" note. The row leaves the list only after a 200 and a re-fetch of the list (the useCardDecision rule). Empty state: one line "Nothing waits on you".
+- Dashboard: point the Review needed StatCard to the review route and update its test. Add a Review entry to `src/design-system/components/AppRail.vue` after Board. No new mobile tab; the mobile path is the dashboard card.
+- No new wire field: the page reads only the eight fields the console emits. No token or USD string anywhere on the page.
+- One line in the PR body names the adapter the view uses in dev and in the test (httpAdapter vs mockAdapter).
+
+## Acceptance
+- [ ] A wire-contract test decodes a fixture that is the exact JSON of GET /api/v1/review as pilot-console internal/boardapi/review.go emits (two projects, three items, one with card_id null and empty actions) into WireReviewItem and asserts all eight fields per item. Rename the fixture key why to reason -> reviewWireContract fails.
+- [ ] View tests: items render in fixture order with two SectionHeaders; the null-card item has no buttons; Reject's send is disabled until the reason has text; Send back's send is disabled until the comment has text; after a mocked 200 the list is re-fetched and the item is gone; after a mocked 409 the item stays and a toast shows the message.
+- [ ] Adapter tests: listReview GETs /api/v1/review; decideCard posts decision send_back with the comment and the CSRF header; decideCard with reject and a comment posts both fields.
+- [ ] Dashboard test: the Review needed card href is /review.
+- [ ] `npm run build`, `npm test`, `npm run lint` pass — paste the output into the PR body.
+
+## Out of scope
+- The draft item type (not emitted yet) and the share link (U7).
+- Storing the reject reason as a learning (console side).
+- Roles beyond owner (D4).
+- Badge counts on the rail.
+
 ## Held legs (filed when upstream merges)
 
 | Leg | Repo | After | Body source |
@@ -322,7 +359,6 @@ probe: absent  qf-studio/pilot-console cards/\{id\}/run-story
 | C2 share token | pilot-console | C1 (filed 10-26, see Refs) | roadmap C2 + §8.1 D3 |
 | U6 Run Story card + ticket page | pilot-console-ui | C1 | §8.1 |
 | U7 share-link view | pilot-console-ui | C2 | §8.1 D3 |
-| U8 Review needed page | pilot-console-ui | C3 merged | §8.2 |
 | C6 brief store + Briefs API + email (SES) | pilot-console | P9 merged + I3 | §8.7 |
 | U11 Briefs page + bell | pilot-console-ui | C6 | §8.7 |
 | U12 brief settings | pilot-console-ui | C6 | §8.7 D3 |
@@ -346,6 +382,7 @@ probe: absent  qf-studio/pilot-console cards/\{id\}/run-story
 - C7 → https://github.com/qf-studio/pilot-console/issues/423
 - C8 → https://github.com/qf-studio/pilot-console/issues/424
 - C1 → https://github.com/qf-studio/pilot-console/issues/440
+- U8 → https://github.com/qf-studio/pilot-console-ui/issues/275
 - Follow-ups from the 10-22 reviews (third batch): pilot#5837 (brief kind filter) · pilot#5838 (example config + CLI window)
 - Follow-ups from the 10-22 reviews (second batch): ui#271 (U5 fix) · ui#272 (U4 fix) · console#436 (card/execution DTO fields) · pilot#5816 (P18 docs summary) · pilot#5812/#5813/#5814 (P9 fixes)
 - Follow-ups from the 10-22 reviews: ui#262 (U2 fix) · ui#263 (USD absent) · ui#264 (U3 fix) · ui#265 (chat confirmation) · ui#266 (mode decision) · console#430 (activity since) · console#431 (proxy USD) · console#432 (allowance hygiene) · pilot#5810 (P17 subagent events, design)
