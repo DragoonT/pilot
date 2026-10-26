@@ -53,7 +53,7 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 | # | Wave | Ticket | § | Size | Status |
 |---|---|---|---|---|---|
 | C1 | 1 | feat(run-story): `GET /orgs/{org}/cards/{id}/run-story` — aggregate executions + events + PR data; cost fields omitted on platform key | 8.1 | M | ✅ console#440 → PR#442 merged 10-26 11:40Z (revision #448 added raw-body wire tests), unreviewed |
-| C2 | 1 | feat(run-story): share token (opt-in), redacted public payload | 8.1 D3 | S | 📋 after C1 |
+| C2 | 1 | feat(run-story): share token (opt-in), redacted public payload | 8.1 D3 | S | 📋 UNBLOCKED 10-26 (C1 merged); leg to write |
 | C3 | 1 | feat(review): unified Review needed list — approvals + spec drafts + decisions; actions carry `actor_id` | 8.2 | M | ✅ console#422 → PR#426 hand-merged, D1 → pilot#5858 (refiled from #5797) (10-22) |
 | C4 | 2 | feat(review): reject reason → learning write-through to the tenant daemon | 8.2 D2 | S | 📋 after P3 |
 | C5 | 2 | feat(drafts): ticket-draft store; approve → GitHub issue with the `pilot` label → Queued; edit before approve | 8.3 | M | 📋 after P2 |
