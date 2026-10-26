@@ -1,6 +1,6 @@
 # TASK-583: Wave 1 — design update + proof surface (Run Story, Review needed, briefs, pen test)
 
-**Status**: ✅ 10-26 12:00Z — **C1 MERGED** (console#440 → PR#442 11:40Z; revision #448 added the raw-body wire-contract tests, closed by hand after the runner's `make test` gate failed without a DB) · **U8 MERGED + DEPLOYED** (ui#275 → PR#276 10:59Z, deploy 11:02Z) · **P18 MERGED** (#5857 → PR#5859). None reviewed yet. **Unblocked now: C2, U6, U7 (no legs written)**; console follow-up for P18 (proxy allowlist `docs/summary`) unfiled. Was: 🚀 10-26 — **U8 DISPATCHED → ui#275** (`pilot`+`no-decompose`; Review needed page on C3's `GET /api/v1/review`, send_back + comment on decideCard, dashboard card → /review) · **C1 → console#440 → PR#442 (4/5 checks green; `Check Wire-Contract Tests` red: DTO fields without a raw-body strings.Contains test) → autopilot `pilot-needs-human` → revision issue console#448 (`pilot`+`no-decompose`, continues branch pilot/GH-440)** (`pilot`+`no-decompose`; relays the daemon `run_story` via the history-row → `GET /api/v1/executions/{id}` path, fills the reserved `linesAdded`/`linesRemoved` on the execution join) and **C14 → console#441** (TASK-589). P1 #5790 → PR#5828 (10-22 21:29Z) and P16 #5807/#5808/#5809 → PR#5835 (10-23 12:38Z) merged unreviewed, both in v2.294.1 on the box. Next after C1 merges: C2, U6; after C14: U19. Was: 🚧 10-22 pm (16:00Z) — MERGED: U1 (PR#245) · U2 (epic ui#247–249, PR#250–252) · U3 (PR#254) · U4 (epic ui#256–258 via stacked PR#261; PR#260 leftover) · U5 (PR#255) · U9 (PR#246) · C3 (PR#426, D1 → pilot#5858 (refiled from #5797)) · C7 (PR#427) · C8 (PR#425, D1 → TASK-589) · P9 (PR#5799, v2.293.0) · P11 (PR#5795 REQUEST-CHANGES → #5798, gate open). REVIEWED 16:00Z: C7 APPROVE-w-notes → console#431/#432, ui#263 · U3 APPROVE-w-defects → ui#264, console#430 · U9 APPROVE-w-defects → ui#265, pilot#5810 (P17, design), ui#266 (decision) · **U2 REQUEST-CHANGES → ui#262** (header bound to invented dashboard fields; StatCard variants unused). REVIEWED 17:30Z: **U4 REQUEST-CHANGES → ui#272 + console#436** (Queue binds to `project`/`parentId`/`durationMs` the console never sends; N+1 fetch) · **U5 REQUEST-CHANGES → ui#271 + pilot#5857 (P18, refiled from #5816)** (Memory card ignores served `counts`; Graph card dead prop; no `ds-*`) · P9 APPROVE-w-defects → pilot#5812/#5813/#5814. All wave-1 merges are now reviewed. Three of six UI PRs (#252, #259/#261, #255) bound to unsent or unsupplied fields → mem-274. P10 MERGED 19:25Z (PR#5822), reviewed APPROVE-w-defects → #5837/#5838. P1: PR#5805 closed (manual-rebase hold), #5790 re-armed and queued. Was: 🚀 DISPATCHING 2026-10-22 — first batch filed: U1 + U2–U5, U9 (blocked by U1) on `pilot-console-ui`; P1, P9, P10 (blocked by P9), P11 on `pilot`; C3, C7, C8 on `pilot-console`. Held until upstream merges (cross-repo deps are not machine-readable): U6/U7 (after C1), U8 (after C3), U11/U12 (after C6), C1/C2 (after P1), C6 (after P9 + I3). Design legs D1–D5, D7 and infra I2/I3 are founder / Nelya items. Roadmap: `.agent/system/project/project_pilot_cloud_roadmap_tickets.md`; decisions: `.agent/system/project/project_pilot_cloud_positioning.md` §6, §8.1, §8.2, §8.7, §8.8, §4.
+**Status**: 🚀 10-26 12:40Z — **C2 → console#450, U6 → ui#277 dispatched** (`pilot`+`no-decompose`; C2 = snapshot share with token_hash + public GET /api/v1/share/{token}, U6 = RunStoryCard on the ticket page + done drawer with Retry). **U7 written, HELD** until C2 merges (its probe on /api/v1/share/ fails by design). Was: ✅ 10-26 12:00Z — **C1 MERGED** (console#440 → PR#442 11:40Z; revision #448 added the raw-body wire-contract tests, closed by hand after the runner's `make test` gate failed without a DB) · **U8 MERGED + DEPLOYED** (ui#275 → PR#276 10:59Z, deploy 11:02Z) · **P18 MERGED** (#5857 → PR#5859). None reviewed yet. **Unblocked now: C2, U6, U7 (no legs written)**; console follow-up for P18 (proxy allowlist `docs/summary`) unfiled. Was: 🚀 10-26 — **U8 DISPATCHED → ui#275** (`pilot`+`no-decompose`; Review needed page on C3's `GET /api/v1/review`, send_back + comment on decideCard, dashboard card → /review) · **C1 → console#440 → PR#442 (4/5 checks green; `Check Wire-Contract Tests` red: DTO fields without a raw-body strings.Contains test) → autopilot `pilot-needs-human` → revision issue console#448 (`pilot`+`no-decompose`, continues branch pilot/GH-440)** (`pilot`+`no-decompose`; relays the daemon `run_story` via the history-row → `GET /api/v1/executions/{id}` path, fills the reserved `linesAdded`/`linesRemoved` on the execution join) and **C14 → console#441** (TASK-589). P1 #5790 → PR#5828 (10-22 21:29Z) and P16 #5807/#5808/#5809 → PR#5835 (10-23 12:38Z) merged unreviewed, both in v2.294.1 on the box. Next after C1 merges: C2, U6; after C14: U19. Was: 🚧 10-22 pm (16:00Z) — MERGED: U1 (PR#245) · U2 (epic ui#247–249, PR#250–252) · U3 (PR#254) · U4 (epic ui#256–258 via stacked PR#261; PR#260 leftover) · U5 (PR#255) · U9 (PR#246) · C3 (PR#426, D1 → pilot#5858 (refiled from #5797)) · C7 (PR#427) · C8 (PR#425, D1 → TASK-589) · P9 (PR#5799, v2.293.0) · P11 (PR#5795 REQUEST-CHANGES → #5798, gate open). REVIEWED 16:00Z: C7 APPROVE-w-notes → console#431/#432, ui#263 · U3 APPROVE-w-defects → ui#264, console#430 · U9 APPROVE-w-defects → ui#265, pilot#5810 (P17, design), ui#266 (decision) · **U2 REQUEST-CHANGES → ui#262** (header bound to invented dashboard fields; StatCard variants unused). REVIEWED 17:30Z: **U4 REQUEST-CHANGES → ui#272 + console#436** (Queue binds to `project`/`parentId`/`durationMs` the console never sends; N+1 fetch) · **U5 REQUEST-CHANGES → ui#271 + pilot#5857 (P18, refiled from #5816)** (Memory card ignores served `counts`; Graph card dead prop; no `ds-*`) · P9 APPROVE-w-defects → pilot#5812/#5813/#5814. All wave-1 merges are now reviewed. Three of six UI PRs (#252, #259/#261, #255) bound to unsent or unsupplied fields → mem-274. P10 MERGED 19:25Z (PR#5822), reviewed APPROVE-w-defects → #5837/#5838. P1: PR#5805 closed (manual-rebase hold), #5790 re-armed and queued. Was: 🚀 DISPATCHING 2026-10-22 — first batch filed: U1 + U2–U5, U9 (blocked by U1) on `pilot-console-ui`; P1, P9, P10 (blocked by P9), P11 on `pilot`; C3, C7, C8 on `pilot-console`. Held until upstream merges (cross-repo deps are not machine-readable): U6/U7 (after C1), U8 (after C3), U11/U12 (after C6), C1/C2 (after P1), C6 (after P9 + I3). Design legs D1–D5, D7 and infra I2/I3 are founder / Nelya items. Roadmap: `.agent/system/project/project_pilot_cloud_roadmap_tickets.md`; decisions: `.agent/system/project/project_pilot_cloud_positioning.md` §6, §8.1, §8.2, §8.7, §8.8, §4.
 
 **P11 hard gate (10-22 review):** PR#5795 merged with a report of 8 PASS, but every executor run had failed in ~2 s (`exit status 1`) and the harness only errors on a nil result → false-success. Fix filed as #5798; the gate stays open until a real run with agent turns is archived.
 **Created**: 2026-10-22
@@ -352,13 +352,102 @@ probe: absent  qf-studio/pilot-console-ui api/v1/review
 - Roles beyond owner (D4).
 - Badge counts on the rail.
 
+## Legs — pilot-console (after C1 merged, 10-26 12:30Z)
+
+### LEG C2 — repo: qf-studio/pilot-console — title: feat(run-story): opt-in share link per story — owner creates or revokes a token on a card, public GET /api/v1/share/{token} serves a redacted snapshot
+
+## Context
+C1 (PR#442) serves GET /api/v1/board/cards/{id}/run-story: linked, executionId, taskId, status, runStory (the daemon run_story body: asked, changed, verified, timings, outcome, failure_class, model_name) and reason. Positioning section 8.1 D3: a share link per story, opt-in, secrets redacted, the sales artifact. No share table or public story route exists. Precedents in this repo: org invites mint a random token and store only its sha256 in a token_hash column (`internal/orgs/invites_handlers.go`, `internal/orgs/invites_store.go`); unauthenticated routes are registered without the authenticate wrapper (`internal/bff/handlers.go`, the login route); a per-key rate limiter lives in `internal/email/ratelimit.go`. Migrations run to 0035.
+
+probe: present qf-studio/pilot-console GET /api/v1/board/cards/\{id\}/run-story
+probe: present qf-studio/pilot-console type RunStoryBody struct
+probe: present qf-studio/pilot-console func hashInviteToken
+probe: present qf-studio/pilot-console CREATE TABLE card_links
+probe: absent  qf-studio/pilot-console card_shares
+probe: absent  qf-studio/pilot-console /api/v1/share/
+
+## Scope
+- Migration 0036: table card_shares with id, org_id, card_id (unique: one share per card), token_hash (unique), payload jsonb, created_by, created_at, revoked_at nullable. RLS like the sibling board tables.
+- Snapshot, not live: the public route never calls a tenant daemon. On create the handler reads the run story through the same reader the C1 route uses, redacts it, and stores the result in payload. The owner refreshes by creating again (rotate: the old token is revoked, a new one minted, payload rebuilt).
+- Owner routes in `internal/boardapi/routes.go`, authenticated and CSRF-guarded like the decision route: POST /api/v1/board/cards/{id}/share creates or rotates and returns enabled true, url (the console origin plus /s/ plus the plaintext token, shown only in this response), createdAt; GET /api/v1/board/cards/{id}/share returns enabled, createdAt (no url); DELETE /api/v1/board/cards/{id}/share revokes (204). A card with no linked execution returns 409 with code no_run_story.
+- Public route GET /api/v1/share/{token}: no session, no CSRF, registered next to the login route; looks up by sha256 of the token; unknown, revoked or malformed tokens all answer 404 with the same body; rate limited per client IP (60 per minute, same limiter shape as the email package); response headers Cache-Control no-store and X-Robots-Tag noindex.
+- Redacted payload (snake_case, the only fields the public route emits): title, outcome, failure_class, model_name, changed with files_changed, lines_added, lines_removed, summary; verified with quality_gates (name, passed) and ci_status; timings with queued_at, started_at, pr_opened_at, merged_at, duration_ms; shared_at. Never emitted: issue_url, pr_url, acceptance_evidence, taskId, executionId, card body, org or project names, any token or USD value.
+- Org scoping: the owner routes resolve the card through the board's org like the sibling routes; the public route is keyed by token only and touches no fleet store.
+
+## Acceptance
+- [ ] Wire-contract test with the raw body from the recorder: the public response contains the literal keys title, outcome, changed, verified, timings, shared_at and does not contain issue_url, pr_url, acceptance_evidence, executionId. Remove the redaction of pr_url -> TestShareRedactsLinks fails.
+- [ ] Handler tests: create returns a url whose token hashes to the stored token_hash; a second create rotates (old token 404, new token 200); delete revokes (then 404); unknown and revoked tokens return the same 404 body; the 61st request from one IP in a minute returns 429; a card without a run story returns 409 no_run_story.
+- [ ] Migration test: card_shares exists with the unique constraints on card_id and token_hash.
+- [ ] `make build`, `make test`, `make lint`, `make check-wire-contract-tests`, `make check-fleet-org-scoping` pass — paste the output into the PR body.
+
+## Out of scope
+- The UI toggle and the public page (U7).
+- Live refresh of a shared story (owner rotates to refresh).
+- Roles beyond owner (D4).
+
+## Legs — pilot-console-ui (after C1 merged, 10-26 12:30Z)
+
+### LEG U6 — repo: qf-studio/pilot-console-ui — title: feat(run-story): Run Story card — asked, changed, verified, time, outcome, model; four states; Retry on Failed; on the ticket page and the done-card drawer
+
+## Context
+C1 shipped on pilot-console (PR#442): GET /api/v1/board/cards/{id}/run-story returns an object with camelCase top-level fields linked, executionId, taskId, status, runStory, reason, where runStory is the daemon's run_story body with snake_case leaves: asked (title, issue_url), changed (pr_url, files_changed, lines_added, lines_removed, summary), verified (quality_gates as a list of name and passed, acceptance_evidence, ci_status), timings (queued_at, started_at, pr_opened_at, merged_at, duration_ms), outcome, failure_class, model_name. Every leaf can be null; runStory itself is null with reason no_execution or daemon_unavailable; linked is false for a card without a tracker link. outcome is one of running, review_needed, merged, failed; failure_class is one of ci, env, scope, unknown. The execution join (`src/lib/api/types.ts` CardExecution, adapter getCardExecution) already carries durationMs, linesAdded, linesRemoved. The ticket page `src/views/IssueView.vue` has a Latest run section with `src/design-system/components/PilotRunTimeline.vue`; the done card opens `src/views/BoardCardDrawer.vue`. Spec: positioning section 8.1 (D1 fields, D2 four states with Retry on Failed, D4 model shown, cost never).
+
+probe: present qf-studio/pilot-console json:"runStory"
+probe: present qf-studio/pilot-console type RunStoryBody struct
+probe: present qf-studio/pilot-console-ui getCardExecution\(cardId: string\)
+probe: present qf-studio/pilot-console-ui PilotRunTimeline
+probe: absent  qf-studio/pilot-console-ui run-story
+
+## Scope
+- Adapter (`src/lib/api/types.ts`, `src/lib/api/httpAdapter.ts`, `src/lib/api/mockAdapter.ts`): a WireRunStory type that mirrors the console response exactly as listed in Context (camelCase top level, snake_case inside runStory, nullable leaves) and a getCardRunStory method on GET /api/v1/board/cards/{id}/run-story. The mock adapter returns four stories, one per outcome, plus one with runStory null and reason daemon_unavailable.
+- Component: new file src/design-system/components/RunStoryCard.vue using the 2026-10 primitives (SectionHeader, Chip, Pill, ListRow). Five blocks: Asked (title, issue link), Changed (PR link, files, plus and minus lines, summary), Verified (quality gates as pass or fail chips, CI status, evidence line), Time (issue to PR = pr_opened_at minus queued_at; PR to merge = merged_at minus pr_opened_at; total = duration_ms), Outcome (state pill from outcome; model_name as text). A null leaf renders an em dash; the component never invents a value. State styles: running shows the live phase from the existing timeline below it; review_needed shows a Review pill that links to the review route; merged shows the merge time; failed shows the failure_class chip and a Retry button.
+- Retry: the Retry button calls the existing C8 dispatch adapter method for the card (the path that supersedes a failed or stalled card) and is never optimistic: the card stays failed until the next run-story read says otherwise; errors show in the toast shelf.
+- Mount: on the ticket page above the Latest run section (keep the timeline); in the drawer when the card status is done (expand on click of the done tile). When runStory is null show one muted line with the reason text and nothing else.
+- Cost rule: no token or USD string anywhere in the component; a test asserts the absence of the dollar sign and the word tokens in the rendered text.
+- One line in the PR body names the adapter the views use in dev and in the test (httpAdapter vs mockAdapter).
+
+## Acceptance
+- [ ] A wire-contract test decodes a fixture that is the exact JSON of GET /api/v1/board/cards/{id}/run-story as pilot-console internal/boardapi/dto.go and internal/approvals/client.go emit (all leaves populated) into WireRunStory and asserts every field in Context; a second case with every leaf null decodes to nulls. Rename the fixture key failure_class to failureClass -> runStoryWireContract fails.
+- [ ] Component tests: one render per outcome asserting the state pill and the Retry button only on failed; null leaves render the em dash; the Time block computes issue to PR and PR to merge from the fixture timestamps; the review_needed pill links to /review.
+- [ ] Retry test: a click calls the dispatch adapter once; after a mocked error the card still shows failed and a toast is shown.
+- [ ] Adapter test: getCardRunStory GETs /api/v1/board/cards/{id}/run-story.
+- [ ] `npm run build`, `npm test`, `npm run lint` pass — paste the output into the PR body.
+
+## Out of scope
+- The share toggle and the public story page (U7, after C2).
+- The receipts digest line (TASK-489).
+- Attempt history (the wire tails the newest execution only).
+
+### LEG U7 — repo: qf-studio/pilot-console-ui — title: feat(run-story): share toggle on the ticket page and the public story page /s/{token}, redacted, noindex
+
+## Context
+Blocked by pilot-console C2 (see TASK-583 Refs): owner routes POST, GET and DELETE /api/v1/board/cards/{id}/share and the public GET /api/v1/share/{token} that serves the redacted snapshot: title, outcome, failure_class, model_name, changed (files_changed, lines_added, lines_removed, summary), verified (quality_gates, ci_status), timings (queued_at, started_at, pr_opened_at, merged_at, duration_ms), shared_at. The public route emits no links, no evidence text, no ids and no org or project name. U6 ships RunStoryCard. The router keeps an explicit list of public route names in `src/router/index.ts` (login, register, verify-email and the email-change pages); every other route redirects to login. Spec: positioning section 8.1 D3 (share link, opt-in per story, secrets redacted).
+
+probe: present qf-studio/pilot-console /api/v1/share/
+probe: present qf-studio/pilot-console-ui RunStoryCard
+probe: absent  qf-studio/pilot-console-ui /api/v1/share/
+
+## Scope
+- Adapter (`src/lib/api/types.ts`, `src/lib/api/httpAdapter.ts`, `src/lib/api/mockAdapter.ts`): WireShareStatus (enabled, createdAt, url optional) and WireSharedStory mirroring the public payload exactly; methods getCardShare, createCardShare, deleteCardShare, and getSharedStory(token) which sends no CSRF header and no credentials.
+- Ticket page: a "Share this story" switch next to the RunStoryCard. Off to on calls createCardShare and shows the returned url with a Copy button and the note "Anyone with the link can read a redacted copy. Rotate to refresh." On to off calls deleteCardShare. A second create (Rotate) replaces the shown url. Never optimistic: the switch reflects the last 2xx response.
+- Public page: route /s/:token named shared-story with meta blank true, added to the router's public list; new file src/views/SharedStoryView.vue renders RunStoryCard in a public mode (no Retry, no links, no review pill) from getSharedStory; 404 renders "This story is not shared." with no further detail; a document meta tag robots noindex on this page only.
+- No token or USD string on the public page; no org or project name; the page title is the story title only.
+
+## Acceptance
+- [ ] A wire-contract test decodes a fixture that is the exact JSON of GET /api/v1/share/{token} as pilot-console emits into WireSharedStory and asserts the fields in Context; a test asserts the type has no pr_url, issue_url or acceptance_evidence key. Add pr_url to the public fixture and assert it is rendered -> sharedStoryWireContract fails.
+- [ ] Router test: /s/abc is reachable without a session; /board still redirects to login.
+- [ ] View tests: the switch creates on first toggle and shows the url; delete on toggle off; a 404 from getSharedStory renders the not-shared line; the public render contains no Retry button and no anchor element.
+- [ ] `npm run build`, `npm test`, `npm run lint` pass — paste the output into the PR body.
+
+## Out of scope
+- Share analytics or expiry.
+- Roles beyond owner (D4).
+
 ## Held legs (filed when upstream merges)
 
 | Leg | Repo | After | Body source |
 |---|---|---|---|
-| C2 share token | pilot-console | C1 (filed 10-26, see Refs) | roadmap C2 + §8.1 D3 |
-| U6 Run Story card + ticket page | pilot-console-ui | C1 | §8.1 |
-| U7 share-link view | pilot-console-ui | C2 | §8.1 D3 |
+| U7 share-link view (LEG written 10-26) | pilot-console-ui | C2 console#450 merged | §8.1 D3 |
 | C6 brief store + Briefs API + email (SES) | pilot-console | P9 merged + I3 | §8.7 |
 | U11 Briefs page + bell | pilot-console-ui | C6 | §8.7 |
 | U12 brief settings | pilot-console-ui | C6 | §8.7 D3 |
@@ -383,6 +472,8 @@ probe: absent  qf-studio/pilot-console-ui api/v1/review
 - C8 → https://github.com/qf-studio/pilot-console/issues/424
 - C1 → https://github.com/qf-studio/pilot-console/issues/440
 - U8 → https://github.com/qf-studio/pilot-console-ui/issues/275
+- C2 → https://github.com/qf-studio/pilot-console/issues/450
+- U6 → https://github.com/qf-studio/pilot-console-ui/issues/277
 - Follow-ups from the 10-22 reviews (third batch): pilot#5837 (brief kind filter) · pilot#5838 (example config + CLI window)
 - Follow-ups from the 10-22 reviews (second batch): ui#271 (U5 fix) · ui#272 (U4 fix) · console#436 (card/execution DTO fields) · pilot#5816 (P18 docs summary) · pilot#5812/#5813/#5814 (P9 fixes)
 - Follow-ups from the 10-22 reviews: ui#262 (U2 fix) · ui#263 (USD absent) · ui#264 (U3 fix) · ui#265 (chat confirmation) · ui#266 (mode decision) · console#430 (activity since) · console#431 (proxy USD) · console#432 (allowance hygiene) · pilot#5810 (P17 subagent events, design)
