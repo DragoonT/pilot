@@ -1,6 +1,6 @@
 # TASK-589: Daemon-owned daily ticket cap — one hold at `Begin`, console renders the cap and shows the notice
 
-**Status**: 🚀 C14 DISPATCHED 2026-10-26 → console#441 (P16 pilot#5794 → #5807/#5808/#5809 all merged, PR#5835 10-23 12:38Z, in v2.294.0; box on v2.294.1). U19 held until C14 merges. Was: 🚀 P16 DISPATCHED 2026-10-22 → pilot#5794. Design 3 chosen by the founder after nav-research (see § Context). Dispatch order: P16 first; C14 and U19 are held until P16 merges and a daemon release carries it.
+**Status**: 🚀 C14 REFILED 2026-10-26 → console#449 (`pilot`+`no-decompose`). First filing console#441 was auto-decomposed into #443–#447: #443 (migration) failed at the repick cap (work auto-preserved as 4e855fc on branch pilot/GH-443), #447 `declined-preflight` (depends on sibling subtasks), #444–#446 ran without the migration → epic cancelled, all six closed. Lesson: a multi-part console leg goes out `no-decompose`. Was: 🚀 C14 DISPATCHED 2026-10-26 → console#441 (P16 pilot#5794 → #5807/#5808/#5809 all merged, PR#5835 10-23 12:38Z, in v2.294.0; box on v2.294.1). U19 held until C14 merges. Was: 🚀 P16 DISPATCHED 2026-10-22 → pilot#5794. Design 3 chosen by the founder after nav-research (see § Context). Dispatch order: P16 first; C14 and U19 are held until P16 merges and a daemon release carries it.
 **Spec refs**: positioning §4 (pricing v3: daily cap 15), §8.7; roadmap rows P16, C14, U19.
 **Origin**: post-merge review of console PR#425 (GH-424, 2026-10-22), defect D1.
 
@@ -64,7 +64,7 @@ Pilot Cloud caps an org at N tickets per calendar day (plan default 15). Today t
 - Any console or UI change (separate issues).
 - The monthly USD ceiling and the chat-turn cap (unchanged).
 
-## Legs — pilot-console (API) — dispatched 10-26 → console#441
+## Legs — pilot-console (API) — refiled 10-26 → console#449 (epic #441 cancelled)
 
 ### LEG C14 — repo: qf-studio/pilot-console — title: feat(fleet): daily ticket cap owned by the daemon — render cap and timezone into tenant config, read the daemon standing for the board notice, delete both console gates, draw packs at ledger ingest
 
@@ -118,4 +118,5 @@ The board API returns `notice` on the cards response while the org's daily ticke
 ## Refs
 
 - P16 → https://github.com/qf-studio/pilot/issues/5794
-- C14 → https://github.com/qf-studio/pilot-console/issues/441
+- C14 → https://github.com/qf-studio/pilot-console/issues/449
+- C14 (epic, cancelled 10-26) → https://github.com/qf-studio/pilot-console/issues/441
