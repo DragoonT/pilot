@@ -1,6 +1,6 @@
 # TASK-583: Wave 1 — design update + proof surface (Run Story, Review needed, briefs, pen test)
 
-**Status**: 🚧 10-26 — P1 #5790 → PR#5828 merged 10-22 21:29Z and P16 (#5807/#5808/#5809) → PR#5835 merged 10-23 12:38Z, both unreviewed, both in v2.294.1 on the box. C1→C2→U6→U7 and C14→U19 are unblocked; **LEG C1 is not written yet** (held table only) — author it from `internal/gateway/run_story.go` (`run_story.{asked,changed,verified,timings,outcome,failure_class,model_name}` on `GET /api/v1/executions/{id}` and `/tasks/{taskId}`), then dispatch C1 and C14 (TASK-589). Was: 🚧 10-22 pm (16:00Z) — MERGED: U1 (PR#245) · U2 (epic ui#247–249, PR#250–252) · U3 (PR#254) · U4 (epic ui#256–258 via stacked PR#261; PR#260 leftover) · U5 (PR#255) · U9 (PR#246) · C3 (PR#426, D1 → pilot#5797) · C7 (PR#427) · C8 (PR#425, D1 → TASK-589) · P9 (PR#5799, v2.293.0) · P11 (PR#5795 REQUEST-CHANGES → #5798, gate open). REVIEWED 16:00Z: C7 APPROVE-w-notes → console#431/#432, ui#263 · U3 APPROVE-w-defects → ui#264, console#430 · U9 APPROVE-w-defects → ui#265, pilot#5810 (P17, design), ui#266 (decision) · **U2 REQUEST-CHANGES → ui#262** (header bound to invented dashboard fields; StatCard variants unused). REVIEWED 17:30Z: **U4 REQUEST-CHANGES → ui#272 + console#436** (Queue binds to `project`/`parentId`/`durationMs` the console never sends; N+1 fetch) · **U5 REQUEST-CHANGES → ui#271 + pilot#5816 (P18)** (Memory card ignores served `counts`; Graph card dead prop; no `ds-*`) · P9 APPROVE-w-defects → pilot#5812/#5813/#5814. All wave-1 merges are now reviewed. Three of six UI PRs (#252, #259/#261, #255) bound to unsent or unsupplied fields → mem-274. P10 MERGED 19:25Z (PR#5822), reviewed APPROVE-w-defects → #5837/#5838. P1: PR#5805 closed (manual-rebase hold), #5790 re-armed and queued. Was: 🚀 DISPATCHING 2026-10-22 — first batch filed: U1 + U2–U5, U9 (blocked by U1) on `pilot-console-ui`; P1, P9, P10 (blocked by P9), P11 on `pilot`; C3, C7, C8 on `pilot-console`. Held until upstream merges (cross-repo deps are not machine-readable): U6/U7 (after C1), U8 (after C3), U11/U12 (after C6), C1/C2 (after P1), C6 (after P9 + I3). Design legs D1–D5, D7 and infra I2/I3 are founder / Nelya items. Roadmap: `.agent/system/project/project_pilot_cloud_roadmap_tickets.md`; decisions: `.agent/system/project/project_pilot_cloud_positioning.md` §6, §8.1, §8.2, §8.7, §8.8, §4.
+**Status**: 🚀 10-26 — **C1 DISPATCHED → console#440** (`pilot`+`no-decompose`; relays the daemon `run_story` via the history-row → `GET /api/v1/executions/{id}` path, fills the reserved `linesAdded`/`linesRemoved` on the execution join) and **C14 → console#441** (TASK-589). P1 #5790 → PR#5828 (10-22 21:29Z) and P16 #5807/#5808/#5809 → PR#5835 (10-23 12:38Z) merged unreviewed, both in v2.294.1 on the box. Next after C1 merges: C2, U6; after C14: U19. Was: 🚧 10-22 pm (16:00Z) — MERGED: U1 (PR#245) · U2 (epic ui#247–249, PR#250–252) · U3 (PR#254) · U4 (epic ui#256–258 via stacked PR#261; PR#260 leftover) · U5 (PR#255) · U9 (PR#246) · C3 (PR#426, D1 → pilot#5797) · C7 (PR#427) · C8 (PR#425, D1 → TASK-589) · P9 (PR#5799, v2.293.0) · P11 (PR#5795 REQUEST-CHANGES → #5798, gate open). REVIEWED 16:00Z: C7 APPROVE-w-notes → console#431/#432, ui#263 · U3 APPROVE-w-defects → ui#264, console#430 · U9 APPROVE-w-defects → ui#265, pilot#5810 (P17, design), ui#266 (decision) · **U2 REQUEST-CHANGES → ui#262** (header bound to invented dashboard fields; StatCard variants unused). REVIEWED 17:30Z: **U4 REQUEST-CHANGES → ui#272 + console#436** (Queue binds to `project`/`parentId`/`durationMs` the console never sends; N+1 fetch) · **U5 REQUEST-CHANGES → ui#271 + pilot#5816 (P18)** (Memory card ignores served `counts`; Graph card dead prop; no `ds-*`) · P9 APPROVE-w-defects → pilot#5812/#5813/#5814. All wave-1 merges are now reviewed. Three of six UI PRs (#252, #259/#261, #255) bound to unsent or unsupplied fields → mem-274. P10 MERGED 19:25Z (PR#5822), reviewed APPROVE-w-defects → #5837/#5838. P1: PR#5805 closed (manual-rebase hold), #5790 re-armed and queued. Was: 🚀 DISPATCHING 2026-10-22 — first batch filed: U1 + U2–U5, U9 (blocked by U1) on `pilot-console-ui`; P1, P9, P10 (blocked by P9), P11 on `pilot`; C3, C7, C8 on `pilot-console`. Held until upstream merges (cross-repo deps are not machine-readable): U6/U7 (after C1), U8 (after C3), U11/U12 (after C6), C1/C2 (after P1), C6 (after P9 + I3). Design legs D1–D5, D7 and infra I2/I3 are founder / Nelya items. Roadmap: `.agent/system/project/project_pilot_cloud_roadmap_tickets.md`; decisions: `.agent/system/project/project_pilot_cloud_positioning.md` §6, §8.1, §8.2, §8.7, §8.8, §4.
 
 **P11 hard gate (10-22 review):** PR#5795 merged with a report of 8 PASS, but every executor run had failed in ~2 s (`exit status 1`) and the harness only errors on a nil result → false-success. Fix filed as #5798; the gate stays open until a real run with agent turns is archived.
 **Created**: 2026-10-22
@@ -279,12 +279,47 @@ Pricing v3 (decided 2026-10-21): the ticket is the unit; the dollar ceiling only
 - [ ] Tests: migration moves default-valued orgs to 300 and leaves custom ones; pack purchase, expiry and consumption order; daily cap holds the 16th dispatch and releases next day; no charge on own-key.
 - [ ] `make build`, `make test`, `make lint` pass — paste the output into the PR body.
 
+## Legs — pilot-console (after P1 merged, 10-26)
+
+### LEG C1 — repo: qf-studio/pilot-console — title: feat(run-story): GET /api/v1/board/cards/{id}/run-story — relay the daemon's run_story object for a linked card; no cost fields
+
+## Context
+The daemon (pilot v2.294.0, GH-5790) serves a Run Story object on GET /api/v1/executions/{id} and GET /api/v1/tasks/{taskId}: an executionId, taskId, status and a run_story object with asked, changed, verified, timings, outcome, failure_class and model_name. Every leaf is nullable and the payload carries no cost or token field. The console has no route that reads it. The board already joins a card to its linked issue and the org's running instance in `internal/boardapi/dispatch.go` (handleExecution, resolveOrgInstance) and already calls a tenant daemon per request through the approvals client in `internal/approvals/client.go` (History reads the daemon history list; the do helper resolves the private IP and the gateway bearer token). The execution route's durationMs already comes from the newest history row whose issueID equals the card's sequence_id (runDurationMs), and the executionDTO comment reserves linesAdded and linesRemoved for the daemon run-story read. This leg adds one read route on that path and fills those two reserved fields. Spec: positioning section 8.1 (Run Story, decisions D1, D4).
+
+probe: present qf-studio/pilot json:"run_story"
+probe: present qf-studio/pilot GET /api/v1/tasks/\{taskId\}
+probe: present qf-studio/pilot-console func \(h \*Handler\) handleExecution
+probe: present qf-studio/pilot-console func \(c \*Client\) History\(
+probe: present qf-studio/pilot-console type HistoryReader interface
+probe: present qf-studio/pilot GET /api/v1/executions/\{id\}
+probe: absent  qf-studio/pilot-console cards/\{id\}/run-story
+
+## Scope
+- Route: GET /api/v1/board/cards/{id}/run-story in `internal/boardapi/routes.go`, authenticated like the sibling execution route, no CSRF guard (read only).
+- Handler in `internal/boardapi/dispatch.go` next to handleExecution: resolve org, board, card and link exactly as handleExecution does. No link, or no running instance, returns 200 with linked false (or linked true and run_story null) — never a 5xx for a card that has nothing to tell yet.
+- Execution lookup: scan the daemon history exactly as runDurationMs does (newest row whose issueID equals the card's sequence_id) and take that row's id as the execution id; then call GET /api/v1/executions/{id} on the org's instance. No matching history row, or a daemon 404, returns 200 with run_story null and reason "no_execution". A daemon that is unreachable or non-200 returns 200 with run_story null and reason "daemon_unavailable", logged at warn. Do not guess a task id from sequence_id.
+- Tenant call: add a RunStory method beside History on the approvals client (same do helper, path executions/{id}, same token cache and timeout) and a nil-legal RunStoryReader interface in the board Deps next to History; do not add a second IP or token resolver.
+- DTO in `internal/boardapi/dto.go`: a runStoryDTO with linked, executionId, taskId, status, runStory, reason. runStory is the daemon's run_story object relayed field by field with the daemon's snake_case names kept inside it (asked.title, asked.issue_url, changed.pr_url, changed.files_changed, changed.lines_added, changed.lines_removed, changed.summary, verified.quality_gates[].name, verified.quality_gates[].passed, verified.acceptance_evidence, verified.ci_status, timings.queued_at, timings.started_at, timings.pr_opened_at, timings.merged_at, timings.duration_ms, outcome, failure_class, model_name). A null leaf stays null; the console never substitutes a zero.
+- Execution route: on GET /api/v1/board/cards/{id}/execution, fill executionDTO linesAdded and linesRemoved from run_story.changed when the run-story read succeeds (omitted otherwise, like durationMs). This is the join pilot-console-ui#242 already reads.
+- Cost rule (section 3, D4): the DTO has no cost, usd, tokens or key_source field, on any key source. The daemon payload has none; do not derive any.
+- One line in the PR body names the daemon file the wire shape was copied from (pilot repo, internal/gateway/run_story.go) and the daemon version it was read at (v2.294.1).
+
+## Acceptance
+- [ ] A wire-contract test decodes a fixture that is the exact JSON the daemon emits (copied from pilot internal/gateway/run_story.go at v2.294.1, all leaves populated) into the relay type and asserts every field listed in Scope round-trips; a second case with every leaf null round-trips as null. Rename the fixture key "failure_class" to "failureClass" -> TestRunStoryWireContract fails.
+- [ ] Handler tests with fake history and run-story readers: a linked card with a running instance and a matching history row returns 200 and the relayed object with the daemon's executionId and taskId; an unlinked card returns 200 linked false; no running instance returns 200 with run_story null and reason "daemon_unavailable"; no matching history row or a daemon 404 returns 200 with run_story null and reason "no_execution"; the execution route carries linesAdded and linesRemoved when the run story has them and omits them when the read fails.
+- [ ] A test asserts the encoded DTO contains none of the keys cost, usd, tokens, key_source for a platform-key org and for an own-key org.
+- [ ] `make build`, `make test`, `make lint` pass — paste the output into the PR body.
+
+## Out of scope
+- Share token and public redacted payload (C2, separate issue).
+- Any UI change (U6, U7).
+- Aggregating several executions of the same task: the daemon's task read already returns the newest execution; the console relays that one.
+
 ## Held legs (filed when upstream merges)
 
 | Leg | Repo | After | Body source |
 |---|---|---|---|
-| C1 run-story endpoint | pilot-console | P1 merged | roadmap C1 + §8.1 |
-| C2 share token | pilot-console | C1 | roadmap C2 + §8.1 D3 |
+| C2 share token | pilot-console | C1 (filed 10-26, see Refs) | roadmap C2 + §8.1 D3 |
 | U6 Run Story card + ticket page | pilot-console-ui | C1 | §8.1 |
 | U7 share-link view | pilot-console-ui | C2 | §8.1 D3 |
 | U8 Review needed page | pilot-console-ui | C3 merged | §8.2 |
@@ -310,6 +345,7 @@ Pricing v3 (decided 2026-10-21): the ticket is the unit; the dollar ceiling only
 - C3 → https://github.com/qf-studio/pilot-console/issues/422
 - C7 → https://github.com/qf-studio/pilot-console/issues/423
 - C8 → https://github.com/qf-studio/pilot-console/issues/424
+- C1 → https://github.com/qf-studio/pilot-console/issues/440
 - Follow-ups from the 10-22 reviews (third batch): pilot#5837 (brief kind filter) · pilot#5838 (example config + CLI window)
 - Follow-ups from the 10-22 reviews (second batch): ui#271 (U5 fix) · ui#272 (U4 fix) · console#436 (card/execution DTO fields) · pilot#5816 (P18 docs summary) · pilot#5812/#5813/#5814 (P9 fixes)
 - Follow-ups from the 10-22 reviews: ui#262 (U2 fix) · ui#263 (USD absent) · ui#264 (U3 fix) · ui#265 (chat confirmation) · ui#266 (mode decision) · console#430 (activity since) · console#431 (proxy USD) · console#432 (allowance hygiene) · pilot#5810 (P17 subagent events, design)
