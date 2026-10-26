@@ -33,8 +33,8 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 | U3 | 1 | feat(dashboard): activity chart 1D/7D/30D | 6 | S | ✅ ui#241 → PR#254, reviewed APPROVE-w-defects (two charts, 50-event cap, rolling buckets) → ui#264 + console#430 (10-22) |
 | U4 | 1 | feat(queue): queue grouped by project with epic trees; rows show `duration · +a −b`, never tokens | 6.1 | M | ✅ ui#242 → epic ui#256–258; PR#261 (stacked superset) merged 14:34Z carrying the component; PR#260 closed as duplicate, ui#257 closed pilot-done 16:20Z; **reviewed REQUEST-CHANGES** (groups/trees/meta bind to `project`/`parentId`/`durationMs` the console never sends; N+1 fetch) → ui#272 + console#436 (10-22) |
 | U5 | 1 | feat(context): Context panel shows growth (`Memories 5.0K · +120 this week`), labeled health | 6.4 | S | ✅ ui#243 → PR#255 merged 13:41Z; **reviewed REQUEST-CHANGES** (no Needs-API list; Memory card ignores served `counts`; Graph card = dead prop; no `ds-*` tokens) → ui#271 + pilot#5857 (refiled from #5816) (P18) (10-22) |
-| U6 | 1 | feat(run-story): Run Story card on Done (expand) + ticket page: asked / changed / verified / time / outcome / model; 4 states; `Retry` on Failed | 8.1 | L | 🎫 ui#277 (10-26, `no-decompose`) |
-| U7 | 1 | feat(run-story): share-link view, public, redacted, opt-in toggle | 8.1 D3 | S | 📋 LEG written 10-26, held until console#450 merges |
+| U6 | 1 | feat(run-story): Run Story card on Done (expand) + ticket page: asked / changed / verified / time / outcome / model; 4 states; `Retry` on Failed | 8.1 | L | ✅ ui#277 merged 10-26 |
+| U7 | 1 | feat(run-story): share-link view, public, redacted, opt-in toggle | 8.1 D3 | S | 🎫 ui#282 (10-26, `no-decompose`) |
 | U8 | 1 | feat(review): Review needed page — one list, oldest first, grouped by project; 3 item types with the "why" line; Approve / Reject with reason / Send back | 8.2 | L | ✅ ui#275 → PR#276 merged 10-26 10:59Z, deployed 11:02Z, unreviewed |
 | U9 | 1 | feat(research): Research page per Figma `13-994` — sub-agent tree with DONE badges, report, Context-per-run panel (`Read 12 docs · 4 memories · Created 2`) | 6 research | M | ✅ ui#244 → PR#246, reviewed APPROVE-w-defects (mobile chat lost confirmation cards → ui#265; tree/Context bind to events the daemon never emits → P17; mode pills inert → ui#266 decision) (10-22) |
 | U10 | 2 | feat(research): `Create tickets` under the report → drafts → lane; edit before approve; board input submits to this page | 8.3, 6.3 | M | 📋 after C5 |
@@ -46,14 +46,14 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 | U16 | 5 | feat(members): Viewer role invite with project scope; "Approved by …" on lane items | 9.1 | M | 📋 after C11 |
 | U17 | 5 | feat(mobile): re-land `restore/GH-71-mobile` on the new design; Playwright 390×844 check | 9.6 | L | 📋 after U1–U11 |
 | U18 | 5 | feat(docs): edit + create `.agent/` docs from the Docs page, PR per change | 9.5 | M | 📋 |
-| U19 | 1 | feat(board): daily cap banner from the cards response `notice`; `daily_cap_reached` toast names the resume time | TASK-589 | S | 🎫 ui#280 (10-26, `no-decompose`) |
+| U19 | 1 | feat(board): daily cap banner from the cards response `notice`; `daily_cap_reached` toast names the resume time | TASK-589 | S | 🎫 ui#280 — 1st run failed, retry non-FF on its own stale branch → branch deleted (f688fe4), `pilot-retry-ready` 15:10Z |
 
 ## pilot-console (API, `qf-studio/pilot-console`) — 14
 
 | # | Wave | Ticket | § | Size | Status |
 |---|---|---|---|---|---|
 | C1 | 1 | feat(run-story): `GET /orgs/{org}/cards/{id}/run-story` — aggregate executions + events + PR data; cost fields omitted on platform key | 8.1 | M | ✅ console#440 → PR#442 merged 10-26 11:40Z (revision #448 added raw-body wire tests), unreviewed |
-| C2 | 1 | feat(run-story): share token (opt-in), redacted public payload | 8.1 D3 | S | 🎫 console#450 (10-26, `no-decompose`) |
+| C2 | 1 | feat(run-story): share token (opt-in), redacted public payload | 8.1 D3 | S | ✅ console#450 → PR#452 merged 10-26 |
 | C3 | 1 | feat(review): unified Review needed list — approvals + spec drafts + decisions; actions carry `actor_id` | 8.2 | M | ✅ console#422 → PR#426 hand-merged, D1 → pilot#5858 (refiled from #5797) (10-22) |
 | C4 | 2 | feat(review): reject reason → learning write-through to the tenant daemon | 8.2 D2 | S | 📋 after P3 |
 | C5 | 2 | feat(drafts): ticket-draft store; approve → GitHub issue with the `pilot` label → Queued; edit before approve | 8.3 | M | 📋 after P2 |

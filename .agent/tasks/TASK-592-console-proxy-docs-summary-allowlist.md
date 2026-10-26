@@ -1,6 +1,6 @@
 # TASK-592: Console proxy — allow the daemon's docs/summary read so the Context panel gets its numbers
 
-**Status**: 🚀 X1 dispatched 2026-10-26 → console#453 (`pilot`+`no-decompose`); **X2 (UI Context cards) written, HELD until console#453 merges** — file with the dispatch script `--only X2` (its first probe fails until the proxy tail is on console main). → qf-studio/pilot-console, labels pilot + no-decompose.
+**Status**: 🚀 X1 MERGED (console#453 → PR#454, 10-26 13:xxZ) · **X2 → ui#283 dispatched 15:10Z** (`pilot`+`no-decompose`). → qf-studio/pilot-console, labels pilot + no-decompose.
 **Spec refs**: positioning §8.1 Context panel; pilot#5857 (P18, merged as PR#5859) names this as the console follow-up.
 **Origin**: post-merge review of ui PR#255 (U5): the Context panel renders dashes because no daemon read existed; the daemon read shipped 2026-10-26, the proxy does not forward it yet.
 
@@ -35,7 +35,7 @@ probe: present qf-studio/pilot GET /api/v1/docs/summary
 - The UI change that reads docs/summary into the Context panel cards (separate pilot-console-ui leg).
 - Any cost or token stripping (the body has none).
 
-## Legs — pilot-console-ui — HELD until console#453 merges
+## Legs — pilot-console-ui — dispatched 10-26 → ui#283
 
 ### LEG X2 — repo: qf-studio/pilot-console-ui — title: feat(context): Context panel reads the daemon docs/summary — created and updated this week, memory totals, graph nodes, edges and last updated
 
@@ -70,6 +70,7 @@ probe: absent  qf-studio/pilot-console-ui docs/summary
 ## Refs
 
 - X1 → https://github.com/qf-studio/pilot-console/issues/453
+- X2 → https://github.com/qf-studio/pilot-console-ui/issues/283
 - Pilot issue: https://github.com/qf-studio/pilot-console/issues/453
 
 **Last Updated**: 2026-10-26

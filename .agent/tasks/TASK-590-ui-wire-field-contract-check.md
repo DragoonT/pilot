@@ -1,6 +1,6 @@
 # TASK-590: UI wire-field contract check — CI fails when a Wire* field has no producer json tag
 
-**Status**: 🚀 Dispatched to Pilot 2026-10-26 → ui#279 (`pilot`+`no-decompose`) → qf-studio/pilot-console-ui, labels pilot + no-decompose.
+**Status**: ✅ MERGED 2026-10-26 — ui#279 → PR#281 (wire-field check live in the UI test job; per-route scoping is the follow-up) → qf-studio/pilot-console-ui, labels pilot + no-decompose.
 **Spec refs**: pitfall mem-274 (UI legs bind to wire fields the counterpart API never sends — 4 instances in wave 1); SOP new-project-issue-authoring Rule 3d (probe lines).
 **Origin**: founder call 2026-10-26 — stop blanket post-merge reviews; make CI catch the wire-contract class.
 
