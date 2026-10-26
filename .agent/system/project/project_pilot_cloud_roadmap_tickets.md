@@ -52,7 +52,7 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 
 | # | Wave | Ticket | § | Size | Status |
 |---|---|---|---|---|---|
-| C1 | 1 | feat(run-story): `GET /orgs/{org}/cards/{id}/run-story` — aggregate executions + events + PR data; cost fields omitted on platform key | 8.1 | M | 📋 after P1 |
+| C1 | 1 | feat(run-story): `GET /orgs/{org}/cards/{id}/run-story` — aggregate executions + events + PR data; cost fields omitted on platform key | 8.1 | M | 📋 UNBLOCKED 10-23 (P1 in v2.294.0); leg spec to write from `run_story.go`, then dispatch |
 | C2 | 1 | feat(run-story): share token (opt-in), redacted public payload | 8.1 D3 | S | 📋 after C1 |
 | C3 | 1 | feat(review): unified Review needed list — approvals + spec drafts + decisions; actions carry `actor_id` | 8.2 | M | ✅ console#422 → PR#426 hand-merged, D1 → pilot#5797 (10-22) |
 | C4 | 2 | feat(review): reject reason → learning write-through to the tenant daemon | 8.2 D2 | S | 📋 after P3 |
@@ -65,13 +65,13 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 | C11 | 5 | feat(viewer): `viewer` role with `project_ids` scope enforced on every read | 9.1 | M | 📋 |
 | C12 | 4 | feat(db): Postgres RLS — `FORCE ROW LEVEL SECURITY` + `app.current_tenant_id` | 8.8 D3 | M | 📋 |
 | C13 | 3 | feat(onboarding): bootstrap trigger per project, cost cap from TASK-581, status + result surface | 7 | M | 📋 after P5 |
-| C14 | 1 | feat(fleet): daily ticket cap owned by the daemon — render cap + timezone into tenant config, standing → board notice, delete both console gates, pack draw at ledger ingest | TASK-589 (PR#425 D1) | M | 📋 held: after P16 in a daemon release |
+| C14 | 1 | feat(fleet): daily ticket cap owned by the daemon — render cap + timezone into tenant config, standing → board notice, delete both console gates, pack draw at ledger ingest | TASK-589 (PR#425 D1) | M | 📋 UNBLOCKED 10-24 (P16 in v2.294.0; box on v2.294.1, tenant unchecked); leg ready in TASK-589 → dispatch |
 
 ## pilot (daemon, `qf-studio/pilot`) — 18
 
 | # | Wave | Ticket | § | Size | Status |
 |---|---|---|---|---|---|
-| P1 | 1 | feat(gateway): run-story fields per execution — diff stats, tests passed/failed, evidence-gate result, issue→PR and PR→merge timings | 8.1 | M | 🚧 pilot#5790 → PR#5805 held `needs-manual-rebase` (non-Go conflicts) → closed 18:05Z, issue re-armed (`pilot-retry-ready`); Pilot rebuilds on current main; blocks C1→C2→U6→U7 (10-22) |
+| P1 | 1 | feat(gateway): run-story fields per execution — diff stats, tests passed/failed, evidence-gate result, issue→PR and PR→merge timings | 8.1 | M | ✅ pilot#5790 → PR#5828 merged 10-22 21:29Z (rebuild after PR#5805 manual-rebase hold), unreviewed; in v2.294.0 |
 | P2 | 2 | feat(research): `Create tickets` — draft N tickets from a research report in SOP format (H2, Acceptance, `file:line`, `#N` deps); shippable check; epic split on failure | 8.3 | L | 📋 after TASK-518 leg 4 |
 | P3 | 2 | feat(memory): reject reason from the lane → learning memory + graph index | 8.2 D2 | S | 📋 |
 | P4 | 3 | feat(bootstrap): new-project interview (≤5 questions, defaults) → scaffold ticket + 5–10 first tickets per the onboarding SOP | 7 | L | 📋 |
@@ -86,7 +86,7 @@ Status: 📋 not filed · 🎫 filed (issue #) · 🚧 in flight · ✅ merged. 
 | P13 | 5 | feat(templates): deploy-template ticket sets — VPS (Compose + Actions over SSH), AWS | 9.2 | L | 📋 |
 | P14 | 5 | feat(pm-mode): preview URL on the Run Story + merge-on-green per project behind the evidence gates | 9.4 | L | 📋 |
 | P15 | 1 | fix(executor): `modelPricing` — Opus 5.5 $4/$20, Sonnet 5.5 + Sonnet 5 $2/$10, Haiku 5.5 $0.10/$0.50, cache-read rate per model (TASK-581 § Found) | 4 | S | 🎫 pilot#5821 (10-22) |
-| P16 | 1 | feat(executor): daily ticket cap held at `ExecutionLifecycle.Begin` — `executor.daily_ticket_cap` + timezone keys, org-local day, `GET /api/v1/executions/daily-cap` standing | TASK-589 | M | 🎫 pilot#5794 (10-22) |
+| P16 | 1 | feat(executor): daily ticket cap held at `ExecutionLifecycle.Begin` — `executor.daily_ticket_cap` + timezone keys, org-local day, `GET /api/v1/executions/daily-cap` standing | TASK-589 | M | ✅ pilot#5794 epic → #5807/#5809 (10-22) + #5808 → PR#5835 merged 10-23 12:38Z, unreviewed; in v2.294.0 |
 | P17 | 1 | feat(web): `subagent` + `context` chat events (`durationMs`, `docsRead`, `memoriesRead`, `memoriesCreated`) for the Research page — U9 renders `—` until then | 6 research | M | 🎫 pilot#5810, needs design (10-22) |
 | P18 | 1 | feat(gateway): docs + graph summary read (`created/updated this week`, memory totals, graph nodes/edges/updatedAt) for the Context panel — U5 renders `—` until then | 6.4 | M | 🎫 pilot#5816 (10-22) |
 
