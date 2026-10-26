@@ -34,7 +34,7 @@ probe: absent  qf-studio/pilot realIssue\.Labels
 - [ ] remove the trigger-label check from the new admission guard -> TestHandleGithubIssueEventSDK_LiveLabelsGate fails
 - [ ] remove the recordClaimLostDrop call from the new skip path -> TestHandleGithubIssueEventSDK_LiveLabelsGate fails
 - [ ] `go test -race ./cmd/pilot/ -run TestHandleGithubIssueEventSDK` passes; paste the output into the PR body.
-- [ ] `make build`, `make test`, `make lint` pass — paste the output into the PR body.
+- [ ] Do not re-run make build, make test or make lint as evidence: the daemon's quality gates already run them on this repo (21–36 min on the box), and a second run overruns the 1-hour task budget before the PR is created.
 
 ## Out of scope
 - Moving the SDK's label refresh after the semaphore acquire, or making the SDK bridge propagate Skipped (studio-sdk changes; file separately if wanted).

@@ -3448,6 +3448,18 @@
           "frontend",
           "testing"
         ]
+      },
+      "TASK-597": {
+        "path": "/Users/aleks.petrov/Projects/startups/pilot/.agent/tasks/TASK-597-finalization-overruns-task-budget-evidence-starves-pr-create.md",
+        "title": "finalization overruns the task budget — the acceptance-evidence runner spends the task ctx and PR creation then fails on the dead ctx",
+        "status": "backlog",
+        "concepts": [
+          "api",
+          "testing",
+          "authentication",
+          "context",
+          "deployment"
+        ]
       }
     },
     "memories": {
@@ -9509,6 +9521,19 @@
         ],
         "created": "2026-10-26",
         "last_validated": "2026-10-26"
+      },
+      "evidence-rerun-of-quality-gates-blows-task-budget-pr-create-on-dead-ctx": {
+        "type": "pitfall",
+        "summary": "Evidence runner re-runs make build/test/lint (21–36 min on the box) inside the task budget after the gates already passed; finalizeCtx was derived before push, so the deadline blows during evidence and CreatePR + recovery ref fail on the dead ctx (GH-5861 ×2, GH-5864, ui GH-280, 2026-10-26). Never add that bullet on the pilot repo; fix = TASK-597.",
+        "path": "memories/pitfalls/evidence-rerun-of-quality-gates-blows-task-budget-pr-create-on-dead-ctx.md",
+        "confidence": 0.95,
+        "concepts": [
+          "executor",
+          "quality-gates",
+          "acceptance-evidence"
+        ],
+        "created": "2026-10-26",
+        "last_validated": "2026-10-26"
       }
     }
   },
@@ -13842,6 +13867,46 @@
       "from": "ccd-auto-fix-off-autopilot-owns-pr-ci-loop",
       "to": "workflow",
       "type": "relates-to"
+    },
+    {
+      "from": "TASK-597",
+      "to": "api",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-597",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-597",
+      "to": "authentication",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-597",
+      "to": "context",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-597",
+      "to": "deployment",
+      "type": "implements"
+    },
+    {
+      "from": "evidence-rerun-of-quality-gates-blows-task-budget-pr-create-on-dead-ctx",
+      "to": "executor",
+      "type": "relates-to"
+    },
+    {
+      "from": "evidence-rerun-of-quality-gates-blows-task-budget-pr-create-on-dead-ctx",
+      "to": "acceptance-evidence",
+      "type": "relates-to"
+    },
+    {
+      "from": "evidence-rerun-of-quality-gates-blows-task-budget-pr-create-on-dead-ctx",
+      "to": "backend-timeout-finalization-on-expired-ctx-discards-committed-work",
+      "type": "relates-to"
     }
   ],
   "concept_index": {
@@ -14067,7 +14132,8 @@
       "mem-253",
       "TASK-589",
       "TASK-593",
-      "TASK-596"
+      "TASK-596",
+      "TASK-597"
     ],
     "approval": [
       "approvals-off-stage-auto-merge",
@@ -14194,7 +14260,8 @@
       "TASK-581",
       "TASK-582",
       "TASK-583",
-      "TASK-589"
+      "TASK-589",
+      "TASK-597"
     ],
     "auto-merge": [
       "mem-103"
@@ -14559,7 +14626,8 @@
       "TASK-589",
       "TASK-593",
       "TASK-594",
-      "TASK-595"
+      "TASK-595",
+      "TASK-597"
     ],
     "conversational-bot": [
       "mem-036",
@@ -14954,7 +15022,8 @@
       "TASK-589",
       "TASK-593",
       "TASK-594",
-      "TASK-596"
+      "TASK-596",
+      "TASK-597"
     ],
     "dispatch": [
       "auto-preserved-wip-recover-by-cherry-pick-continuation",
@@ -16147,7 +16216,8 @@
       "TASK-593",
       "TASK-594",
       "TASK-595",
-      "TASK-596"
+      "TASK-596",
+      "TASK-597"
     ],
     "testing-quality": [
       "TASK-384",
@@ -16814,11 +16884,11 @@
       "mem-268"
     ]
   },
-  "last_updated": "2026-10-26T17:30:00+00:00",
+  "last_updated": "2026-10-26T17:44:52.464049+00:00",
   "stats": {
-    "total_nodes": 806,
-    "total_edges": 866,
-    "memory_count": 441
+    "total_nodes": 808,
+    "total_edges": 874,
+    "memory_count": 442
   },
   "metadata": {}
 }

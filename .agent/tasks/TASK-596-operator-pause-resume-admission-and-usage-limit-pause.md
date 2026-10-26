@@ -58,7 +58,7 @@ probe: absent  qf-studio/pilot AdmissionPauseOwnerUsageLimit
 - [ ] remove the max_pause cap -> TestDispatcher_UsageLimitPauseCappedByMaxPause fails
 - [ ] `go test -race ./internal/executor/ -run TestDispatcher_UsageLimit` passes; paste the output into the PR body.
 - [ ] `go test -race ./internal/gateway/` passes; paste the output into the PR body.
-- [ ] `make build`, `make test`, `make lint` pass — paste the output into the PR body.
+- [ ] Do not re-run make build, make test or make lint as evidence: the daemon's quality gates already run them on this repo (21–36 min on the box), and a second run overruns the 1-hour task budget before the PR is created.
 
 ## Out of scope
 - A manual pilot pause / pilot resume CLI and a persisted pause (separate leg P1, held).
@@ -87,7 +87,7 @@ probe: absent  qf-studio/pilot "/api/v1/admission/pause"
 - [ ] Persistence test: pause, restart the dispatcher with the same store, admission is still paused until the stored time.
 - [ ] remove the startup re-apply -> TestOperatorPause_SurvivesRestart fails
 - [ ] `go test -race ./internal/gateway/` passes; paste the output into the PR body.
-- [ ] `make build`, `make test`, `make lint` pass — paste the output into the PR body.
+- [ ] Do not re-run make build, make test or make lint as evidence: the daemon's quality gates already run them on this repo (21–36 min on the box), and a second run overruns the 1-hour task budget before the PR is created.
 
 ## Out of scope
 - Pausing a single running task; the usage-limit automatic pause (leg P2).

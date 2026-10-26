@@ -110,6 +110,14 @@ Not recognised (renders nothing): `go test ./x passes`, `CI green`,
 pin in the evidence block`. Put at least one bullet of each shape in every
 issue that adds or changes a test.
 
+## Rule 5d — No gate re-runs as evidence on repos with slow gates (2026-10-26)
+
+The evidence runner executes every paste-output bullet as a subprocess **inside the task's own budget**, after the quality gates already ran. On the pilot repo `make build`, `make test`, `make lint` take 21–36 min on the box, so the once-standard bullet "`make build`, `make test`, `make lint` pass — paste the output into the PR body" doubles that time and blows the 60-minute complex budget: 2026-10-26 four runs (GH-5861 ×2, GH-5864, console-ui GH-280 on the 30-minute trivial budget) finished Claude and the gates, then died in evidence, and PR creation failed on the dead ctx with the branch already pushed (pitfall `evidence-rerun-of-quality-gates-blows-task-budget-pr-create-on-dead-ctx`; durable fix TASK-597).
+
+- Never add a make build/test/lint paste-output bullet on the pilot repo (or any repo whose gates run those commands). The gates are the evidence; the PR body carries their result.
+- Prefer one targeted bullet per package: `go test -race ./internal/approval/ -run TestCheckApproval` — a package-wide `./internal/executor/` run is ~10 min by itself.
+- Budget check before filing a complex issue: expected Claude time + gate time + every paste-output bullet must stay under the repo's complex timeout (box: 60m). If it cannot, split the issue or ask the operator to raise `executor.timeout.complex`.
+
 ## Rule 6 — Per-project config before the first run
 
 In `~/.pilot/config.yaml` for the new project:
@@ -125,6 +133,7 @@ In `~/.pilot/config.yaml` for the new project:
 ## Pre-flight checklist (before adding the `pilot` label)
 
 - [ ] Every premise the leg rests on has a `probe:` line (Rule 3d); the dispatch dry run is clean.
+- [ ] No make build/test/lint paste-output bullet; every evidence bullet is a targeted `-run` test (Rule 5d).
 
 - [ ] Scaffold issue merged to `main` (Rule 1) — or this IS the scaffold issue
 - [ ] Body has H2 `## Context` / `## Acceptance` / `## Implementation` (Rule 2)

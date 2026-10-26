@@ -41,7 +41,7 @@ probe: absent  qf-studio/pilot resolvePending\(context\.WithoutCancel
 - [ ] revert the resolvePending call to the cancelled poll ctx -> TestCheckApproval_RecordsDecisionOnDetachedContext fails
 - [ ] make RecordDecision delete the pending entry on a plain recorder error -> TestRecordDecision_PersistenceErrorKeepsPending fails
 - [ ] `go test -race ./internal/approval/` passes; paste the output into the PR body.
-- [ ] `make build`, `make test`, `make lint` pass — paste the output into the PR body.
+- [ ] Do not re-run make build, make test or make lint as evidence: the daemon's quality gates already run them on this repo (21–36 min on the box), and a second run overruns the 1-hour task budget before the PR is created.
 
 ## Out of scope
 - Changing the approval poll interval, the pre-merge timeout or default_action.

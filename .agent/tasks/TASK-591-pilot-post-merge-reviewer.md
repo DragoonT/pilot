@@ -36,9 +36,9 @@ probe: absent  qf-studio/pilot post_merge_review
 - [ ] Reviewer test with a fake command runner: the parsed verdict and defects match a fixture output; a malformed output yields verdict unknown and posts nothing.
 - [ ] Posting test: REQUEST-CHANGES files exactly one issue with labels pilot and post-merge-review and a title that starts with the PR number; APPROVE files none; both post one comment.
 - [ ] Cap test: the 21st review in a day is skipped and logged; the ticket cap counter is unchanged by reviews.
-- [ ] `go test -race ./internal/autopilot/` passes; paste the output into the PR body.
-- [ ] `go test -race ./internal/executor/` passes; paste the output into the PR body.
-- [ ] `make build`, `make test`, `make lint` pass — paste the output into the PR body.
+- [ ] `go test -race ./internal/autopilot/ -run PostMergeReview` passes; paste the output into the PR body.
+- [ ] `go test -race ./internal/executor/ -run PostMergeReview` passes; paste the output into the PR body.
+- [ ] Do not re-run make build, make test or make lint as evidence: the daemon's quality gates already run them on this repo (21–36 min on the box), and a second run overruns the 1-hour task budget before the PR is created.
 
 ## Out of scope
 - Reviewing non-Pilot PRs.
