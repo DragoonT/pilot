@@ -1,6 +1,6 @@
 # TASK-607: executor — a killed self-review leaves uncommitted edits in the direct-mode clone; every later task fails git_clean
 
-**Status**: 🚀 DISPATCHED 2026-10-27 18:00Z — A1 → pilot#5900 (running 18:00Z) · A2 → pilot#5901 (`pilot` label REMOVED until #5900 merges: the first filing carried a literal ref, the dependency did not hold it and it queued behind #5900; re-add `pilot` after the A1 merge). Both `no-decompose`.
+**Status**: ✅ BOTH MERGED 2026-10-27 — A1 pilot#5900 → PR#5902 (18:50Z, reviewer APPROVE-w-notes: killed-with-success edge may skip the PR note · test names differ from the issue pins) · A2 pilot#5901 → PR#5904 (19:47Z, reviewer APPROVE-w-notes: untracked-files note is WRONG, ResetHardToCommit runs git clean -fd · no consumer of the new preflight_self_heal event yet). #5865 closed. Was: 🚀 DISPATCHED 18:00Z — A1 → pilot#5900 (running 18:00Z) · A2 → pilot#5901 (`pilot` label REMOVED until #5900 merges: the first filing carried a literal ref, the dependency did not hold it and it queued behind #5900; re-add `pilot` after the A1 merge). Both `no-decompose`.
 **Spec refs**: pilot#5865 (scrappydog, v2.289.0, macOS direct mode, Claude Code backend); SOP `.agent/sops/onboarding/new-project-issue-authoring.md` Rules 3b/3c/5b/5d.
 **Origin**: external bug report 2026-10-26. Reporter: 77 of ~150 self-reviews SIGKILLed at exactly 120 s; 4 left an edit; each blocked the project queue until a hand clean.
 

@@ -1,6 +1,6 @@
 # TASK-608: wait_for_merge, poll_interval and pr_timeout never reach the GitHub SDK poller — SDK fields + pilot wiring
 
-**Status**: 🚀 S1 MERGED (sdk#148 → PR#150 18:09Z) · **studio-sdk v0.38.4 cut by hand 19:18Z** at d2fe89a19 (carries PR#150 + PR#151; notes on the release) · sdk#147 closed · **P1 DISPATCHED 19:22Z → pilot#5903** (`pilot`+`no-decompose`; bumps go.mod to v0.38.4, wires the three fields, banner effective values, execution-modes docs).
+**Status**: ✅ ALL MERGED 2026-10-27 — P1 pilot#5903 → PR#5905 20:15Z (reviewer APPROVE-w-notes: the partial-execution-block worry is moot — Load unmarshals over DefaultConfig, verified wait_for_merge=true with only mode set · the sequential log line is the SDK's own and prints its effective fields). #5898 + #5897 closed. S1 MERGED (sdk#148 → PR#150 18:09Z) · **studio-sdk v0.38.4 cut by hand 19:18Z** at d2fe89a19 (carries PR#150 + PR#151; notes on the release) · sdk#147 closed · **P1 DISPATCHED 19:22Z → pilot#5903** (`pilot`+`no-decompose`; bumps go.mod to v0.38.4, wires the three fields, banner effective values, execution-modes docs).
 **Spec refs**: pilot#5898 and studio-sdk#147 (scrappydog); prior art sdk#137 → pilot#5207 (commit 16ccb2281: wire + go.mod bump in one PR).
 **Origin**: external bug report 2026-10-27.
 
