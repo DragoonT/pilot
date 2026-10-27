@@ -1,6 +1,6 @@
 # TASK-609: auto mode dispatches an issue whose scope overlaps an older issue's open, unmerged PR — SDK overlap guard holds on open PRs
 
-**Status**: 🚀 S2 DISPATCHED 2026-10-27 18:06Z → studio-sdk#149 (`pilot`+`no-decompose`, Depends on #148 so it holds until S1 closes). Pilot side ships in TASK-608 P1 (bump + docs).
+**Status**: ✅ S2 MERGED 2026-10-27 18:18Z (sdk#149 → PR#151), in **studio-sdk v0.38.4**. Pilot side: TASK-608 P1 → pilot#5903 (bump + docs). Post-merge review of PR#151 not posted (the pilot reviewer reviews pilot-repo merges only).
 **Spec refs**: pilot#5897 (scrappydog). Docs promise: `docs/content/features/execution-modes.mdx` Auto Mode, "B waits for A's PR to merge".
 **Origin**: external bug report 2026-10-27.
 

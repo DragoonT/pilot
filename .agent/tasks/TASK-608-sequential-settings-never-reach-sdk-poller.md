@@ -1,6 +1,6 @@
 # TASK-608: wait_for_merge, poll_interval and pr_timeout never reach the GitHub SDK poller — SDK fields + pilot wiring
 
-**Status**: 🚀 S1 DISPATCHED 2026-10-27 18:05Z → studio-sdk#148 (`pilot`+`no-decompose`). P1 (pilot) NOT filed: file with `--only P1` after the SDK tag that carries sdk#148 + sdk#149 exists, then close sdk#147 as done.
+**Status**: 🚀 S1 MERGED (sdk#148 → PR#150 18:09Z) · **studio-sdk v0.38.4 cut by hand 19:18Z** at d2fe89a19 (carries PR#150 + PR#151; notes on the release) · sdk#147 closed · **P1 DISPATCHED 19:22Z → pilot#5903** (`pilot`+`no-decompose`; bumps go.mod to v0.38.4, wires the three fields, banner effective values, execution-modes docs).
 **Spec refs**: pilot#5898 and studio-sdk#147 (scrappydog); prior art sdk#137 → pilot#5207 (commit 16ccb2281: wire + go.mod bump in one PR).
 **Origin**: external bug report 2026-10-27.
 
@@ -58,15 +58,15 @@ Refs #147 and qf-studio/pilot#5898. #137 made the host's execution mode reachabl
 
 ### LEG P1 — repo: qf-studio/pilot — title: fix(github): wire wait_for_merge, poll_interval and pr_timeout into the SDK poller; banner prints the effective values; execution-modes docs match the poller
 probe: present qf-studio/pilot pollerDeps.ExecutionMode = deps.Cfg.Orchestrator.Execution.Mode
-probe: absent  qf-studio/pilot pollerDeps.PRTimeout
+probe: absent  qf-studio/pilot pollerDeps\.PRTimeout\s*=
 
 ## Context
 
-Closes #5898 and #5897 on the pilot side. The daemon reads orchestrator.execution.wait_for_merge, poll_interval and pr_timeout in `cmd/pilot/main.go` (banner at the sequential-mode line, epic merge waiter), but `cmd/pilot/poller_github.go` passes only ExecutionMode and MaxConcurrent into the SDK PollerDeps, so the GitHub poller runs sequential mode on its own defaults (wait true, 30s, 1h). studio-sdk now carries the three fields on PollerDeps (sdk#147 leg) and holds an overlapping issue while the older issue's PR is open, bounded by PRTimeout (sdk leg for #5897). This leg bumps the SDK and wires the settings.
+Closes #5898 and #5897 on the pilot side. The daemon reads orchestrator.execution.wait_for_merge, poll_interval and pr_timeout in `cmd/pilot/main.go` (banner at the sequential-mode line, epic merge waiter), but `cmd/pilot/poller_github.go` passes only ExecutionMode and MaxConcurrent into the SDK PollerDeps, so the GitHub poller runs sequential mode on its own defaults (wait true, 30s, 1h). studio-sdk v0.38.4 (tag d2fe89a19) carries the three fields on PollerDeps (sdk#148, PR#150) and holds an overlapping issue while the older issue's PR is open, bounded by PRTimeout (sdk#149, PR#151). This leg bumps the SDK to v0.38.4 and wires the settings.
 
 ## Implementation
 
-1. Bump github.com/qf-studio/studio-sdk in `go.mod` to the release that carries both SDK legs; run go mod tidy.
+1. Bump github.com/qf-studio/studio-sdk in `go.mod` from v0.38.3 to v0.38.4; run go mod tidy and commit go.sum.
 2. Factor one helper in `cmd/pilot/main.go` (or a small file next to it) that resolves the triple from the config with today's guards (durations only when greater than zero; wait as configured). Use it at the banner, at the epic merge waiter, and in `cmd/pilot/poller_github.go` where PollerDeps is built: set WaitForMerge (pointer), PRPollInterval and PRTimeout.
 3. Banner: in sequential mode print the effective wait, interval and timeout from the same helper; when wait_for_merge is false print "sequential mode · not waiting for PR merge" instead of hiding the line.
 4. Update the comment block above the PollerDeps execution fields in poller_github.go (it still says only mode is passed since #5207).
@@ -94,3 +94,4 @@ Closes #5898 and #5897 on the pilot side. The daemon reads orchestrator.executio
 ## Refs
 
 - S1 → https://github.com/qf-studio/studio-sdk/issues/148
+- P1 → https://github.com/qf-studio/pilot/issues/5903
