@@ -1,6 +1,6 @@
 # TASK-600: a just-passed reset rolls +24 h into a 6-hour daemon-wide hold; one usage-limit failure fires two alerts
 
-**Status**: 🚀 Dispatched 2026-10-27 → pilot#5879 (`pilot`+`no-decompose`+`bug`), from the post-merge review of PR#5874 (defects 1 and 2).
+**Status**: 🟡 #5879 → PR#5884 (09:51Z) **failed the argument-discarding-mocks CI gate** → autopilot closed it, filed fix issue #5885 (`autopilot-fix`), fix run GH-5885 started 09:54Z (60-min budget). Original row superseded. Review the fix PR when it lands. Was: 🚀 Dispatched 2026-10-27 → pilot#5879 (`pilot`+`no-decompose`+`bug`), from the post-merge review of PR#5874.
 **Spec refs**: TASK-596 / #5862 → PR#5874 (usage-limit admission pause), review comment on PR#5874; `internal/executor/ratelimit.go` (`parseRateLimitErrorAt`, "if reset time is in the past, it's tomorrow"), `internal/executor/usage_limit_pause.go` (`armUsageLimitPause`), `internal/executor/runner.go` (`AlertEventTypeRateLimit` emission on `BackendError` type rate_limit).
 **Origin**: founder 2026-10-27: "File one pilot + no-decompose issue for PR#5874 review defect 1 … also suppress the duplicate rate_limit alert when the pause arms."
 

@@ -1,6 +1,6 @@
 # TASK-601: post-merge follow-up issue — Reviewer Notes rendered without backticks (base-presence gate)
 
-**Status**: 🚀 Dispatched 2026-10-27 → pilot#5882 (`pilot`+`no-decompose`+`bug`), from the post-merge review of PR#5876 (GH-5873), defect 1 (low).
+**Status**: ✅ Merged 2026-10-27 10:28Z — pilot#5882 → PR#5886 (11 lines). Post-merge review posted 2026-10-27 **APPROVE** (all three scope items landed, whole-body no-backtick assertion, pin holds). Ready to archive.
 **Spec refs**: TASK-598 / #5873, PR#5876 review comment (APPROVE-WITH-NOTES), SOP `sops/onboarding/new-project-issue-authoring.md` Rule 3b.
 **Origin**: post-merge review 2026-10-27 — own read + independent second read + `go test -race` + five mutation pins (all hold).
 

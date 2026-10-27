@@ -1,6 +1,6 @@
 # TASK-595: an issue un-labeled or closed while it waits for an execution slot still runs — the handler re-fetches the issue but ignores its live labels and state
 
-**Status**: 🚀 Dispatched 2026-10-26 (verified 2026-10-26 (nav-research, LIKELY-BUG — race confirmed in code; two report details corrected below) → body applied to the reporter's issue pilot#5849, labeled `pilot`+`no-decompose`+`bug`.
+**Status**: ✅ Merged 2026-10-26 — #5849 → PR#5871. **Post-merge review not posted** (10-27 docs pass). Was: 🚀 Dispatched 2026-10-26 (nav-research LIKELY-BUG).
 **Spec refs**: GH-4050 / GH-4631 (post-wait re-fetch of the issue), GH-5056 (pilot-needs-human admission backstop), GH-5072 (the SDK bridge drops `Skipped`, so a skip must arm `repickBackoff`), TASK-421 (repick cap).
 **Origin**: external report by @scrappydog (2026-10-23, v2.289.0, studio-sdk v0.38.3 — the pin on main is still v0.38.3).
 

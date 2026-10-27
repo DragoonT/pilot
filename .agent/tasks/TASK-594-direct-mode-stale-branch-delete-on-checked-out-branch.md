@@ -1,6 +1,6 @@
 # TASK-594: direct mode (no worktree) — stale-branch cleanup deletes the branch the clone is checked out on, so every retry after a closed PR fails until the repick cap parks the task
 
-**Status**: 🚀 Dispatched 2026-10-26 (verified 2026-10-26 (nav-research, LIKELY-BUG — every quoted string exists; code path confirmed, not reproduced at runtime) → body applied to the reporter's issue pilot#5829, labeled `pilot`+`no-decompose`+`bug`.
+**Status**: ✅ Merged 2026-10-26 — #5829 → PR#5870. **Post-merge review not posted** (10-27 docs pass). Was: 🚀 Dispatched 2026-10-26 (nav-research LIKELY-BUG).
 **Spec refs**: #912 (stale local branch handling — the delete-then-recreate step this task fixes), #4594 (the EnsureBranchFromOrigin rewrite that kept the delete step), #5769 (lease-push over the run's own auto-preserve SHA — nearby, different path), TASK-421 (repick hard cap).
 **Origin**: external report by @scrappydog (2026-10-22, v2.289.0). Verified against main at v2.295.0.
 
