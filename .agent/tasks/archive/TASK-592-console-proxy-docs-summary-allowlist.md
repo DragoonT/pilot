@@ -1,6 +1,6 @@
 # TASK-592: Console proxy — allow the daemon's docs/summary read so the Context panel gets its numbers
 
-**Status**: 🚀 X1 MERGED (console#453 → PR#454, 10-26 13:xxZ) · **X2 → ui#283 dispatched 15:10Z** (`pilot`+`no-decompose`). → qf-studio/pilot-console, labels pilot + no-decompose.
+**Status**: ✅ DONE 2026-10-27 — X1 merged (console#453 → PR#454, 10-26) · X2 merged (ui#283 → PR#286, 12:04Z, after a manual rebase in a side session: one conflict in httpAdapter.ts imports, both sides kept; head 798897f). Post-merge review of ui PR#286 not posted. Archived.
 **Spec refs**: positioning §8.1 Context panel; pilot#5857 (P18, merged as PR#5859) names this as the console follow-up.
 **Origin**: post-merge review of ui PR#255 (U5): the Context panel renders dashes because no daemon read existed; the daemon read shipped 2026-10-26, the proxy does not forward it yet.
 

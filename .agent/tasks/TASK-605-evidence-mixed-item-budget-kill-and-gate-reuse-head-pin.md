@@ -1,6 +1,6 @@
 # TASK-605: executor — evidence never shows a budget-killed command as evidence; gate reuse skipped when HEAD moved
 
-**Status**: 🚀 Dispatched 2026-10-27 → pilot#5890 (`pilot`+`no-decompose`+`bug`), from the post-merge review of PR#5875 (GH-5867 / TASK-597), defects 1–2.
+**Status**: ✅ Merged 2026-10-27 12:36Z — #5890 → PR#5895. **Post-merge review not posted.**
 **Spec refs**: the review comment on the PR (APPROVE-WITH-NOTES), issue body as filed (Context / Scope / Acceptance / Out of scope; one targeted `-run` evidence bullet, SOP Rule 5d).
 **Origin**: 10-27 review batch of the four unreviewed 10-26 merges (PR#5870/#5871/#5872/#5875) — own read + independent second read + `go test -race` + mutation pins.
 

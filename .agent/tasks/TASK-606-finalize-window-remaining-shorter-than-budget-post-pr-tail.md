@@ -1,6 +1,6 @@
 # TASK-606: executor — finalizeCtx grants the window on a live-but-short deadline, and the window covers the post-PR tail
 
-**Status**: 🚀 Dispatched 2026-10-27 → pilot#5891 (`pilot`+`no-decompose`+`bug`), from the post-merge review of PR#5875 (GH-5867 / TASK-597), notes 3–4. Founder: "file it" (2026-10-27).
+**Status**: ✅ Merged 2026-10-27 13:25Z — #5891 → PR#5896. **Post-merge review not posted.**
 **Spec refs**: PR#5875 review comment (APPROVE-WITH-NOTES), TASK-597 (finalization overrun), GH-5346 (finalizeCtx origin), GH-5342 (deadline-exceeded classification).
 **Origin**: the 10-27 review batch; the mechanism is proven from code (`finalizeCtx` at `internal/executor/runner.go` ~L348 extends only when `ctx.Err() == DeadlineExceeded`), no incident investigation needed.
 
