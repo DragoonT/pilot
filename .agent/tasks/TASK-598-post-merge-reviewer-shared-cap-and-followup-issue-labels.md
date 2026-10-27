@@ -1,6 +1,6 @@
 # TASK-598: post-merge reviewer follow-ups — one daily cap for the whole daemon, and a follow-up issue that survives the epic and base-presence gates
 
-**Status**: 🚀 Dispatched 2026-10-26 → pilot#5873 (`pilot`+`no-decompose`+`bug`), from the tier-1 review of PR#5868 (defects 1 and 2).
+**Status**: ✅ Merged 2026-10-26 21:25Z — pilot#5873 → PR#5876. Post-merge review posted 2026-10-27 **APPROVE-WITH-NOTES** (shared cap wired on both construction paths, race-safe, 3 mutation pins hold; defect: `## Reviewer Notes` keeps backticks → base-presence hold still possible → TASK-601 / #5882).
 **Spec refs**: TASK-591 / #5861 (the reviewer), PR#5868 review comment (APPROVE-WITH-NOTES), SOP `sops/onboarding/new-project-issue-authoring.md` Rules 3b and 3c, GH-5527 (epic decomposition of a single-fix issue).
 **Origin**: founder 2026-10-26: "File one pilot + no-decompose issue for the PR#5868 review defects 1 and 2".
 
