@@ -3460,6 +3460,31 @@
           "context",
           "deployment"
         ]
+      },
+      "TASK-598": {
+        "path": "/Users/aleks.petrov/Projects/startups/pilot/.agent/tasks/TASK-598-post-merge-reviewer-shared-cap-and-followup-issue-labels.md",
+        "title": "post-merge reviewer follow-ups — one daily cap for the whole daemon, and a follow-up issue that survives the epic and base-presence gates",
+        "status": "backlog",
+        "concepts": [
+          "authentication",
+          "api",
+          "workflow",
+          "knowledge",
+          "deployment",
+          "testing",
+          "context"
+        ]
+      },
+      "TASK-599": {
+        "path": "/Users/aleks.petrov/Projects/startups/pilot/.agent/tasks/TASK-599-agent-opened-pr-bypasses-gates-and-reaper-prunes-live-execution.md",
+        "title": "an agent-opened PR bypasses the gates (reconciler adopts it, autopilot merges on CI alone) and the stale-running reaper then prunes the live execution's worktree",
+        "status": "backlog",
+        "concepts": [
+          "authentication",
+          "testing",
+          "deployment",
+          "context"
+        ]
       }
     },
     "memories": {
@@ -9534,6 +9559,19 @@
         ],
         "created": "2026-10-26",
         "last_validated": "2026-10-26"
+      },
+      "agent-opened-pr-adopted-and-merged-before-gates-reaper-prunes-live-worktree": {
+        "type": "pitfall",
+        "summary": "ghguard allows `gh pr create` on the agent's own branch; the reconciler adopts the untracked PR and autopilot merges it on CI alone while the executor gates still run (GH-5862 → PR#5874, 2026-10-26); the merge marks the claim completed and recoverStaleRunningTasks (30-min rule, completed shortcut before hasLiveWorker, no Runner.IsRunning check) deletes the live row and prunes the worktree under the gates → false `failed` on a shipped ticket. Fix TASK-599 (G1 deny pr create; G2 liveness check first).",
+        "path": "memories/pitfalls/agent-opened-pr-adopted-and-merged-before-gates-reaper-prunes-live-worktree.md",
+        "confidence": 0.95,
+        "concepts": [
+          "executor",
+          "autopilot",
+          "ghguard"
+        ],
+        "created": "2026-10-26",
+        "last_validated": "2026-10-26"
       }
     }
   },
@@ -13907,6 +13945,76 @@
       "from": "evidence-rerun-of-quality-gates-blows-task-budget-pr-create-on-dead-ctx",
       "to": "backend-timeout-finalization-on-expired-ctx-discards-committed-work",
       "type": "relates-to"
+    },
+    {
+      "from": "TASK-598",
+      "to": "authentication",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-598",
+      "to": "api",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-598",
+      "to": "workflow",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-598",
+      "to": "knowledge",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-598",
+      "to": "deployment",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-598",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-598",
+      "to": "context",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-599",
+      "to": "authentication",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-599",
+      "to": "testing",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-599",
+      "to": "deployment",
+      "type": "implements"
+    },
+    {
+      "from": "TASK-599",
+      "to": "context",
+      "type": "implements"
+    },
+    {
+      "from": "agent-opened-pr-adopted-and-merged-before-gates-reaper-prunes-live-worktree",
+      "to": "executor",
+      "type": "relates-to"
+    },
+    {
+      "from": "agent-opened-pr-adopted-and-merged-before-gates-reaper-prunes-live-worktree",
+      "to": "autopilot",
+      "type": "relates-to"
+    },
+    {
+      "from": "agent-opened-pr-adopted-and-merged-before-gates-reaper-prunes-live-worktree",
+      "to": "evidence-rerun-of-quality-gates-blows-task-budget-pr-create-on-dead-ctx",
+      "type": "relates-to"
     }
   ],
   "concept_index": {
@@ -14133,7 +14241,8 @@
       "TASK-589",
       "TASK-593",
       "TASK-596",
-      "TASK-597"
+      "TASK-597",
+      "TASK-598"
     ],
     "approval": [
       "approvals-off-stage-auto-merge",
@@ -14261,7 +14370,9 @@
       "TASK-582",
       "TASK-583",
       "TASK-589",
-      "TASK-597"
+      "TASK-597",
+      "TASK-598",
+      "TASK-599"
     ],
     "auto-merge": [
       "mem-103"
@@ -14627,7 +14738,9 @@
       "TASK-593",
       "TASK-594",
       "TASK-595",
-      "TASK-597"
+      "TASK-597",
+      "TASK-598",
+      "TASK-599"
     ],
     "conversational-bot": [
       "mem-036",
@@ -15023,7 +15136,9 @@
       "TASK-593",
       "TASK-594",
       "TASK-596",
-      "TASK-597"
+      "TASK-597",
+      "TASK-598",
+      "TASK-599"
     ],
     "dispatch": [
       "auto-preserved-wip-recover-by-cherry-pick-continuation",
@@ -15578,7 +15693,8 @@
       "TASK-583",
       "TASK-589",
       "TASK-593",
-      "TASK-596"
+      "TASK-596",
+      "TASK-598"
     ],
     "labels": [
       "mem-100",
@@ -16217,7 +16333,9 @@
       "TASK-594",
       "TASK-595",
       "TASK-596",
-      "TASK-597"
+      "TASK-597",
+      "TASK-598",
+      "TASK-599"
     ],
     "testing-quality": [
       "TASK-384",
@@ -16385,7 +16503,8 @@
       "TASK-563",
       "TASK-573",
       "TASK-577",
-      "TASK-595"
+      "TASK-595",
+      "TASK-598"
     ],
     "workflow-discipline": [
       "TASK-359",
@@ -16884,11 +17003,11 @@
       "mem-268"
     ]
   },
-  "last_updated": "2026-10-26T17:44:52.464049+00:00",
+  "last_updated": "2026-10-27T08:19:45.654803+00:00",
   "stats": {
-    "total_nodes": 808,
-    "total_edges": 874,
-    "memory_count": 442
+    "total_nodes": 811,
+    "total_edges": 888,
+    "memory_count": 443
   },
   "metadata": {}
 }
