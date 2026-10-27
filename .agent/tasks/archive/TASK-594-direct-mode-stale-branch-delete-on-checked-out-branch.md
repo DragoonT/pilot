@@ -1,6 +1,6 @@
 # TASK-594: direct mode (no worktree) — stale-branch cleanup deletes the branch the clone is checked out on, so every retry after a closed PR fails until the repick cap parks the task
 
-**Status**: ✅ Merged 2026-10-26 — #5829 → PR#5870. **Post-merge review not posted** (10-27 docs pass). Was: 🚀 Dispatched 2026-10-26 (nav-research LIKELY-BUG).
+**Status**: ✅ Merged 2026-10-26 — #5829 → PR#5870. Post-merge review posted 2026-10-27 **APPROVE-WITH-NOTES** (real-git table test, pin holds; notes: no recovery ref for committed work on the discarded branch, swallowed GetCurrentBranch error, silent detach). No follow-up.
 **Spec refs**: #912 (stale local branch handling — the delete-then-recreate step this task fixes), #4594 (the EnsureBranchFromOrigin rewrite that kept the delete step), #5769 (lease-push over the run's own auto-preserve SHA — nearby, different path), TASK-421 (repick hard cap).
 **Origin**: external report by @scrappydog (2026-10-22, v2.289.0). Verified against main at v2.295.0.
 

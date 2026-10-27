@@ -3401,7 +3401,7 @@
         ]
       },
       "TASK-593": {
-        "path": "/Users/aleks.petrov/Projects/startups/pilot/.agent/tasks/TASK-593-github-review-approval-recorded-on-cancelled-context.md",
+        "path": ".agent/tasks/archive/TASK-593-github-review-approval-recorded-on-cancelled-context.md",
         "title": "github-review approvals dropped since v2.290.0 \u2014 the poller records the decision on a context it just cancelled",
         "status": "research",
         "concepts": [
@@ -3414,7 +3414,7 @@
         ]
       },
       "TASK-594": {
-        "path": "/Users/aleks.petrov/Projects/startups/pilot/.agent/tasks/TASK-594-direct-mode-stale-branch-delete-on-checked-out-branch.md",
+        "path": ".agent/tasks/archive/TASK-594-direct-mode-stale-branch-delete-on-checked-out-branch.md",
         "title": "direct mode (no worktree) \u2014 stale-branch cleanup deletes the branch the clone is checked out on, so every retry after a closed PR fails until the repick cap parks the task",
         "status": "research",
         "concepts": [
@@ -3426,7 +3426,7 @@
         ]
       },
       "TASK-595": {
-        "path": "/Users/aleks.petrov/Projects/startups/pilot/.agent/tasks/TASK-595-stale-labels-after-slot-wait-run-unlabeled-or-closed-issue.md",
+        "path": ".agent/tasks/archive/TASK-595-stale-labels-after-slot-wait-run-unlabeled-or-closed-issue.md",
         "title": "an issue un-labeled or closed while it waits for an execution slot still runs \u2014 the handler re-fetches the issue but ignores its live labels and state",
         "status": "research",
         "concepts": [
@@ -3450,7 +3450,7 @@
         ]
       },
       "TASK-597": {
-        "path": "/Users/aleks.petrov/Projects/startups/pilot/.agent/tasks/TASK-597-finalization-overruns-task-budget-evidence-starves-pr-create.md",
+        "path": ".agent/tasks/archive/TASK-597-finalization-overruns-task-budget-evidence-starves-pr-create.md",
         "title": "finalization overruns the task budget \u2014 the acceptance-evidence runner spends the task ctx and PR creation then fails on the dead ctx",
         "status": "backlog",
         "concepts": [
@@ -3476,7 +3476,7 @@
         ]
       },
       "TASK-599": {
-        "path": "/Users/aleks.petrov/Projects/startups/pilot/.agent/tasks/TASK-599-agent-opened-pr-bypasses-gates-and-reaper-prunes-live-execution.md",
+        "path": ".agent/tasks/archive/TASK-599-agent-opened-pr-bypasses-gates-and-reaper-prunes-live-execution.md",
         "title": "an agent-opened PR bypasses the gates (reconciler adopts it, autopilot merges on CI alone) and the stale-running reaper then prunes the live execution's worktree",
         "status": "backlog",
         "concepts": [

@@ -1,6 +1,6 @@
 # TASK-597: finalization overruns the task budget — the acceptance-evidence runner spends the task ctx and PR creation then fails on the dead ctx
 
-**Status**: ✅ Merged 2026-10-26 20:55Z — #5867 → PR#5875 (SOP Rule 5d landed alongside). **Post-merge review not posted** (10-27 docs pass). Was: 🚀 Dispatched 2026-10-26 from box evidence (four lost runs).
+**Status**: ✅ Merged 2026-10-26 20:55Z — #5867 → PR#5875. Post-merge review posted 2026-10-27 **APPROVE-WITH-NOTES** (incident path closed, 4 pins hold; defects: budget-killed command in a mixed item renders as evidence · gate reuse not pinned to HEAD → TASK-605 / #5890; note: finalizeCtx extends only an already-dead ctx).
 **Spec refs**: #5342 / PR#5345 (finalizeCtx — fresh window only when the task ctx is *already* dead), #5346 (WithoutCancel), #5399 / PR#5402 (salvage push), GH-5435/5437/5438 (acceptance-evidence gate), GH-5442 (argv runner, per-command 10 min default `defaultAcceptanceEvidenceCommandTimeout`), #5864 (re-pick over a stale head — made worse by this class).
 **Origin**: founder question 2026-10-26 17:40Z "why is the outcomes chart red today". Four of today's red rows are this class; the branches were pushed each time and the work was lost to a from-scratch re-pick.
 

@@ -1,6 +1,6 @@
 # TASK-602: stale-reap liveness — pin the runner→dispatcher wiring, log the skip at Info, add CompletedExecutionID to the completion invariant
 
-**Status**: 🚀 Dispatched 2026-10-27 → pilot#5883 (`pilot`+`no-decompose`+`bug`), from the post-merge review of PR#5881 (GH-5878), notes 1, 5 and 6.
+**Status**: ✅ Merged 2026-10-27 10:51Z — #5883 → PR#5887. Post-merge review posted **APPROVE** (real-runner wiring pin closes M3; stale store.go doc comment left). Done.
 **Spec refs**: TASK-599 / #5878, PR#5881 review comment (APPROVE-WITH-NOTES), TASK-574 (same class: call site untested).
 **Origin**: post-merge review 2026-10-27 — own read + independent second read + `go test -race` + four mutation pins (M2 fails as required; M1/M3/M4 survive).
 

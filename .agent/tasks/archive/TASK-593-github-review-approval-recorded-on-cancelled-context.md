@@ -1,6 +1,6 @@
 # TASK-593: github-review approvals dropped since v2.290.0 — the poller records the decision on a context it just cancelled
 
-**Status**: ✅ Merged 2026-10-26 — #5803 → PR#5872. **Post-merge review not posted** (10-27 docs pass). Was: 🚀 Dispatched 2026-10-26 (nav-research CONFIRMED-BUG).
+**Status**: ✅ Merged 2026-10-26 — #5803 → PR#5872. Post-merge review posted 2026-10-27 **APPROVE-WITH-NOTES** (detached bounded write correct; defect: Manager early-return skips waiter cleanup on sql.ErrNoRows → TASK-603 / #5888).
 **Spec refs**: #5764 (persist + rehydrate github-review approval requests, commit 27ff0d246, v2.290.0) introduced the path; #5716 / #5752 (per-repo approval lookup, head-SHA check) are the v2.289.0 baseline the reporter compares against.
 **Origin**: external report by @scrappydog (2026-10-22). Verified against main at v2.295.0: every quoted log line exists verbatim; the cause the reporter suggested is the actual cause.
 
