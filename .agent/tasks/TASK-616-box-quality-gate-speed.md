@@ -99,7 +99,7 @@ Depends on #5924 (it lands the -short guards the scoped run relies on). The qual
 
 ## Operator steps (box, after the legs merge and the release lands)
 
-1. Interim, can go now: test gate command `go test -short ./...` (no -race; CI keeps it) and `export GOFLAGS=-trimpath` in the wrapper so worktree paths share the build cache; measure one ticket; restart per SOP.
+1. ✅ Interim APPLIED 2026-10-28 20:02Z (founder "yes, after 5923"): test gate command `go test -short ./...` (no -race; CI keeps it), `export GOFLAGS=-trimpath` in the wrapper (verified in the daemon's /proc environ); backups `config.yaml.bak-gate-20261028`, `start-pilot.sh.bak-gate-20261028`; graceful restart, 1 proc, no 409. GH-5929 (1 min in) and GH-5924 (queued) re-pick from scratch. **Measure: first gate wall time under the new command goes here.**
 2. After G2: test gate command `make test-changed`, timeout 10m, max_retries 1.
 3. Record before/after gate wall times in this doc. Target: non-executor diffs under 3 min, executor diffs under 6 min.
 4. Separately: the Go build cache is 36 GB on the data volume; add it to the disk watch (pitfall go-caches-on-root-volume-fill-disk).
