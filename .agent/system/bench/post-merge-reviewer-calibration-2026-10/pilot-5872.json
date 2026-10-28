@@ -1,0 +1,20 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5872,
+  "issue": 5803,
+  "merge_commit": "bfa013cbc9a4867743dca7454ad1b56fa8f7f7f8",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [],
+  "notes": "- Requirements:\n- Met: `checkApproval` now writes on `context.WithTimeout(context.WithoutCancel(ctx), 10s)` (github.go:~414-419) and keeps the `CancelFn` call.\n- Met: `Manager.RecordDecision` logs a WARN persistence failure, returns the error, and keeps the pending entry on any non-`ErrApprovalAlreadyDecided` error. It keeps the \"race lost\" INFO line and the delete only for `ErrApprovalAlreadyDecided`.\n- Met: the webhook, cancel, Slack and Telegram handler code is untouched, and nothing out of scope is changed.\n- Acceptance tests:\n- Met: `TestCheckApproval_RecordsDecisionOnDetachedContext` and the rehydrated variant use a recorder that fails when its ctx is done, and they check the waiter's Response. They use the real `checkApproval` and a fake recorder. That is acceptable, because the contract at risk is ctx propagation and not a wire format.\n- Met: the two Manager tests, `TestRecordDecision_PersistenceErrorKeepsPending` and the already-decided test, cover both branches.\n- Evidence gaps:\n- The PR body's `go test -race` output is `(cached)`. It does not show the new tests running fresh, and the race detector may not have run on the new code.\n- Not evidenced in the PR: the two revert checks (revert the `resolvePending` ctx, and delete the pending entry on a plain error) that the acceptance list asks for.\n- Retry semantics: the issue says keeping the pending entry lets \"the next poll tick retry the write\". In `checkApproval`, `pending.CancelFn()` still runs before the write, so the poll goroutine stops after one attempt. On a persistence failure the Manager entry and its waiter stay pending, but I see no retry driver. They would wait until the pre-merge timeout. I can't see `resolvePending`, so I can't tell whether it clears or restores the handler's own `h.pending` entry on error. This follows the issue's literal scope, but whether retry actually works is unverified.\n- \"No second copy\" check: the issue asks to confirm that no other call site resolves a pending entry from the poll goroutine. The diff touches only one site, and I can't see the rest of github.go. Not confirmed from the diff.\n- Behaviour change beyond GitHub: `RecordDecision` is shared, so any other caller that goes through it now keeps the pending entry on plain writer errors. That is intended by the issue, but it is not strictly \"no change\" for Slack and Telegram if they use the Manager.\n- Not reviewed: `resolvePending` and the `Rehydrate` internals (outside the diff). The rehydrated test assigns `p.CancelFn` without holding `h.mu`. That is safe only because the poll interval is set to 1 hour.",
+  "diff_bytes": 10847,
+  "diff_files": 4,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 10847,
+  "input_issue_bytes": 4654,
+  "input_pr_body_bytes": 5327,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 20603,
+  "posted": false
+}

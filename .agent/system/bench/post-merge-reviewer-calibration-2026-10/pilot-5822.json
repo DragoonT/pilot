@@ -1,0 +1,39 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5822,
+  "issue": 5792,
+  "merge_commit": "b8fa43099badcefcbf2b57ee6f8c6c798e13399b",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "file": "PR body (Evidence section)",
+      "line": "1",
+      "claim": "the acceptance bullet \"`make test` and `make lint` pass\" is not met",
+      "evidence": "because the pasted output shows both failing, evidence: `make test` ends with \"FAIL / make: *** [Makefile:60: test] Error 1\" and `make lint` ends with \"3 issues: staticcheck: 3 / Error 1\" (SA4023 at cmd/pilot/tunnel.go:205, 351 and 433)"
+    },
+    {
+      "file": "PR body (Evidence section)",
+      "line": "1",
+      "claim": "the failing test package cannot be identified",
+      "evidence": "so the PR cannot be shown to be free of regressions, evidence: \"... 36099 lines omitted ...\" hides the FAIL line, and only PASS lines for `internal/wiring` and `tests/pentest` are visible"
+    },
+    {
+      "file": "internal/memory/weekly_proof.go",
+      "line": "44",
+      "claim": "the merged_count query depends on `execution_events` rows with stage `merged`",
+      "evidence": "and no producer for them is shown in this diff, evidence: `weekly_test.go` `seedWeek` inserts the `merged` rows by raw SQL through `addEvent`. No visible code path or test shows the autopilot writing `StageMerged` events, so production could report merged_count = 0 while the tests stay green."
+    }
+  ],
+  "notes": "1. Issue requirements, bullet by bullet:\n- Schedule on Monday at the daily-brief hour and timezone, with `weekly_day` defaulting to monday: met. `WeeklySchedule` derives the cron spec, and `DailyBriefConfig.WeeklyDay` is mapped into `briefs.BriefConfig` in cmd/pilot/commands.go and cmd/pilot/main.go. Validation is added in `config.go`.\n- `tickets_shipped`, `median_time_to_pr_minutes` and `merged_count` over 7 days, plus the top 3 shipped runs by diff size: met in `BuildWeeklyProof`. The tests cover a fixture ledger and an empty week, which gives zeros and `[]`.\n- `merged_count` from \"the autopilot PR state\": deviated. It is counted from `execution_events` instead. The rationale given is that autopilot deletes finished `autopilot_pr_state` rows. That is reasonable, but it differs from the issue text and should be confirmed with the issue author.\n- `kind: weekly` marker on the console and email payloads: met. The console JSON carries `kind` and `weekly`, and the email has `\u003cmeta name=\"pilot-brief-kind\"\u003e`, a weekly title and a weekly subject. Wire-field check: `kind`, `weekly`, `tickets_shipped`, `median_time_to_pr_minutes`, `merged_count` and `top_shipped` are all produced by `StructuredBrief` and `WeeklyProof` in `types.go`. The consumer is the stored payload served by GET /api/v1/briefs. I could not see that handler in the diff.\n- Acceptance tests: the Monday-only schedule test (`TestWeeklySchedule_FiresOnMondayOnly`) and the fixture-ledger test (`TestGenerateWeeklyEnding_ProofNumbersFromFixtureLedger`) are met. The tests use a real SQLite store and the real scheduler, not mocks.\n- Acceptance: `make test` and `make lint` pass: not met (see defects). The task statement says CI was green, which contradicts the PR body evidence. Confirm whether the lint failures in `tunnel.go` were already on main. They are outside this diff.\n2. Untested: `maybeCatchUpWeekly` and `catchUp` with `requirePrior` have no tests. The catch-up lookback of 8 days is unexercised.\n3. `WeeklySchedule` copies the minute and hour fields verbatim. A daily schedule such as `0 9,17 * * 1-5` or `*/30 9 * * *` would make the weekly brief fire several times on the weekly day.\n4. The Telegram and Slack text outputs show only the one-line summary. The top-3 shipped runs appear only in the email and the console payload. The issue does not require them in every channel, so this is a minor gap.\n5. `GenerateWeeklyEnding` and `storeStructured` each build the data separately, with a separate `time.Now()` each. That can cause a small drift between the channel brief and the console payload.\n6. Migrations: none. No new tables or columns, so there is no RLS concern.\n7. Not reviewed: the 36099 omitted lines of `make test` output. No part of the Go diff was truncated.",
+  "diff_bytes": 51095,
+  "diff_files": 18,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 51095,
+  "input_issue_bytes": 1027,
+  "input_pr_body_bytes": 7100,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 26688,
+  "posted": false
+}

@@ -1,0 +1,43 @@
+{
+  "repo": "qf-studio/pilot-console",
+  "pr": 427,
+  "issue": 423,
+  "merge_commit": "b823a0d3c92619b4a5d4837e9b88db634cdd10c8",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "file": "internal/allowanceapi/routes_test.go:~660",
+      "claim": "the top-level key_source assertion is vacuous",
+      "evidence": "evidence: the `||` fallback `\"key_source\":\"\u003csrc\u003e\"` also matches the nested `usage.key_source` that already existed, so the test passes even if the new top-level `KeySource` field were never emitted"
+    },
+    {
+      "file": "internal/allowance/status.go",
+      "line": "349",
+      "claim": "`KeySourceForOrg` is new and untested and duplicates the platform-key and switched-to-own logic from `StatusForOrg`",
+      "evidence": "evidence: the usageapi tests use a `fakeKeys` stub and the allowanceapi tests use `StatusForOrg`, so the real resolver that gates USD on `/usage` and `/usage/ledger` is never exercised and can drift from `StatusForOrg`"
+    },
+    {
+      "file": "internal/allowanceapi/routes_test.go:~665",
+      "claim": "the platform case never feeds the USD meter",
+      "evidence": "evidence: the fixture uses `USDCents: 0`, so no test shows `percent_used` still counts a nonzero dollar meter (like the \"usd meter fuller\" case) while the USD fields are hidden"
+    },
+    {
+      "file": "internal/usageapi/routes.go",
+      "line": "170",
+      "claim": "the key-source lookup runs before `days` validation",
+      "evidence": "evidence: `hideUSD` is called before the `days` query parse, so a bad `days` value returns 500 instead of 400 whenever the resolver errors"
+    }
+  ],
+  "notes": "- Acceptance bullet by bullet:\n- `percent_used` and `key_source` on the allowance endpoint: met.\n- USD hidden for `platform` on allowance, `/usage` and `/usage/ledger`: met. The USD fields are pointers with `omitempty`.\n- Dashboard gate: not addressed. No dashboard file is in the diff and the PR doesn't say whether the payload carries cost fields. I can't tell from this diff whether that is a gap, so someone should confirm.\n- Percent tests at 0, mid and over-cap: met.\n- USD absent for `platform` and present for `own` on all three endpoints: allowance, `/usage` and `/usage/ledger` are covered. The dashboard is not.\n- `make build`, `make test` and `make lint` output pasted into the PR body: can't verify from the diff.\n- Wire fields: the producers for `percent_used` and `key_source` are in the same diff. I did not see the web or frontend consumers of `usd_cents`, `remaining_usd_cents`, `usd_percent`, `totalCostUsd`, `costUsd`, `estimatedUsdCents` and `reportedUsdCents`. Any consumer that assumes these fields always exist will now see them missing for platform-key tenants. Check those consumers.\n- `main.go` reformats the `boardapi.Register` block (gofmt alignment only). It is unrelated to the issue but harmless.\n- Not reviewed: the dashboard handler and `StatusForOrg` internals. They are outside the visible diff, so I did not check the dashboard gate or confirm `KeySourceForOrg` matches `StatusForOrg`.",
+  "diff_bytes": 29679,
+  "diff_files": 6,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 29679,
+  "input_issue_bytes": 1020,
+  "input_pr_body_bytes": 520,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 19129,
+  "posted": false
+}

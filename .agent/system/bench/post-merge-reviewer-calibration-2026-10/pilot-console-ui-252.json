@@ -1,0 +1,41 @@
+{
+  "repo": "qf-studio/pilot-console-ui",
+  "pr": 252,
+  "issue": 249,
+  "merge_commit": "61aa3b94d34be3eb84ba50a196927e078aa46189",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "file": "src/lib/api/httpAdapter.ts:1016 and :1046-1048 - the adapter reads new wire keys `timeToPrMinutes` `orgName` `lastShippedAt` `poolPercentUsed` but I can see no producer for them - the types.ts comment and the issue name the console field `percent_used` while the adapter binds camelCase `poolPercentUsed` and the counterpart console dashboard handler (GET dashboard in the console repo) is not in this diff - if the console emits `percent_used` the header Pool segment never renders and Time to PR stays '—' in production while CI stays green",
+      "claim": ""
+    },
+    {
+      "file": "src/views/__tests__/DashboardView.spec.ts:437-495 - every new test stubs `mockAdapter.getDashboard` and none exercises `toDashboard` in httpAdapter so the new wire mapping is untested - the mock returns already-mapped camelCase objects so the wire contract is not covered",
+      "claim": ""
+    },
+    {
+      "file": "src/views/__tests__/DashboardView.spec.ts:493 - the issue asks for a no-`$`/no-`tokens` assertion on a platform-key tenant but the test sets no tenant or key mode and only checks a header built from three fixed fields - it would pass on any tenant",
+      "claim": ""
+    },
+    {
+      "file": "src/views/__tests__/DashboardView.spec.ts:293 - the Cost/Shipped degrade test was rewritten to assert 'Time to PR' instead of its own subject so it no longer checks that the cost tile degrades - the em-dash assertion at old line 264 was also deleted so coverage was removed rather than updated",
+      "claim": ""
+    },
+    {
+      "file": "src/views/DashboardView.vue:353 - adds a `costTile.note` line to the mobile cost tile - the issue's scope covers the desktop StatCard row and header only so this is an unrequested mobile change",
+      "claim": ""
+    }
+  ],
+  "notes": "- Met: four labels in order; `/100` secondary span; Review needed RouterLink to `/board?lane=needs-you`; header with org and 'Last shipped … · Pool N%' with Pool hidden when absent; '—' fallbacks; docblock updated with trims.\n- Not verified: the honest-degrade branch for a non-running instance is outside the visible hunks. I assume the existing `v-else` structure keeps it.\n- Not verified: `StatCard.vue` and its `data-stat-*` attributes are not in the diff. The tests depend on them.\n- The extra `issue` route added to the test routers is unrelated to this slice.\n- 'Pool' is rendered only when the field is present. The `$`/tokens exclusion is true by construction here, not by tenant check.",
+  "diff_bytes": 14773,
+  "diff_files": 4,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 14773,
+  "input_issue_bytes": 1217,
+  "input_pr_body_bytes": 892,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 19504,
+  "posted": false
+}

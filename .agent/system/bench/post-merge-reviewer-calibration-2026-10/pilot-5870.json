@@ -1,0 +1,20 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5870,
+  "issue": 5829,
+  "merge_commit": "c69964797e24b5d779515a2e764f258839963d76",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [],
+  "notes": "- Requirements, checked against the issue:\n- Met: the GetCurrentBranch check sits before DeleteBranch (git.go, new block above the `DeleteBranch` call).\n- Met: when the checked-out branch is dirty, the error contains \"checked out in the clone, refusing\" and names the branch.\n- Met: when it is clean, HEAD is detached at baseRef through `detachHeadAt` (`git checkout --detach`), then the branch is deleted and recreated as before.\n- Met: the stale decision, worktree mode, CreateOrResetBranchFromOrigin and the repick cap are untouched.\n- Acceptance criteria:\n- The table test `TestEnsureBranchFromOrigin_StaleCheckedOutBranchIsRecreated` has the three required cases: checked-out clean, checked-out dirty, and not checked out.\n- It runs on real temp repos with a real origin (`setupSyncTestRepos` and `pushExtraCommitFromSecondClone`), not a mock.\n- The dirty case asserts that the branch SHA, the current branch and the dirty file are unchanged.\n- The mutation criterion (remove the check and the test fails) is plausible, because git refuses `branch -D` on the checked-out branch. It was not demonstrated in the PR evidence.\n- Wire fields: the diff reads and emits none, so there is no producer or consumer to verify. There are no migrations and no RLS concerns.\n- Behaviour to be aware of: if `GetCurrentBranch` returns an error, `curErr` is ignored and the code falls through to the old `DeleteBranch` path. The failure would then be git's original message. This is a benign fallback, but it is not covered by a test.\n- Evidence hygiene:\n- The PR body pastes `make build`, `make test` and `make lint` output, which the issue explicitly said not to use as evidence.\n- The `make lint` output shows 3 staticcheck SA4023 errors, all in cmd/pilot/tunnel.go, which this diff does not touch. They are most likely pre-existing, but the PR body presents the run under a \"pass\" heading even though lint exited with an error.\n- The `go test -race` line for the targeted test is present and matches the acceptance criterion.\n- Not reviewed: the middle of the `make test` output (17746 lines omitted). It is not relevant to this diff.",
+  "diff_bytes": 6211,
+  "diff_files": 2,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 6211,
+  "input_issue_bytes": 4348,
+  "input_pr_body_bytes": 11682,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 13363,
+  "posted": false
+}

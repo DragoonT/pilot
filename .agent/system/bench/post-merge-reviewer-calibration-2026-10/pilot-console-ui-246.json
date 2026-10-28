@@ -1,0 +1,45 @@
+{
+  "repo": "qf-studio/pilot-console-ui",
+  "pr": 246,
+  "issue": 244,
+  "merge_commit": "8b14c8e954e3ed27fd4816e57240f155c5b8fba0",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "file": "src/lib/api/httpAdapter.ts:897 - wire fields durationMs/docsRead/memoriesRead/memoriesCreated are read from chat events with no confirmed producer - types.ts:437 calls them an \"ASSUMED wire contract — not yet confirmed by the daemon\" and the diff touches no daemon or mockAdapter file that emits them. The issue says to show `—` and list missing event fields in the PR body",
+      "claim": "but the PR body lists none."
+    },
+    {
+      "file": "src/lib/api/httpAdapter.ts:1648 - POST /api/v1/chat/messages now sends a `mode` key that no named consumer accepts - the diff shows no daemon-side handler and no mockAdapter change (mockAdapter.sendChatMessage is untouched). The issue says to keep the existing mode semantics",
+      "claim": "but ChatMode and ChatSendOptions.mode are both introduced in this diff."
+    },
+    {
+      "file": "src/views/ChatView.vue:30 - the page depends on `subagent` and `context` event types and `phase` and `taskId` values that no producer is shown to emit - the ChatEvent union and the event-to-message loop in stores/chat.ts are not visibly extended for these types. The Research tree may never populate against the real adapter.",
+      "claim": ""
+    },
+    {
+      "file": "src/views/__tests__/ChatView.spec.ts:7 - the tests inject `chat.messages` directly and mock `chat.send` - they bypass httpAdapter.toChatEvent and the store's event-to-message mapping. No test covers the new wire fields or the `mode` body key",
+      "claim": "so the adapter wire contract is untested. httpAdapter.spec.ts has no additions."
+    },
+    {
+      "file": "PR body - the acceptance criterion \"one line names the adapter used\" is missing from the evidence - the build",
+      "claim": "test and lint output is pasted but no adapter line appears."
+    },
+    {
+      "file": "src/views/__tests__/ChatView.spec.ts:46 - the no-`token`/`$` assertion runs only on a fixture that contains neither string - it passes trivially. No fixture puts token or cost fields on a sub-agent event to prove the rows suppress them.",
+      "claim": ""
+    }
+  ],
+  "notes": "- Issue bullets met: page title and question, Navigator research tree with count, ListRow per sub-agent with duration-only meta and DONE chip, markdown report with raw HTML escaped, composer with placeholder and two pills, Enter to send, dashboard composer navigating with `q` and `mode`, Context panel with `—` fallback, and no Create tickets action. All of this rests on the assumed event contract.\n- Not met or unverified: listing the missing event fields in the PR body, naming the adapter, and a real-adapter test.\n- The judge name and version are not rendered, which satisfies the issue.\n- The Context totals sum across the run's events. If the daemon emits cumulative counts, they will be double-counted.\n- The report is taken as the last `text` event, so any trailing assistant chatter after the report would replace it.\n- The dashboard composer navigates even when chat is disabled or the box is stopped. The Research page then shows the notice, and the pending question is dropped because `send` is not attempted.\n- Not reviewed: ResearchComposer pill label casing (`RESEARCH` in the issue versus `Research` in the code), which depends on Pill.vue. Also not reviewed: the 1584 lines of test output omitted from the PR body.",
+  "diff_bytes": 25745,
+  "diff_files": 9,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 25745,
+  "input_issue_bytes": 2021,
+  "input_pr_body_bytes": 15932,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 20748,
+  "posted": false
+}

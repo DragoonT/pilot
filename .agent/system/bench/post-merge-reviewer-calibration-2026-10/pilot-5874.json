@@ -1,0 +1,20 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5874,
+  "issue": 5862,
+  "merge_commit": "076bb48f488b1f6538bcf3f8c682f50f54e5d39c",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [],
+  "notes": "- Requirements, bullet by bullet. I could only read the diff, so I did not run any of this.\n- **Config knob:** Met. `UsageLimitPauseConfig` is in `internal/executor/backend.go`, validated in `internal/config/config.go`, and documented in `configs/pilot.example.yaml`.\n- **Hook:** Met. The call sits in `processQueue` in `internal/executor/dispatcher.go`, before `lifecycle.Persist`. It uses the exported owner `AdmissionPauseOwnerUsageLimit` (\"usage-limit\"), and the resume time is reset plus `DefaultSchedulerConfig().RetryBuffer`, or `fallback_pause`, capped by `max_pause`. A second hit extends the resume time (never shortens it) and keeps one owner. Alert and INFO log lines are emitted on pause, with a resume log on release.\n- **Status:**\n- Met. The gateway emits `admission_paused`, `admission_pause_owners` and `admission_resumes_at`. `pilot status` decodes the same three keys, so each field has a producer in `internal/gateway/server.go` and a consumer in `cmd/pilot/commands.go`.\n- Alert metadata keys (`owner`, `reset_at`, `resumes_at`) are produced in `internal/executor/usage_limit_pause.go`, and `internal/alerts/engine.go` reads `resumes_at`.\n- The event type string \"usage_limit_pause\" is the same in `internal/executor/alerts.go` and `internal/alerts/engine.go`.\n- **Single-task re-queue:** Left unchanged.\n- **Out-of-scope items:** Nothing forbidden was added. There is no CLI pause, no persistence, no percentage threshold, and no drain on stop.\n- Tests:\n- **Dispatcher tests:** They use a real `Dispatcher` and store, with a fake backend and a fake clock. `TestDispatcher_UsageLimitPausesAdmission` goes through the real finalization path. The disabled, fallback, cap and never-shortened tests call `armUsageLimitPause` directly, which skips the `processQueue` wiring. Only the first test would catch a broken hook.\n- **Gateway test:** It uses a mock `AdmissionStatusSource`, but it exercises the real `handleStatus` JSON output. There is no test that wires a real `*executor.Dispatcher` into the gateway.\n- **Evidence:** The gateway evidence is \"(cached)\", so it does not show a fresh run. Tests for `cmd/pilot` and `internal/config` were added, but no output for them is in the PR body.\n- Config validation is stricter than the issue asked. Setting only `max_pause: 10m` is rejected because the default 30m fallback exceeds it. That is deliberate and tested (\"default fallback above small max\"), but an operator could be surprised.\n- The issue says the alert has \"the same severity as the platform breaker's\". The diff uses `SeverityWarning`. I could not see the platform breaker rule, so I cannot confirm they match.\n- `cmd/pilot/main.go`: the new `SetAdmissionStatusSource` block was inserted between the \"GH-xxxx … only runs in --dashboard mode\" comment and the `if dispatcher != nil { … SetDispatcherLiveness }` block it describes. That separates the comment from its code and is misleading to readers.\n- Not reviewed: I could not see whether `processQueue` is the only place a run finalizes as `rate_limited`. If decomposed-subtask or epic runs finalize elsewhere, they would not arm the pause.",
+  "diff_bytes": 52411,
+  "diff_files": 19,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 52411,
+  "input_issue_bytes": 4918,
+  "input_pr_body_bytes": 3285,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 22199,
+  "posted": false
+}

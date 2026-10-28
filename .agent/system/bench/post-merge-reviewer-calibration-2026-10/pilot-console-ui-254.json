@@ -1,0 +1,33 @@
+{
+  "repo": "qf-studio/pilot-console-ui",
+  "pr": 254,
+  "issue": 241,
+  "merge_commit": "49b455547f427b9b4aca79880afc263b681007de",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "file": "src/views/DashboardView.vue:339 - the old chart is neither restyled nor replaced and the dashboard now shows two activity charts - the context lines still render `\u003cDashboardShippedChart :activity=\"filteredActivity\" :projects=\"projects\" /\u003e` and the new `\u003cDashboardActivityChart :events=\"boardActivity\" /\u003e` is added right after it",
+      "claim": "while the issue scope says to restyle `DashboardShippedChart.vue` or replace its use in `DashboardView.vue`"
+    },
+    {
+      "file": "src/design-system/components/DashboardActivityChart.vue:25 - the range switch does not re-request the endpoint and the highlight and muted colours differ from the spec - the issue says to re-request `GET /api/v1/board/activity` with the range the endpoint supports and to use the warm accent from `dashboardShippedColors.ts` with white at 30% for the others; the diff fetches once in `DashboardView.vue` and uses `bg-needs-you` and `bg-ink/30`. The component comment discloses the colour deviation",
+      "claim": ""
+    },
+    {
+      "file": "src/design-system/components/DashboardActivityChart.vue:73 - the 30D view probably overflows its container and gets clipped - 30 bars at 9.67px plus 29 gaps at 8px is about 522px and the container has `overflow-hidden` with `shrink-0` bars",
+      "claim": "so narrow panels cut off the newest bars without any scroll or warning. No test covers this"
+    }
+  ],
+  "notes": "- Acceptance bullet 1 is met. The spec finds three `button[data-range]` elements and checks bar counts of 7, 24 and 30 after clicks.\n- Acceptance bullet 2 is met. The spec asserts one `bg-needs-you` bar and six `bg-ink/30` bars for the mixed fixture.\n- Acceptance bullet 3 is met by the pasted `make build`, `make test` and `make lint` output. The test output has a \"1621 lines omitted\" gap that I could not review.\n- Wire fields: the component reads `kind === 'pr_merged'` and `createdAt` from `BoardActivityEntry`, and `DashboardView.vue` calls `getAdapter().listBoardActivity()`. The producer files (`src/lib/api/types.ts`, the http and mock adapters) are not in the visible diff. The spec fixture type-checking under `vue-tsc` suggests the fields exist, but I could not confirm it.\n- The real adapter's page size or limit for `listBoardActivity` is unknown. If it returns only recent entries, 30D would silently under-count. Please verify.\n- The PR body shown contains only evidence. I could not confirm it says the buckets are built client-side because the endpoint has no range parameter, as the issue requires. The code comment says so.\n- The tests mount the real component with fixture props. They do not exercise the adapter, `DashboardView` wiring or the error-to-empty fallback in `loadBoardActivity`.\n- The `now` default is evaluated once at mount, so the window does not advance if the page stays open. Events that arrive later fall outside `t \u003e= end`.\n- Whether `text-ds-label` is 12px and whether `ink` at 30% matches the design's \"white at 30%\" on the light theme were not verifiable from the diff.\n- Out-of-scope items could not be checked because the issue's out-of-scope section was not provided. No migrations are involved.",
+  "diff_bytes": 8270,
+  "diff_files": 3,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 8270,
+  "input_issue_bytes": 1416,
+  "input_pr_body_bytes": 16232,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 21977,
+  "posted": false
+}

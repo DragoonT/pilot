@@ -1,0 +1,20 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5871,
+  "issue": 5849,
+  "merge_commit": "62fdf98ca4d2de6181ae5eb2e35690fa28e338c9",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [],
+  "notes": "- Requirements met:\n- Live labels now come from realIssue.Labels. On fetch failure liveLabels stays as ev.Labels, so it fails open.\n- The needs-human backstop, the spec-guard labels and the task Labels all read liveLabels.\n- The admission guard runs before the spec guard, label write, comment and task construction.\n- Skips cover closed, trigger label removed, pilot-blocked, pilot-needs-clarification and needs-human. Each has a distinct SkipReason, returns Success false and Skipped true, logs one INFO line with task id and reason, and calls recordClaimLostDrop on backoffKey.\n- There is no studio-sdk change, and no other adapter is touched.\n- Wire fields: the test server emits number, title, body, state, labels[].name and user.login. The code reads these through githubSDK.Issue. I could not see the SDK's struct tags, so that match is unconfirmed. The test would fail if the tags did not match, because the four skip cases depend on state and labels.\n- Tests:\n- The test uses the real SDK client against an httptest server through the new githubTaskClientOpts hook. It does not mock the adapter, so the HTTP read of the issue is exercised.\n- The mutation criteria hold. Dropping the trigger-label check fails the \"trigger label removed\" case, and dropping recordClaimLostDrop fails the backoff and ClaimLostDropCount assertions.\n- The fetch-error case is weak. It only asserts that the result is not one of the live-gate skip reasons. It does not check that the task proceeds with ev.Labels, which the acceptance criterion asked for. No side-effect assertion applies to that case either.\n- Behaviour change:\n- The issue fetch now runs before the needs-human backstop, so a needs-human skip costs one extra GET.\n- If the live labels no longer carry needs-human but ev.Labels does, the issue is now admitted. This is intended by the issue, but it changes the GH-5056 semantics.\n- Not verified:\n- Whether githubEventHasLabel compares case-insensitively. If the poller matches PilotLabel case-insensitively and this helper does not, an issue could be skipped as trigger_label_removed by mistake.\n- Whether backoffKey is defined above the diff hunk. It compiled and CI was green, so it probably is.\n- The PR evidence contains only the one required test command output, which matches the issue's instruction not to re-run make targets.",
+  "diff_bytes": 18610,
+  "diff_files": 3,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 18610,
+  "input_issue_bytes": 4231,
+  "input_pr_body_bytes": 4931,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 21177,
+  "posted": false
+}

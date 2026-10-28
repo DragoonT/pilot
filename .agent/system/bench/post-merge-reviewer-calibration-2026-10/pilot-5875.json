@@ -1,0 +1,20 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5875,
+  "issue": 5867,
+  "merge_commit": "57e9356223af656f8d80c56391a24bb4b15ce675",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [],
+  "notes": "1) Issue requirements against the diff:\n- Fresh finalize window before PR/MR create: met. `runner.go` re-derives `finalizeCtx(ctx, r.finalizeTimeout())` after `appendAcceptanceEvidence` in the three direct-path branches (GitHub SDK, MR creator, gh CLI). It does the same in `finalizeEpicBranchPR` and `pushAndCreatePRAfterTimeout`.\n- Fresh window inside `formatGitStepFailureWithRecovery` before the recovery ref: met.\n- GH-5342 rule that `context.Canceled` is not extended: met. `finalizeCtx` is reused, and the recovery-ref test asserts a cancelled ctx is not extended.\n- Own evidence budget: met. `evidenceBudgetCtx` uses `WithoutCancel` plus a timeout, and an `AfterFunc` propagates only `context.Canceled`.\n- Config knob: met. `acceptance_evidence_budget` defaults to 15m, `config.go` rejects negative values, and `pilot.example.yaml` documents it.\n- Exhausted budget renders \"Not verified: evidence budget exhausted\" for paste-output and mutation items, and the task proceeds to PR creation: met.\n- Reuse of passed gate output: met. The match is on the argv key, output goes through `finalizeEvidenceOutput`, and the line carries the \"(from the quality-gate run)\" marker. Failed gates and a different argv still run.\n- One WARN line with task id, item index and elapsed time: met through `logEvidenceEvent`. The exhaustion line fires only once per run, at the first cut-off item.\n- Evidence bullet for make build/test/lint not added to the issue: met.\n2) Wire fields:\n- YAML key `executor.acceptance_evidence_budget` is produced by the `BackendConfig` yaml tag in `backend.go`. It is consumed by `config.go` Validate and by `EffectiveAcceptanceEvidenceBudget` in `runner`.\n- Gate fields `Command`, `Output`, `Passed` and `ExitCode` are read from `QualityGateResult`. The diff does not show that struct, but CI compiled it, so the fields exist.\n- No unbacked field found.\n3) Tests:\n- The runner test uses the real git repo and the real `Execute` path with a fake PR creator. A fake creator is acceptable here, because the risk is the ctx handed to the creator and not an adapter wire format.\n- The recovery-ref assertion checks `recovery_ref=` in the error string. It does not directly probe the ctx the helper sees.\n- The runner test sets `SkipQualityGates`, so reuse of gate output is covered only by the unit test and not end to end.\n4) Migrations: none.\n5) Out of scope:\n- The allowlist is unchanged.\n- `runDiffCoverageCheck` now runs on its own `finalizeCtx` window. This is small and benign, and goes slightly beyond the issue's text.\n6) Observations, none of them blocking:\n- `finalizeEpicBranchPR` and `pushAndCreatePRAfterTimeout` pass `nil` gates, so reuse does not apply on those paths. The issue's incident was the direct path.\n- `classifier.Classify` still runs on the task ctx, so an already-expired ctx at classification time falls back to the classifier's error handling and is not covered by the evidence budget.\n- Budget-kill detection in `runAcceptanceEvidenceItemsBudgeted` matches `NotVerifiedReason` by string prefixes (\"timed out after\", \"execution error running\", \"could not run\"). This breaks silently if those messages change.\n- `finalizeCtx` still returns a plain `WithCancel` when the task ctx is alive but nearly spent. The PR window can then be short, which matches the issue's stated design.\nNot reviewed: the allowlist-validation lines of `runPasteOutputItem`, which sit in an unshown hunk gap. The gate lookup appears to run after them, but I can't confirm that from the diff.",
+  "diff_bytes": 46902,
+  "diff_files": 15,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 46902,
+  "input_issue_bytes": 5154,
+  "input_pr_body_bytes": 7143,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 36156,
+  "posted": false
+}

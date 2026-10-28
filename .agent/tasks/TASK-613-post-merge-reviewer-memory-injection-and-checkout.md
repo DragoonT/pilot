@@ -1,6 +1,6 @@
 # TASK-613: post-merge reviewer reads project memory (M1, now) and, if calibration says so, a read-only checkout (M2, held)
 
-**Status**: 🚀 M1 DISPATCHED 2026-10-28 → pilot#5911 (`pilot`+`no-decompose`, Depends on #5910). M2 is written here and HELD until the TASK-612 calibration run reports.
+**Status**: 🚀 M1 DISPATCHED 2026-10-28 → pilot#5911 (`pilot`+`no-decompose`, Depends on #5910). M2 GATE MET by the calibration (recall 39.4 %, ~18 of 28 misses need code outside the diff) — ready to dispatch on founder go. M1 is in the autopilot fix cycle (PR#5914 lint fail → #5915).
 **Spec refs**: TASK-387 (executor memory injection: buildMemoryInjectionBlock in `internal/executor/prompt_builder.go`, graphrecall.RecallRelevant in `internal/memory/graphrecall/recall.go`), TASK-591/610/612 (reviewer, diff budget, calibration).
 **Origin**: question 2026-10-28 "does Pilot use nav-research patterns on review?" — no: the reviewer is a fixed five-item checklist over the diff; the executor prompt gets up to five ranked graph memories, the reviewer gets none, and it has no checkout to open the counterpart files its checklist asks about.
 

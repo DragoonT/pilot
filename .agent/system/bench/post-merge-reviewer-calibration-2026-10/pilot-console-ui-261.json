@@ -1,0 +1,45 @@
+{
+  "repo": "qf-studio/pilot-console-ui",
+  "pr": 261,
+  "issue": 258,
+  "merge_commit": "b881f20587cd5d1e3a75e432db1f60f0b6835fc4",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "file": "src/views/DashboardView.vue:66 stale docblock still says the Context column sits right of the by-project list, but that list was removed; the issue asked for the docblock design citation to reflect the swap, and the top-level design citation was not updated, only a GH-258 paragraph was appended",
+      "claim": "the GH-243 paragraph is unchanged context in the diff right after the added GH-258 lines"
+    },
+    {
+      "file": "src/components/dashboard/DashboardQueue.vue:1 new component, queue.ts and spec added although the issue only says to mount an existing DashboardQueue, and its scope fence forbids implementing sibling work",
+      "claim": "the diff creates DashboardQueue.vue, queue.ts and DashboardQueue.spec.ts, and the docblock cites GH-257 as a separate ticket"
+    },
+    {
+      "file": "src/lib/api/httpAdapter.ts:589 WireBoardCard gains project and parentId but no producer is shown",
+      "claim": "the diff has no console or backend file that emits board-card project or parentId, so the bindings may never be populated and the Queue would collapse into a single \"Board\" group with no nesting"
+    },
+    {
+      "file": "src/lib/api/httpAdapter.ts:720 toBoardCard mapping of project and parentId has no test against the real adapter",
+      "claim": "DashboardQueue.spec.ts mocks getAdapter entirely and DashboardView.spec.ts uses mockAdapter, so the wire contract is unexercised"
+    },
+    {
+      "file": "src/views/DashboardView.vue:140 the project filter pill no longer affects any list because filteredProjectsForByProjectList was removed and DashboardQueue takes no filter",
+      "claim": "the GH-139 assertions on the by-project list were deleted from DashboardView.spec.ts with no replacement, so the behavior change is untested and not called out in the issue"
+    },
+    {
+      "file": "src/components/dashboard/DashboardQueue.vue:30 onMounted awaits listCards with no error handling",
+      "claim": "a rejected listCards call leaves an unhandled rejection and an empty Queue on the dashboard with no error state"
+    }
+  ],
+  "notes": "- Requirements met: SectionHeader \"Queue\" with \"Show history\" linking to /board (the fallback) is mounted under the activity chart and above the composer. The DashboardShippedByProject import, usage, file and spec are removed. A view test covers the header and link.\n- Not verified: the make build, make test and make lint output for the PR body is not in the diff, so I could not check it. I could not see SectionHeader.vue, so I could not confirm its `title` prop and `action` slot. I also could not confirm that CardExecution already has durationMs, linesAdded and linesRemoved, or that getCardExecution exists on the adapter. All of these are used by the new code.\n- The Queue fetches one execution per card (N+1 requests on mount), and chipFor takes an unused `exec` parameter.\n- The updated DashboardView test still expects 'Ship StatusDot needs-you token' in the page text. Check that something other than the deleted list still renders it, since the Queue is backed by the cards endpoint rather than the dashboard fixture.\n- No migrations are involved.",
+  "diff_bytes": 33516,
+  "diff_files": 9,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 33516,
+  "input_issue_bytes": 951,
+  "input_pr_body_bytes": 626,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 19575,
+  "posted": false
+}

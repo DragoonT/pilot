@@ -1,0 +1,20 @@
+{
+  "repo": "qf-studio/pilot-console-ui",
+  "pr": 255,
+  "issue": 243,
+  "merge_commit": "c05dbd11b039898701b81df285a25223a10c8998",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [],
+  "notes": "- Requirements, bullet by bullet:\n- Right column: met. `DashboardView.vue` changes the grid to `xl:grid-cols-[minmax(0,1fr)_400px_270px]`. Tailwind's `xl` is 1280px, and below that the grid is a single column, so the panel stacks.\n- Three cards: met. `ContextPanel.vue` has the \"Context\" header and Docs, Memory and Graph cards, with 16px padding (`p-4`) and 13px rows.\n- Docs header value (total count): met.\n- Docs rows: partly met. `Updated this week` comes from `entries[].modifiedAt`. `Created this week` and `Read by Pilot this week` render `—`. The \"muted secondary number\" next to each count is not implemented. The issue says \"where available\", so this is acceptable.\n- Memory: met as a `—` fallback. The header and all rows are `—`.\n- Graph health word and tooltip: met for the Healthy/Drift/Stale words. The tooltip is a native `title` attribute. The 7-day and 30-day thresholds are the author's own assumption, as the code comment says.\n- Graph rows: shown, but always `—` because nothing passes the `graph` prop.\n- No bare percentage: met. The test asserts `not.toMatch(/\\d+%/)`.\n- Unit test for labels and the `—` fallback: met (`ContextPanel.spec.ts`).\n- Acceptance bullet 2 is not shown as met. The PR evidence I was given has only build, test and lint output. It has no \"Needs API\" section listing the fields that fell back to `—`. Memory counts, graph stats, docs created and read counts, and memory created, updated and read counts all fall back. If the PR body lacks that list, the criterion is unmet. I could not see the full body, so I did not count this as a defect.\n- Wire fields:\n- The panel reads `entries[].modifiedAt` and `entries.length` from `DocsTreeResponse`. The producer is `getDocsTree` in the http adapter and `src/lib/api/types.ts`. I could not see those files, so I did not confirm the field exists there. The fixture in the test is typed as `DocsTreeResponse`, which suggests it does.\n- The `graph` prop (`nodes`, `edges`, `updatedAt`) has no producer. The issue says to use the \"existing docs/graph endpoints\". The diff states that no graph endpoint exists, and I could not check that against `types.ts`. If one does exist, the Graph card is left unwired.\n- Tests:\n- They mount `ContextPanel` with props only, so the adapter wire contract is not exercised.\n- `DashboardView`'s `loadContextDocs` has no test. That covers the use of `session.instances[0]`, which may not be a running instance, and the silent catch that turns any error into `—`.\n- Migrations: none in this diff.\n- Out of scope: no violations seen. Nothing is hardcoded and no values are invented.\n- Minor: `text-needs-you`, `text-success`, `text-error` and `text-text-2` are Tailwind tokens I could not check against the theme. `vue-tsc` and the build would not catch an unknown class.\n- Not reviewed: `src/lib/api/types.ts`, the http and mock adapters, and `src/lib/relativeTime.ts`. They are not in the diff.",
+  "diff_bytes": 10956,
+  "diff_files": 3,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 10956,
+  "input_issue_bytes": 1713,
+  "input_pr_body_bytes": 15974,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 22668,
+  "posted": false
+}

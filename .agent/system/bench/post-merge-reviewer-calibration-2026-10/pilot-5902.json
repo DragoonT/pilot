@@ -1,0 +1,20 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5902,
+  "issue": 5900,
+  "merge_commit": "9fc6fec70e57d4d11b1cff4652e3dfece93dc37a",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [],
+  "notes": "- **Requirement 1 (tree hygiene), met.** `self_review_hygiene.go` skips worktree mode, runs `git status --porcelain` and picks commit or reset as the issue specifies. It uses a fresh 30s context and logs one Info line with action, file count and reason. Two deviations are harmless. It adds a fourth reason, `discarded-unreported`, for a passed review that left stray edits. If the commit fails it falls back to a reset and logs a Warn plus an Info line.\n- **Requirement 2 (terminated note), met in substance.** `ExecutionResult.SelfReviewTerminated` feeds `selfReviewPRNote` in all three PR/MR body builders and in the completion log line. The PR body has no dedicated \"self-review section\", so the line is appended at the very end, after the acceptance evidence.\n- **Requirement 3 (configurable timeout), met.** `BackendConfig.SelfReviewTimeout` and `EffectiveSelfReviewTimeout` are in `backend.go`. `selfReviewTimeout` reads them in `runner.go`. `config.go` rejects negatives with a message naming `executor.self_review_timeout`, and `TestSelfReviewTimeoutConfig` covers that path. The example YAML places the real key far from `finalize_timeout`, inside the acceptance-evidence comment block, and only a pointer comment sits next to `finalize_timeout`. That is slightly off from \"next to finalize_timeout\" and splits the evidence comments.\n- **Requirement 4 (tests), met.** The fake backend reads `opts.ProjectPath`, writes into it, and returns either the terminated error or REVIEW_FIXED. The mutation-check tests exist under the names the issue lists. Test evidence is pasted in the PR body.\n- **Wiring not covered by tests.** Every test calls `runSelfReview` and `afterSelfReview` directly. Nothing exercises the call site in `Execute` that passes `runSelfReview` and `useWorktree`. A wrong argument there would not be caught, and CI cannot see it.\n- **PR note in worktree mode.** The note says \"its edits were discarded\" when the session was killed, even in worktree mode where `selfReviewTreeHygiene` does not run. The claim is true only because the worktree is thrown away later. `TestSelfReviewTreeHygiene` asserts the note for that case.\n- **Reset scope.** The reset targets `HEAD` and runs in direct mode whenever the tree is dirty. If an earlier phase ever leaves uncommitted work, such as quality-gate or fixer edits, the reset would silently drop it. I could not see whether the earlier phases always commit.\n- **`-z` parsing.** `dirtyProjectPaths` skips the bare origin entry after a rename by checking `entry[2] == ' '`. A path with a space at that position could be miscounted. This only affects the logged file count.\n- **Counterparts not visible.** I could not see `git.Commit`, `ResetHardToCommit`, `gitOutput`, `isExcluded` or the `ErrorTypeShutdownTerminated` and `ErrorTypeTimeout` constants. I took their existence and behaviour from the diff and the green CI.\n- **Not reviewed:** nothing was truncated.\n- **Out of scope:** the diff respects it. It adds no pre-flight self-heal, does not touch the hooks bootstrap, and leaves the self-review prompt unchanged.",
+  "diff_bytes": 32113,
+  "diff_files": 7,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 32113,
+  "input_issue_bytes": 4802,
+  "input_pr_body_bytes": 6072,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 31724,
+  "posted": false
+}

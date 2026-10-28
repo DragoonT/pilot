@@ -1,0 +1,40 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5799,
+  "issue": 5791,
+  "merge_commit": "d814c2381d90af25a47f504aa5191f73b6a4d7a5",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "file": "internal/briefs/receipts.go:341-348 - The receipts digest shows cost on every key source except platform",
+      "claim": "but the issue says cost appears only when key_source is the tenant's own key - evidence: the check is `exec.KeySource != memory.KeySourcePlatform`",
+      "evidence": "so empty or unknown shows `$`. BuildStructured in structured.go uses `== KeySourceOwn` and omits cost for unknown, so the two paths disagree. The test only covers own and platform."
+    },
+    {
+      "file": "internal/briefs/receipts.go:366-374 - The day-total cost has the same problem. It is omitted only if a row is platform",
+      "claim": "so a day of unknown or empty key_source rows still prints a `$` total."
+    },
+    {
+      "file": "internal/briefs/generator.go:20-25 - The pool section has no producer. `SetPoolSource` is called only in structured_test.go",
+      "claim": "and nothing in the diff wires a PoolSource into the Generator",
+      "evidence": "so `pool` is always null in production - evidence: the Changed Files list has no cmd or daemon wiring."
+    },
+    {
+      "file": "PR body (make lint) - An acceptance item requires `make lint` to pass",
+      "claim": "but the pasted output ends with `make: *** [Makefile:94: lint] Error 1` and 3 staticcheck SA4023 issues at cmd/pilot/tunnel.go:205",
+      "evidence": "351 and 433. The criterion is unmet and the PR body shows it."
+    }
+  ],
+  "notes": "- Issue requirements:\n- Met: the four sections in order, 24h-first ordering, the cost rule in the structured brief, the `schema: 1` JSON payload, the email formatter with four headings, the two gateway routes, and unchanged scheduler times.\n- Met with the gaps above: receipts folded in (the digest's cost rule is wrong) and the pool section (the data source is never wired).\n- Not met: lint passing.\n- I could not check these counterparts because they are not in the diff:\n- `memory.KeySourceOwn`, `KeySourcePlatform`, `NormalizeKeySource`, `Execution.KeySource`.\n- `GetExecutionsForReceipts`, `LoadPendingApprovals`, `GetExecutionByApprovalRequestID`.\n- Whether `/api/v1/briefs*` routes sit behind the same bearer middleware as sibling routes. The 401 test suggests yes.\n- Tests:\n- Gateway tests use the real `memory.Store` and a real server, which is good.\n- The generator and scheduler test uses a real store.\n- The `GenerateStructured` pending-approvals path (review items, expiry skip, PR URL join) is not tested end to end.\n- The gateway tests start the server with a 100ms sleep, which is racy and could flake.\n- Migration:\n- It is an additive `CREATE TABLE IF NOT EXISTS` and index, so there is no data loss.\n- There is no down path, and no retention or pruning of `brief_payloads`, so the table grows by one row per run.\n- Row-level security does not apply to this SQLite store, so I'm treating it as not applicable.\n- `ClassifyFailure` uses loose substring matches. \"eof\", \"429\", \"401\", \"502\" and \"503\" can match unrelated text such as line numbers, and \"conflict\" is broad. The order of the cases also affects the result.\n- `oneLine` truncates by bytes and can split a multibyte rune.\n- `GenerateStructured` is called separately from `Generate`, so the stored brief can differ slightly from the delivered one. The two use different queries and a different `now`.\n- Nothing in the diff violates the issue's out-of-scope items. I did not see the issue's out-of-scope section, so this is judged only against the Scope text.",
+  "diff_bytes": 41156,
+  "diff_files": 13,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 41156,
+  "input_issue_bytes": 1832,
+  "input_pr_body_bytes": 8684,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 22754,
+  "posted": false
+}
