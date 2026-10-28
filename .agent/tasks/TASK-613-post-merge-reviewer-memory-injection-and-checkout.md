@@ -1,6 +1,6 @@
 # TASK-613: post-merge reviewer reads project memory (M1, now) and, if calibration says so, a read-only checkout (M2, held)
 
-**Status**: 🚀 M1 DISPATCHED 2026-10-28 → pilot#5911 (`pilot`+`no-decompose`, Depends on #5910). M2 GATE MET by the calibration (recall 39.4 %, ~18 of 28 misses need code outside the diff) — ready to dispatch on founder go. M1 is in the autopilot fix cycle (PR#5914 lint fail → #5915).
+**Status**: 🚀 M1 DISPATCHED 2026-10-28 → pilot#5911 (`pilot`+`no-decompose`, Depends on #5910). M2 DISPATCHED 2026-10-28 → pilot#5916 (`pilot`+`no-decompose`, Depends on #5915); gate met by the calibration (recall 39.4 %). M1 is in the autopilot fix cycle (PR#5914 lint fail → #5915).
 **Spec refs**: TASK-387 (executor memory injection: buildMemoryInjectionBlock in `internal/executor/prompt_builder.go`, graphrecall.RecallRelevant in `internal/memory/graphrecall/recall.go`), TASK-591/610/612 (reviewer, diff budget, calibration).
 **Origin**: question 2026-10-28 "does Pilot use nav-research patterns on review?" — no: the reviewer is a fixed five-item checklist over the diff; the executor prompt gets up to five ranked graph memories, the reviewer gets none, and it has no checkout to open the counterpart files its checklist asks about.
 
@@ -53,11 +53,10 @@ Depends on #5910 (it moves the review-input gather into one exported function; t
 
 ### LEG M2 — repo: qf-studio/pilot — title: feat(autopilot): post-merge reviewer runs against a read-only checkout of the merge commit with read tools, so checklist item 2 opens the counterpart file instead of naming it
 probe: present qf-studio/pilot func localMergedDiff
-probe: absent  qf-studio/pilot allowedTools
 
 ## Context
 
-Gate: dispatch only if the TASK-612 calibration shows the counterpart-file misses drive the recall gap (defect recall below threshold with "could not see" notes on the missed defects). The reviewer today invokes the model with --print and the prompt on stdin, no working directory and no tools (`internal/executor/post_merge_reviewer.go` Review, runner from `internal/executor/intent_judge.go`). Checklist item 2 asks it to confirm a wire field's producer in a counterpart file it cannot open.
+Depends on #5915 (the lint fix of the memory-injection PR; both change the reviewer). Gate met by the 2026-10-28 calibration (`.agent/system/bench/post_merge_reviewer_calibration_2026-10.md`): defect recall 39.4 % against a 0.5 bar, and about 18 of the 28 misses need code outside the diff — pre-existing helpers the change interacts with, counterpart DTOs in the same repo, the file a wire field is produced in. The reviewer today invokes the model with --print and the prompt on stdin, no working directory and no tools (`internal/executor/post_merge_reviewer.go` Review, runner from `internal/executor/intent_judge.go`). Checklist item 2 asks it to confirm a wire field's producer in a counterpart file it cannot open.
 
 ## Implementation
 
@@ -83,3 +82,4 @@ Gate: dispatch only if the TASK-612 calibration shows the counterpart-file misse
 ## Refs
 
 - M1 → https://github.com/qf-studio/pilot/issues/5911
+- M2 → https://github.com/qf-studio/pilot/issues/5916
