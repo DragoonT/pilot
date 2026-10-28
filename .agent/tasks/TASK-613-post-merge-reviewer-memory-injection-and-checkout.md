@@ -1,6 +1,6 @@
 # TASK-613: post-merge reviewer reads project memory (M1, now) and, if calibration says so, a read-only checkout (M2, held)
 
-**Status**: 🚀 M1 DISPATCHED 2026-10-28 → pilot#5911 (`pilot`+`no-decompose`, Depends on #5910). M2 DISPATCHED 2026-10-28 → pilot#5916 (`pilot`+`no-decompose`, Depends on #5915); gate met by the calibration (recall 39.4 %). M1 is in the autopilot fix cycle (PR#5914 lint fail → #5915).
+**Status**: 🚀 M1 DISPATCHED 2026-10-28 → pilot#5911 (`pilot`+`no-decompose`, Depends on #5910). M2 MERGED as PR#5919 16:21Z (reviewer verdict APPROVE-w-notes named a real hole: Read/Grep not confined to the worktree) → **M3 DISPATCHED → pilot#5920** (`pilot`+`no-decompose`, Depends on #5917). M1 merged via #5915 → PR#5918 15:32Z. M1 is in the autopilot fix cycle (PR#5914 lint fail → #5915).
 **Spec refs**: TASK-387 (executor memory injection: buildMemoryInjectionBlock in `internal/executor/prompt_builder.go`, graphrecall.RecallRelevant in `internal/memory/graphrecall/recall.go`), TASK-591/610/612 (reviewer, diff budget, calibration).
 **Origin**: question 2026-10-28 "does Pilot use nav-research patterns on review?" — no: the reviewer is a fixed five-item checklist over the diff; the executor prompt gets up to five ranked graph memories, the reviewer gets none, and it has no checkout to open the counterpart files its checklist asks about.
 
@@ -49,6 +49,47 @@ Depends on #5910 (it moves the review-input gather into one exported function; t
 
 - https://github.com/qf-studio/pilot/issues/5910
 
+## Legs — M3 (from the reviewer's own verdict on PR#5919)
+
+### LEG M3 — repo: qf-studio/pilot — title: fix(autopilot): the post-merge review checkout confines Read, Grep and Glob to the worktree with a PreToolUse hook, sweeps stale review worktrees at startup, and logs a max-turns exhaustion instead of an unknown verdict
+probe: present qf-studio/pilot func createPostMergeCheckout\(
+probe: present qf-studio/pilot func postMergeCheckoutArgs\(
+probe: present qf-studio/pilot type HookMatcherEntry struct
+
+## Context
+
+Depends on #5917 (it edits the same reviewer files). PR#5919 (#5916) runs the post-merge reviewer in a detached worktree of the merge commit with the CLI tools limited to Read, Grep and Glob and max-turns 12 (`internal/executor/post_merge_checkout.go`, postMergeCheckoutArgs; the CLI gets cmd.Dir set to the worktree). The reviewer's own verdict on that merge named three gaps. First, Read and Grep accept absolute paths, so nothing confines them to the worktree: a prompt-injected diff or file could make the model read files outside the checkout — the daemon home, credentials, the main clone — and echo them into the posted comment. Second, a daemon crash mid-review leaves a pilot-worktree-review-* directory and a stale .git/worktrees entry; only a successful removal runs git worktree prune, so nothing sweeps them at startup. Third, when the CLI ends on max-turns with an empty result, the parser falls back to the last assistant text, which parses to PostMergeUnknown and is silently not posted.
+
+## Implementation
+
+1. Path confinement. Before the CLI runs, write a .claude/settings.json into the review worktree with a PreToolUse hook, using the matcher-based entries the executor already writes for tasks (HookMatcherEntry in `internal/executor/hooks.go`, GenerateClaudeSettings idiom): matcher Read|Grep|Glob, the hook script resolves the tool's target path (file_path, path, or pattern base) with symlinks followed and exits with a deny when the resolved path is not under the worktree root; it also denies any Bash, Edit, Write, WebFetch or WebSearch call outright as a second layer under --allowedTools. The hook script lives with the other hook scripts the executor installs; never under the project checkout. Log one Warn line per denied call with the tool and the path.
+2. Environment. Pass the review CLI the same scrubbed environment the executor uses (modelSubprocessEnv) with HOME pointed at a per-review temp directory that carries only the settings file; confirm no token-bearing variable reaches the subprocess beyond what the model call needs.
+3. Startup sweep. On daemon start, list os.TempDir() for pilot-worktree-review-* directories older than the review timeout plus one hour, remove them, then run git worktree prune in each configured project; log counts at Info.
+4. Max-turns. When the stream ends without a final result and the last assistant text does not parse to a verdict, record the review as "exhausted" (metric label and one Warn line with turns used and files read) rather than unknown, and do not fall back to narration.
+5. Tests, table-driven: the hook denies an absolute path outside the worktree, a symlink that escapes, and a .. traversal, and allows a path inside; the settings file is present in the worktree during the run and gone after cleanup; the startup sweep removes an old directory and leaves a fresh one; the max-turns case yields the exhausted outcome. The build-tagged integration test runs the hook script against a real worktree. Fakes read their arguments.
+
+## Acceptance
+
+- During a review the worktree contains .claude/settings.json with a PreToolUse hook on Read, Grep and Glob, and the hook denies a Read of a path outside the worktree with a logged Warn line.
+- A Read of a file inside the worktree passes the hook.
+- After daemon start, a stale pilot-worktree-review-* directory older than the threshold is gone and git worktree list shows no stale entry for it.
+- A review that hits max-turns logs "post-merge review exhausted" and posts nothing.
+- `go test -race ./internal/executor/ -run TestPostMergeCheckoutConfinement` passes; paste the output into the PR body.
+- `go test -race ./internal/executor/ -run TestPostMergeCheckoutSweep` passes; paste the output into the PR body.
+- remove the symlink resolution before the prefix check -> TestPostMergeCheckoutConfinement_SymlinkEscapeDenied fails
+- allow a path with .. segments through -> TestPostMergeCheckoutConfinement_TraversalDenied fails
+- skip the sweep -> TestPostMergeCheckoutSweep_OldDirectoryRemoved fails
+
+## Out of scope
+
+- Changing which tools the reviewer may use.
+- The prompt and parser changes in #5917.
+
+## Refs
+
+- https://github.com/qf-studio/pilot/pull/5919
+- #5917
+
 ## Held — do not dispatch before the TASK-612 calibration report
 
 ### LEG M2 — repo: qf-studio/pilot — title: feat(autopilot): post-merge reviewer runs against a read-only checkout of the merge commit with read tools, so checklist item 2 opens the counterpart file instead of naming it
@@ -83,3 +124,4 @@ Depends on #5915 (the lint fix of the memory-injection PR; both change the revie
 
 - M1 → https://github.com/qf-studio/pilot/issues/5911
 - M2 → https://github.com/qf-studio/pilot/issues/5916
+- M3 → https://github.com/qf-studio/pilot/issues/5920
