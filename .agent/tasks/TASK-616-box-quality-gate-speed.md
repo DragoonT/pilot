@@ -1,6 +1,6 @@
 # TASK-616: box quality gates from 23 min to under 5 — executor test hygiene, a changed-package test gate, and a box config step
 
-**Status**: 🚀 DISPATCHED 2026-10-28 — G1 → pilot#5924 · G2 → pilot#? (Depends on #5924); both `pilot`+`no-decompose`. Operator interim step (drop -race, -trimpath) pending founder go. nav-research done (local `-race -json` timings of internal/memory and internal/executor; import graph via go list; box config read).
+**Status**: 🚀 DISPATCHED 2026-10-28 — G1 → pilot#5924 · G2 → pilot#5926 (Depends on #5924); both `pilot`+`no-decompose`. Operator interim step (drop -race, -trimpath) pending founder go. nav-research done (local `-race -json` timings of internal/memory and internal/executor; import graph via go list; box config read).
 **Spec refs**: `internal/quality/runner.go` (executeCommand ~293, RunAll retries ~147), `internal/quality/types.go` (ResolveConfig, IsParallel), `Makefile` (test, test-short), `internal/executor/git.go` (resolveMergeBaseSHA ~1579, ChangedFilesAgainstOrigin ~1764), `internal/executor/acceptance_evidence_run.go` (evidence reuse keyed by argv ~794), `scripts/pre-push-classify.sh` (docs-only classifier), TASK-393 Phase 2 "affected-tests-only" (never built).
 **Origin**: founder 2026-10-28 "where is our 15 min per issue": GH-5915/5916/5917 took 47–48 min each; Claude 1–9 min, box gates 22–23 min, CI 12 min, merge 2 min.
 
@@ -53,8 +53,8 @@ The internal/executor test suite takes 343 s locally without the race detector a
 
 ### LEG G2 — repo: qf-studio/pilot — title: feat(quality): changed-package test gate — the gate runner computes the Go packages a diff affects and exports them, make test-changed runs only those, full suite on any blind spot
 probe: present qf-studio/pilot cmd.Dir = r.projectDir
-probe: present qf-studio/pilot func resolveMergeBaseSHA
-probe: absent  qf-studio/pilot PILOT_CHANGED_PACKAGES
+probe: present qf-studio/pilot resolveMergeBaseSHA\(
+probe: absent  qf-studio/pilot func ChangedGoPackages\(
 
 ## Context
 
@@ -62,7 +62,7 @@ Depends on #5924 (it lands the -short guards the scoped run relies on). The qual
 
 ## Implementation
 
-1. New `internal/quality/scope.go`: ChangedGoPackages(ctx, dir, baseBranch) returns the affected import paths, a full flag and a reason. Diff = union of git diff --name-only merge-base...HEAD (merge-base from origin/base, then local base, as resolveMergeBaseSHA does), git diff --name-only HEAD, and untracked files from git ls-files -o --exclude-standard. Package graph from go list -f with ImportPath, Imports, TestImports and XTestImports over ./... in the worktree.
+1. New file internal/quality/scope.go: ChangedGoPackages(ctx, dir, baseBranch) returns the affected import paths, a full flag and a reason. Diff = union of git diff --name-only merge-base...HEAD (merge-base from origin/base, then local base, as resolveMergeBaseSHA does), git diff --name-only HEAD, and untracked files from git ls-files -o --exclude-standard. Package graph from go list -f with ImportPath, Imports, TestImports and XTestImports over ./... in the worktree.
 2. Affected set: a package is affected when it changed, or when the production-import closure of its Imports plus one hop of its TestImports and XTestImports contains a changed package. Test imports are one hop, never transitive. A non-Go file under a package directory marks that package changed. A test file that contains a relative-path literal into a sibling directory (a quoted string beginning with ../ followed by a directory that holds a package) adds an edge from that directory's package to the test's package.
 3. Full-suite fallbacks (full = true with the reason logged): any change under go.mod, go.sum, Makefile, scripts, .github, configs, .golangci.yml or any path outside a Go package directory except .agent and docs; any git or go list error; no merge base; empty base branch. A diff whose every path is under .agent or docs yields an empty set with reason docs-only, and the test gate passes without running. When the set covers more than 70 percent of packages, run ./... instead of listing packages.
 4. Plumb the base branch: add BaseBranch to the quality executor config (`internal/quality/executor.go`, `internal/quality/types.go`), set from the project's BranchFrom in `cmd/pilot/adapters.go` where the quality checker factory is built.
@@ -107,3 +107,4 @@ Depends on #5924 (it lands the -short guards the scoped run relies on). The qual
 ## Refs
 
 - G1 → https://github.com/qf-studio/pilot/issues/5924
+- G2 → https://github.com/qf-studio/pilot/issues/5926

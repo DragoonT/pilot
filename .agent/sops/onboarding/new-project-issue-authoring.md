@@ -58,7 +58,7 @@ probe: absent  qf-studio/pilot-console enforceDailyTicketCap
 probe: present qf-studio/pilot         json:"kind"
 ```
 
-`present` needs a match, `absent` needs none; a mismatch aborts the run. Write one probe per claim the leg rests on ("no enforcer exists yet", "the producer emits this field", "this helper exists"). Every probed repo needs a `--checkout`.
+`present` needs a match, `absent` needs none; a mismatch aborts the run. **An `absent` probe is grepped over the whole repo at `origin/main`, task docs included (2026-10-28, three aborts in one day: TASK-610 `max_diff_chars`, TASK-613 `checkout: yes, files read`, TASK-616 `PILOT_CHANGED_PACKAGES`): once the task doc is committed, any prose it carries matches itself. Write `absent` probes as Go symbols that the leg will create (`func ChangedGoPackages\(`, `pmr\.MaxDiffChars`), never as config keys, log text or comment lines that the doc also quotes. git grep's ERE has no `\s`; use a literal space or `[[:space:]]`.** Write one probe per claim the leg rests on ("no enforcer exists yet", "the producer emits this field", "this helper exists"). Every probed repo needs a `--checkout`.
 
 ## Rule 4 — Serialize anything that touches shared root files
 
