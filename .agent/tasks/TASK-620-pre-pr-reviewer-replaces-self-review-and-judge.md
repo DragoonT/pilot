@@ -1,6 +1,6 @@
 # TASK-620: the reviewer moves before the PR — one in-run review after the gates with a resumed fix round; self-review and the in-run intent judge retire; post-merge becomes a sampled audit
 
-**Status**: 🚀 L1 DISPATCHED 2026-10-29 → pilot#5949 (`pilot`+`no-decompose`); L2 after it merges; plan approved by the founder (plan file `~/.claude/plans/let-s-use-nav-research-pure-twilight.md`). Dispatch order L1 → L2 (shadow live) → L5 ∥ L3 → enforce → L4 → L6.
+**Status**: 🚀 L1 IN CI 2026-10-29 14:18Z — pilot#5949 → PR#5951 (run 14:00→14:18Z, gates full-suite 4–5 min); L2 after it merges and the Opus verdict is read; plan approved by the founder (plan file `~/.claude/plans/let-s-use-nav-research-pure-twilight.md`). Dispatch order L1 → L2 (shadow live) → L5 ∥ L3 → enforce → L4 → L6.
 **Spec refs**: nav-research 2026-10-29 (in-run phases) + stage-machine map; `.agent/system/bench/post_merge_reviewer_calibration_2026-10.md` (runs 1–3); TASK-591 (reviewer), TASK-612/613/614/618/619 (reviewer chain); `internal/executor/runner.go` 6614–6838 (today's self-review ∥ judge block), `internal/executor/post_merge_reviewer.go`, `internal/executor/post_merge_checkout.go`, `internal/autopilot/controller.go` handleCIPassed 3760–3890, `internal/autopilot/post_merge_review.go`.
 **Origin**: founder 2026-10-29 "why review after CI at all?" — gates, CI, evidence and self-review check the PR against itself; only the reviewer checks it against the system; a post-merge REQUEST-CHANGES costs a new issue cycle (25–45 min; four in a row on 10-28).
 

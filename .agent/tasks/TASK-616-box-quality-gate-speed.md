@@ -1,6 +1,6 @@
 # TASK-616: box quality gates from 23 min to under 5 — executor test hygiene, a changed-package test gate, and a box config step
 
-**Status**: 🚀 DISPATCHED 2026-10-28 — G1 → pilot#5924 · G2 → pilot#5926 (Depends on #5924); both `pilot`+`no-decompose`. Operator interim step (drop -race, -trimpath) pending founder go. nav-research done (local `-race -json` timings of internal/memory and internal/executor; import graph via go list; box config read).
+**Status**: 🟡 G1 #5924 + G2 #5926 MERGED (v2.298.0); box on `make test-changed` since 10-29 11:49Z — **but every scoped run computed `full`**: `listPackages` trims the whole `go list` output before splitting lines, so the last package (tests/pentest/cmd/pentest, no tests, no test imports) loses its empty trailing columns and the parser rejects it. G3 filed 10-29 to fix the parser. Measured 10-29 (full suite under -short, -trimpath): GH-5946 3m08 · GH-5947 5m17 (failed, retried) → 4m21. Scoped timings still unmeasured.
 **Spec refs**: `internal/quality/runner.go` (executeCommand ~293, RunAll retries ~147), `internal/quality/types.go` (ResolveConfig, IsParallel), `Makefile` (test, test-short), `internal/executor/git.go` (resolveMergeBaseSHA ~1579, ChangedFilesAgainstOrigin ~1764), `internal/executor/acceptance_evidence_run.go` (evidence reuse keyed by argv ~794), `scripts/pre-push-classify.sh` (docs-only classifier), TASK-393 Phase 2 "affected-tests-only" (never built).
 **Origin**: founder 2026-10-28 "where is our 15 min per issue": GH-5915/5916/5917 took 47–48 min each; Claude 1–9 min, box gates 22–23 min, CI 12 min, merge 2 min.
 
@@ -97,10 +97,49 @@ Depends on #5924 (it lands the -short guards the scoped run relies on). The qual
 - .agent/tasks/TASK-616-box-quality-gate-speed.md
 - .agent/tasks/TASK-393-throughput-acceleration.md
 
+### LEG G3 — repo: qf-studio/pilot — title: fix(quality): changed-package scope accepts the last go list line — whole-output TrimSpace drops the trailing empty test columns and every box run falls back to the full suite
+probe: present qf-studio/pilot func listPackages\(
+probe: present qf-studio/pilot go list: unexpected line
+probe: absent  qf-studio/pilot func TestListPackages_LastLineEmptyTrailingColumns\(
+
+## Context
+
+Since the changed-package gate landed (#5926, v2.298.0) the box test gate is make test-changed, but every run on the box has logged the scope as full. The daemon log for GH-5946 and GH-5947 shows, for each of the build, test and lint gates:
+
+```
+msg="Quality gate changed-package scope" gate=test package_count=0 full=true reason="go list: unexpected line \"github.com/qf-studio/pilot/tests/pentest/cmd/pentest\t/tmp/pilot-worktree-GH-5946-…/tests/pentest/cmd/pentest\tcontext flag fmt github.com/qf-studio/pilot/tests/pentest os os/signal path/filepath strings time\""
+```
+
+The cause is in listPackages in `internal/quality/scope.go`. The go list template prints five tab-separated columns per package: import path, dir, imports, test imports plus xtest imports, test files plus xtest files. For a package with no test files and no test imports the last two columns are empty, so the line ends in a tab, a space, a tab and a space. The function then calls strings.TrimSpace on the whole output before it splits lines. For the last package in go list order that trim removes the trailing empty columns, the line has three columns instead of five, and the function returns the unexpected-line error. ChangedGoPackages treats any go list error as a full-suite fallback, so the scope never applies. In this repo the last package is tests/pentest/cmd/pentest, which has no tests. The existing tests in `internal/quality/scope_test.go` build temp modules whose last package carries a test file, so the line always has content in the last column and the bug does not show.
+
+## Implementation
+
+1. In listPackages in `internal/quality/scope.go`, stop trimming the whole output. Split the raw output on newline, skip lines that are empty after a trailing carriage return is removed, and keep the five-column check on each line as it is. Do not trim individual lines either: an empty last column is a valid value.
+2. Add a package to the test module fixture in `internal/quality/scope_test.go` that sorts last in go list order, has one Go file with no imports and no test file (for example a package named zz with one exported constant). Add TestListPackages_LastLineEmptyTrailingColumns: run listPackages on that module and assert the package is present with empty test imports and empty test files.
+3. Run TestChangedGoPackages against the extended fixture and confirm the existing cases still pass with the extra package present (it is unaffected by every diff in the table).
+4. In the PR body paste the scope log line from the box quoted above as the before state, and the test output as the after state.
+
+## Acceptance
+
+- `go test -race ./internal/quality/ -run TestListPackages_LastLineEmptyTrailingColumns` passes; paste the output into the PR body.
+- `go test -race ./internal/quality/ -run TestChangedGoPackages` passes with the extended fixture; paste the output into the PR body.
+- Running listPackages against this repository root returns a package set that includes github.com/qf-studio/pilot/tests/pentest/cmd/pentest with no error.
+- restore strings.TrimSpace on the whole go list output -> TestListPackages_LastLineEmptyTrailingColumns fails
+
+## Out of scope
+
+- The scope rules themselves (test-import hops, blind-spot fallbacks) and the Makefile target.
+- The box config; it already runs make test-changed.
+
+## Refs
+
+- .agent/tasks/TASK-616-box-quality-gate-speed.md
+- G2 → https://github.com/qf-studio/pilot/issues/5926
+
 ## Operator steps (box, after the legs merge and the release lands)
 
 1. ✅ Interim APPLIED 2026-10-28 20:02Z (founder "yes, after 5923"): test gate command `go test -short ./...` (no -race; CI keeps it), `export GOFLAGS=-trimpath` in the wrapper (verified in the daemon's /proc environ); backups `config.yaml.bak-gate-20261028`, `start-pilot.sh.bak-gate-20261028`; graceful restart, 1 proc, no 409. GH-5929 (1 min in) and GH-5924 (queued) re-pick from scratch. **Measured (daemon log, Quality gates passed total_time): GH-5924 4m19s · GH-5926 3m54s · GH-5932 2m59s · GH-5934 5m03s — vs 21m37s for GH-5927 (last run under `make test`). Gates 22 min → 3–5 min. Claude 7–15 min per run; CI ~12 min remains the long pole.**
-2. ✅ After G2 (PR#5935 merged 10:40Z, in v2.298.0): test gate command `make test-changed`, timeout 10m, max_retries 1 — config edited 11:31Z (backup `config.yaml.bak-gate2-20261029`), loaded by the hot-upgrade config reload at 11:49:43Z. **Measure the first scoped run (log: quality scope line + total_time) here.**
+2. ✅ After G2 (PR#5935 merged 10:40Z, in v2.298.0): test gate command `make test-changed`, timeout 10m, max_retries 1 — config edited 11:31Z (backup `config.yaml.bak-gate2-20261029`), loaded by the hot-upgrade config reload at 11:49:43Z. **Measured 10-29 13:55Z (daemon log):** every `Quality gate changed-package scope` line since the reload reads `package_count=0 full=true reason="go list: unexpected line …tests/pentest/cmd/pentest…"` (GH-5946 and GH-5947, all three gates). `make test-changed` therefore ran `go test -short ./...` each time: GH-5940 3m40 (pre-reload) · GH-5943 3m31 (pre-reload) · GH-5946 3m08 · GH-5947 5m17 (all_passed=false, gate-level retry) → 4m21. Parser bug → G3. Re-measure after G3 lands.
 3. Record before/after gate wall times in this doc. Target: non-executor diffs under 3 min, executor diffs under 6 min.
 4. Separately: the Go build cache is 36 GB on the data volume; add it to the disk watch (pitfall go-caches-on-root-volume-fill-disk).
 
@@ -108,3 +147,4 @@ Depends on #5924 (it lands the -short guards the scoped run relies on). The qual
 
 - G1 → https://github.com/qf-studio/pilot/issues/5924
 - G2 → https://github.com/qf-studio/pilot/issues/5926
+- G3 → https://github.com/qf-studio/pilot/issues/5952

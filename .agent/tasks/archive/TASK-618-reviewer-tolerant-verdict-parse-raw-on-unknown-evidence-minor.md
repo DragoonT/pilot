@@ -1,6 +1,6 @@
 # TASK-618: post-merge reviewer — tolerant verdict parsing, raw output kept on unknown, files-read in the CLI output, and PR-body evidence gaps are minor
 
-**Status**: 🚀 DISPATCHED 2026-10-29 → pilot#5946 (`pilot`+`no-decompose`). From calibration run 3 (Opus): 2 of 14 reviews came back `unknown` with the model output discarded; runs 1–3 all over-escalate on PR-body evidence bullets.
+**Status**: ✅ MERGED 2026-10-29 — pilot#5946 → PR#5948 merged 13:05Z, post-merge review (Opus) APPROVE-WITH-NOTES (minor: stripPostMergeMarkup trims trailing markers too; the RawOutput mutation bullet only holds for the CLI site). Rides v2.299.0. Was: 🚀 DISPATCHED 2026-10-29 → pilot#5946 (`pilot`+`no-decompose`). From calibration run 3 (Opus): 2 of 14 reviews came back `unknown` with the model output discarded; runs 1–3 all over-escalate on PR-body evidence bullets.
 **Spec refs**: `internal/executor/post_merge_reviewer.go` (parsePostMergeReview ~406: verdict must be the first non-empty line, regex `^VERDICT:`; system prompt ~135), `cmd/pilot/review_merge.go` (~229 returns "reviewer output did not follow the contract" and prints nothing else), `internal/autopilot/post_merge_review.go` (unknown → metric + skip, no text logged); TASK-591 note "markdown-wrapped VERDICT → unknown (watch the counter)"; bench report `.agent/system/bench/post_merge_reviewer_calibration_2026-10.md`.
 **Origin**: founder switched the reviewer to claude-opus-5-5 on 2026-10-29 12:17Z.
 
