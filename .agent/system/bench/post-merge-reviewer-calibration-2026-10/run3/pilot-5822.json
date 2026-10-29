@@ -1,0 +1,67 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5822,
+  "issue": 5792,
+  "merge_commit": "b8fa43099badcefcbf2b57ee6f8c6c798e13399b",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "severity": "blocking",
+      "file": "Makefile",
+      "line": "60",
+      "claim": "the acceptance bullet \"`make test` and `make lint` pass\" is not met",
+      "evidence": "the PR body's Evidence block is headed \"`make test` and `make lint` FAILS\", the test run ends `FAIL` / `make: *** [Makefile:60: test] Error 1`, and lint ends `make: *** [Makefile:101: lint] Error 1` with three staticcheck SA4023 findings at cmd/pilot/tunnel.go:205, :351 and :433 (a file the diff does not touch, but the bullet still fails)"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/briefs/scheduler.go",
+      "line": "79",
+      "claim": "on Mondays the default daily schedule `0 9 * * 1-5` and the derived weekly `0 9 * * 1` fire at the same minute, so tenants get two briefs and both payloads are stored, so GET /api/v1/briefs/latest returns whichever was stored last",
+      "evidence": "internal/gateway/briefs.go:48 serves `ListBriefPayloads(1)` as is, with no kind filter"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/memory/weekly_proof.go",
+      "line": "43",
+      "claim": "`earliestStageOccurrences(StagePRCreated)` loads every pr_created event in the whole ledger, with no time window, on every weekly run",
+      "evidence": "internal/memory/store.go:5393-5399 has no time predicate"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/briefs/weekly.go",
+      "line": "66",
+      "claim": "`tickets_shipped` counts completed runs that opened no PR (the fixture's GH-4 at weekly_test.go:160 is asserted as shipped), so \"shipped\" means completed rather than delivered as a PR",
+      "evidence": "semantic choice not stated in the issue"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/memory/weekly_proof.go",
+      "line": "55",
+      "claim": "the merged-count project filter binds `e.project_path IN (filters.projects)`, but executions.project_path holds an absolute filesystem path (project memory), so an owner/repo filter matches 0 rows",
+      "evidence": "it copies the existing filter at internal/memory/store.go:2423, so the numbers stay consistent with the shipped list"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/briefs/scheduler.go",
+      "line": "342",
+      "claim": "weekly catch-up keys only on the `telegram` channel record with requirePrior, so a Slack- or email-only tenant never gets a missed weekly brief caught up",
+      "evidence": "carries over the existing daily behaviour"
+    }
+  ],
+  "not_verified": [
+    "No console frontend reader of the payload's `kind`/`weekly` keys exists in this checkout. The only reader found is a verbatim passthrough at internal/gateway/briefs.go:58.",
+    "Which package produced the `make test` FAIL line, and whether it predates this PR: the Evidence output omits 36099 lines."
+  ],
+  "notes": "- Scheduling on `weekly_day` (default monday) at the daily hour and timezone: met. `WeeklySchedule` (weekly.go:20) reuses the daily cron's minute and hour. The default `WeeklyDay: \"monday\"` is set at config.go:695, the YAML key `weekly_day` at config.go:219, and it is wired through at cmd/pilot/main.go:3977 and commands.go:1716. Validation is at config.go:1326.\n- Proof numbers from the ledger and autopilot PR state: met. Merged PRs come from the `execution_events` stage `merged`, which internal/autopilot/controller.go:10726 and internal/executor/runner.go:2717 write. `pr_created` is written at runner.go:7199. `occurred_at` is written as a Go `time.Now().UTC()` value (store.go:1300), the same layout the window query binds (weekly_proof.go:53). Top 3 shipped by diff size: met (weekly.go:110).\n- `kind: weekly` marker: met. The console payload has `json:\"kind\"` (types.go:121), served verbatim by gateway/briefs.go:58. The email carries `\u003cmeta name=\"pilot-brief-kind\"\u003e` (formatter_email.go:26, :167), plus the weekly title and subject.\n- Tests: met. \"Fires on Monday only\" is covered by a 5-week cron walk across a DST change and by a scheduler `WeeklyNextRun` check in Europe/Berlin. The fixture ledger runs on the real SQLite store (`setupSchedulerTestStore`) with raw `execution_events` rows in the producer's layout, so nothing is mocked. The empty week gives zeros and `[]` without an error. The even-count median is covered.\n- Migrations: none in the diff.\n- Out of scope: the issue has no out-of-scope section.\n- Memory \"top-level autopilot / missing autopilot_pr_state\": not repeated. The diff deliberately counts from `execution_events` instead of `autopilot_pr_state` (weekly_proof.go:26-29).\n- Memory \"GitHub rate limit\": not repeated. The diff makes no GitHub API calls.\n- Memory \"project_path is an absolute path\": repeated only by copying the existing filter (see the minor defect above).",
+  "diff_bytes": 51095,
+  "diff_files": 18,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 51095,
+  "input_issue_bytes": 1027,
+  "input_pr_body_bytes": 7100,
+  "model": "claude-opus-5-5",
+  "duration_ms": 66245,
+  "posted": false
+}

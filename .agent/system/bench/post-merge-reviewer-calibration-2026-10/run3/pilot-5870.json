@@ -1,0 +1,37 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5870,
+  "issue": 5829,
+  "merge_commit": "c69964797e24b5d779515a2e764f258839963d76",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "internal/executor/git.go",
+      "line": "191",
+      "claim": "if GetCurrentBranch itself errors, the check is skipped and DeleteBranch runs anyway, so a failure there still surfaces git's \"cannot delete branch\" message instead of the real cause",
+      "evidence": "`if curErr == nil \u0026\u0026 current == branchName` silently drops curErr; behaviour is unchanged from before for that case only"
+    },
+    {
+      "severity": "minor",
+      "file": "PR Body \"## Evidence\"",
+      "claim": "the PR re-ran make build/test/lint as evidence, which the issue's last acceptance bullet forbids, and the pasted make lint output fails (cmd/pilot/tunnel.go:205/351/433 SA4023, files outside this diff)",
+      "evidence": "the PR body's Acceptance copy holds the older \"make build, make test, make lint pass\" bullet, so the issue text was changed after the run started (matches commit bace2e70 \"make-all bullet dropped\"); the PR was still created, so no budget overrun happened"
+    }
+  ],
+  "not_verified": [
+    "Mutation bullet (remove GetCurrentBranch check -\u003e TestEnsureBranchFromOrigin_StaleCheckedOutBranchIsRecreated fails) was not run by the PR (\"freeform mutation, run manually\") and I cannot run tests; reading the code, the clean case would then reach DeleteBranch at git.go:204, get git's refusal and hit t.Fatalf, and the dirty case's error would lack \"checked out in the clone, refusing\""
+  ],
+  "notes": "- Scope: GetCurrentBranch is called before DeleteBranch in the stale path (git.go:190). It calls HasUncommittedChanges when current == branchName (git.go:192). A dirty tree returns an error that names the branch and contains \"checked out in the clone, refusing\" (git.go:197). A clean tree runs `git checkout --detach baseRef` (git.go:215), then the existing delete and recreate (git.go:204-210). Met.\n- The stale decision (branchIsBehind, git.go:170-183) is unchanged. CreateOrResetBranchFromOrigin (git.go:118-128), worktree mode and the repick cap are untouched. Met.\n- Acceptance 1 (checked out, clean): the table row \"checked out and clean is recreated at new base\" asserts created true, the current branch equals pilot/GH-5829, and HEAD equals rev-parse baseRef and differs from the stale SHA. It runs against a real origin via setupSyncTestRepos (runner_git_test.go:18) and pushExtraCommitFromSecondClone (runner_git_test.go:86). Met.\n- Acceptance 2 (checked out, dirty): this row asserts the error text, created false, the branch still checked out, the branch SHA unchanged and dirty.txt preserved. The untracked file counts as dirty because HasUncommittedChanges uses `git status --porcelain` (git.go:1398). Met.\n- Acceptance 3 (not checked out): this row checks out main first, then expects delete + recreate with created true at the new base. Met.\n- Acceptance 5 (`go test -race ... -run TestEnsureBranchFromOrigin`): the output is pasted in Evidence and shows ok (2.300s). Met.\n- Wire fields: none. The diff only shells out to git; there are no JSON/YAML/HTTP/DB fields to check.\n- Tests: they use real git repos and a real bare origin, with no mocks of GitOperations. baseRef resolves to origin/main through a real fetch (git.go:614-626).\n- Migrations: none.\n- Out of scope: the diff does not switch the clone back to the default branch at task end, change worktree mode, or change the failure threshold or needs-human sweep. Respected.\n- Project memories: none of the four memories (cap-stalled re-arm recipe, identical-failure streak, dead-owner claim, stalled-marking generation loop) is repeated. The diff removes the deterministic identical-failure trigger described in the streak learning and does not touch the dispatcher or execution rows.",
+  "diff_bytes": 6211,
+  "diff_files": 2,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 6211,
+  "input_issue_bytes": 4348,
+  "input_pr_body_bytes": 11682,
+  "model": "claude-opus-5-5",
+  "duration_ms": 34591,
+  "posted": false
+}

@@ -89,3 +89,33 @@ Same 14 PRs, same scorer rules (hand defects 53 under this scorer's counting; ru
 2. Recall is a model-capability question now, not a plumbing one. Cheapest test: rerun the same 14 with `post_merge_review.model: claude-opus-5-5` (one knob, no code) and compare recall. If Opus moves recall past 0.5, pay the per-review cost for the daemon reviewer only.
 3. Make tool use measurable: the review-merge JSON and the "post-merge review" log line carry files_read; a rerun then shows whether the model opens counterpart files or answers from the diff.
 4. Until recall passes: keep hand review on tier-1 merges; read daemon REQUEST-CHANGES follow-ups; treat APPROVE-WITH-NOTES as "no human needed" only for non-tier-1 merges.
+
+---
+
+# Run 3 — 2026-10-29 12:16–12:28Z, v2.298.0, reviewer model claude-opus-5-5 (founder call 12:16Z)
+
+Same 14 PRs, same rules, denominator 53. Raw: `run3/`. Two outputs (pilot#5872, ui#246) came back `unknown`: the model broke the VERDICT line contract and the text was discarded (TASK-618 / #5946 keeps it next time).
+
+| Metric | Run 1 Sonnet | Run 2 Sonnet + v2.298.0 | Run 3 Opus | Bar |
+|---|---|---|---|---|
+| REQUEST-CHANGES caught | 2 of 3 | 2 of 3 | **3 of 3** (ui#255 caught at last) | ≥2 |
+| Defect recall, all 14 | 39.4 % | 34.9 % | 32.1 % (17 / 53) | ≥ 0.5 — FAIL |
+| Defect recall, parsed PRs only | — | — | 36.2 % (17 / 47) | |
+| False notes per verdict | 0.14 | 0.36 | **0.07** (1 / 14) | ≤ 1 |
+| REQUEST-CHANGES on human-approved PRs | 5 of 11 | 5 of 11 | 5 of 11 | — |
+| Defect-bearing approves matched | 10 of 11 | 10 of 11 | 7 of 11 (two unknown, 5874 and 5871 missed) | — |
+| New valid findings | 44 | 27 | 34 | — |
+| Format failures (verdict unknown) | 0 | 0 | **2** | — |
+| Mean review time | ~25 s | ~21 s | 48 s | — |
+
+## Reading
+- **Opus caught the third REQUEST-CHANGES and made almost no false claims.** On the two PRs that matter most to the policy (wrong code shipped green) it is the better reviewer.
+- **Recall did not move.** On the twelve parsed PRs it is 36.2 %, inside the noise of the Sonnet runs. The miss class is identical across all three runs: behaviour outside the diff hunks (adjacent code, callers, cross-repo contracts, project conventions). The model answers "met" from the diff where the human traced callers. The checkout and read tools are available since v2.298.0; nothing yet shows how much they are used (files_read lands with #5946).
+- **Over-escalation is the same five PRs for the same reason**: a [blocking] item about PR-body evidence the human waived via CI. For three of them (5822, 5868, 427) it is the only blocking item. The severity rule in #5946 makes those minor.
+- **Two format failures are a real regression** with Opus (markdown-wrapped or preceded VERDICT line, the TASK-591 prediction); they cost 11 points of headline recall. #5946 adds a tolerant parse and keeps the raw text.
+- New verified findings worth a look: pilot#5874 `pilot status` calls /api/v1/status without the bearer the route requires; RetryBuffer read from DefaultSchedulerConfig, not the live scheduler.
+
+## Decision inputs after three runs
+1. Keep Opus for the reviewer: 3/3 REQUEST-CHANGES and the lowest false rate are the two properties the policy needs. Cost: ~2× review time, higher per-token price, bounded by the daily cap of 20.
+2. Recall is bounded by behaviour, not model: the reviewer must trace callers. Next prompt change (TASK-619 candidate): for every changed exported function and every wire field, open the callers and the producer in the checkout and cite file:line; a requirement may be marked "met" only with a checkout citation; raise max-turns from 12 to 30; report files_read. Measure on the same 14.
+3. Until recall passes 0.5: hand review stays on tier-1 merges; daemon REQUEST-CHANGES follow-ups are read; APPROVE-WITH-NOTES is "no human needed" for non-tier-1 merges only.

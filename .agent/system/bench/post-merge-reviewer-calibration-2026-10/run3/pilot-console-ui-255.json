@@ -1,0 +1,51 @@
+{
+  "repo": "qf-studio/pilot-console-ui",
+  "pr": 255,
+  "issue": 243,
+  "merge_commit": "c05dbd11b039898701b81df285a25223a10c8998",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "severity": "blocking",
+      "file": "PR body (no \"Needs API\" section)",
+      "claim": "Acceptance bullet 2 is not met. The issue asks for every field that falls back to `—` to be listed under \"Needs API\" with the endpoint that would supply it. The PR body has only Summary, Changes (the issue text repeated) and Evidence. The fallbacks are Docs Created/Read this week, all Memory values, and Graph health/Nodes/Edges/Last updated. They are listed only in the docblock at src/design-system/components/ContextPanel.vue:11-15, not in the PR body."
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/ContextPanel.vue",
+      "line": "72",
+      "claim": "The Docs header value is a client count of `docs.entries.length`. The type contract says not to client-recount entries because the tree may cap or paginate them independently of server totals (src/lib/api/types.ts:644-645). So the header can undercount when the server caps the tree."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/DashboardView.vue",
+      "line": "324",
+      "claim": "ContextPanel sits inside the `hidden … md:grid` container (DashboardView.vue:367). Below 768px the Context column is not rendered at all. The issue asks for it to stack under the main column below 1280px."
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/ContextPanel.vue",
+      "line": "14-15",
+      "claim": "The health thresholds (7d / 30d) were invented by the PR author and the docblock says \"assumed — no backend definition exists yet\". No caller ever passes `graph` (DashboardView.vue:367), so the word always renders `—` today. The rule needs product sign-off before a graph source exists."
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/__tests__/ContextPanel.spec.ts",
+      "line": "17",
+      "claim": "The tests mount ContextPanel with hand-built props. No test covers the DashboardView wiring (`loadContextDocs` using `session.instances[0]`, or the failure path falling back to `—`)."
+    }
+  ],
+  "not_verified": [],
+  "notes": "- Right column 270px at ≥1280px: met (`xl:grid-cols-[minmax(0,1fr)_400px_270px]`). It stacks below xl from md upward but is absent below md (see defect above).\n- \"Context\" header and three cards with 16px padding (`p-4`) and 13px rows (`text-[13px]`): met. All color classes are theme tokens (theme.css:8-27).\n- Docs card: header shows the count and all three row labels are present. \"Updated this week\" is derived from `modifiedAt`, which the producer side relays at src/lib/api/httpAdapter.ts:268 and :519. `entries` is relayed at httpAdapter.ts:280 and consumed by getDocsTree at httpAdapter.ts:1743-1747. The fixture has it at src/lib/api/__tests__/fixtures/docs-tree.json:4. The other two rows show `—`, and no muted secondary number is shown.\n- Memory card: header and rows all show `—`. No memory endpoint exists in the checkout. `memoriesRead`/`memoriesCreated` exist only as per-turn ChatEvent fields (types.ts:445-446), not as a weekly aggregate, so `—` is the honest choice.\n- Graph card: health word with a `title` tooltip explaining the rule, plus Nodes/Edges/Last updated rows. No bare percentage appears, and the test asserts `not.toMatch(/\\d+%/)`. Met.\n- Data source: uses the same `getDocsTree` that DocsView uses (DocsView.vue:111). Met.\n- Unit test for labels and the `—` fallback: met (ContextPanel.spec.ts:17-26). It exercises the component only; the adapter contract is covered separately by httpAdapter.spec.ts:1177.\n- Acceptance bullet 2 (\"Needs API\" list): not met.\n- make build/test/lint: the Evidence block shows a successful build, 69 files / 954 tests passed, and a clean `vue-tsc`. Met.\n- No migrations. No out-of-scope changes; the rail and dark mode are untouched.",
+  "diff_bytes": 10956,
+  "diff_files": 3,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 10956,
+  "input_issue_bytes": 1713,
+  "input_pr_body_bytes": 15974,
+  "model": "claude-opus-5-5",
+  "duration_ms": 30193,
+  "posted": false
+}

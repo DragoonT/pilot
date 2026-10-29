@@ -1,0 +1,53 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5875,
+  "issue": 5867,
+  "merge_commit": "57e9356223af656f8d80c56391a24bb4b15ce675",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "internal/executor/runner.go",
+      "line": "3570",
+      "claim": "the timeout-salvage path calls appendAcceptanceEvidence with nil gates, so it never reuses gate output even though it has gate results. On that path the quality-gate commands still run again",
+      "evidence": "runner.go:3157 sets `result.QualityGates = r.buildQualityGatesResult(outcome, 0)` just before `pushAndCreatePRAfterTimeout(finCtx, ...)` at runner.go:3163, and the diff passes `nil` at 3570 instead of `result.QualityGates`"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/acceptance_evidence_run.go",
+      "line": "322",
+      "claim": "in a multi-command item that the budget cuts off partway, the commands that never ran show up inside \"## Evidence\" as fake output instead of as a \"Not verified\" bullet",
+      "evidence": "each skipped command gets `Output: evidenceBudgetExhaustedReason`, but `allErrored` is already false from an earlier command that succeeded or was reused (lines 319/336), so the item never gets a NotVerifiedReason and RenderAcceptanceEvidenceSections prints \"$ cmd\\nNot verified: evidence budget exhausted\" as a code block"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/runner.go",
+      "line": "349",
+      "claim": "the new window before PR creation only helps if the deadline has already passed at that exact moment. If the task ctx still has a few seconds left, finalizeCtx returns `context.WithCancel(ctx)` and CreatePR plus the recovery ref still run on a nearly dead ctx",
+      "evidence": "`if ctx.Err() == context.DeadlineExceeded { ... } return context.WithCancel(ctx)`"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/acceptance_evidence_run.go",
+      "line": "836",
+      "claim": "a command killed by the budget is relabelled by matching the start of the error text (\"timed out after\", \"execution error running\", \"could not run\"). Any change to that wording in runMutationItem or runPasteOutputItem silently brings back the misleading per-command-timeout label",
+      "evidence": "it is a string HasPrefix chain, not a typed error check"
+    }
+  ],
+  "not_verified": [
+    "The three mutation checks (\"remove X, test fails\") are not shown working: the PR body lists them as \"Not verified: freeform mutation, run manually\", and I cannot run tests here",
+    "Only the shared PRCreator/MR branch (runner.go:7268, `SourceAdapter = \"linear\"`) is covered by TestExecute_PRCreateSurvivesDeadlineBlownDuringEvidence. The gh CLI branch (runner.go:7304), which this repo uses, and the SDK branch (runner.go:7228) have the same code but no test"
+  ],
+  "notes": "- Fresh window before PR/MR create: met. `finalizeCtx(ctx, r.finalizeTimeout())` is added right after appendAcceptanceEvidence on all three direct-path branches, the epic path and the salvage path.\n- Fresh window inside formatGitStepFailureWithRecovery: met (runner.go:400-401). The GH-5342 rule holds because finalizeCtx only extends a ctx that ended with DeadlineExceeded, and TestExecute_PRCreateSurvivesDeadline_RecoveryRefOnExpiredCtx checks that a cancelled ctx is not extended.\n- evidenceBudgetCtx: met. It is `WithoutCancel` plus `WithTimeout(EffectiveAcceptanceEvidenceBudget())`, with an AfterFunc that passes on only context.Canceled. Remaining items get `evidenceBudgetExhaustedReason`, the evidence block is still added and PR creation continues.\n- Config knob: met. The YAML tag `acceptance_evidence_budget` is in backend.go:582. DefaultConfig gets the 15m default from `Executor: executor.DefaultBackendConfig()` (config/config.go:715). Validate rejects negative values (config.go:1347). It is documented, commented out, in configs/pilot.example.yaml:812. TestAcceptanceEvidenceBudget covers the default, a configured value, negative rejection and zero accepted. TestAppendAcceptanceEvidence_ReadsBudgetFromConfig shows the runner reads it.\n- Gate reuse: met. Lookup happens after the allowlist check (acceptance_evidence_run.go:305-310) and keys on the argv from splitCommandFields. Gate fields come from real producers: Command is set at internal/quality/runner.go:143, Output and ExitCode at :180-181, then copied through runner.go:9238-9240 and the `QualityGateResult(detail)` conversion at runner.go:9103. Failed gates are excluded. The reuse test checks that a matching command is not run, and that a different argv, a failed gate and a longer argv all still run.\n- WARN line: met. logEvidenceEvent logs task_id, item_index and elapsed, for each reuse and for the first item cut off by the budget.\n- Tests drive the real runAcceptanceEvidenceItemsBudgeted and Runner.Execute. Only the subprocess runner and PR creator are faked, and those are not the contract under test.\n- The PR body pastes passing output for all three go test commands.\n- No make build/make test/make lint evidence bullet was added. Nothing in the diff touches the out-of-scope items (timeouts, re-pick lease, allowlist contents).\n- No migrations.\n- Project-memory pitfalls (Jev classifier triage, identical Jev instructions): not repeated. The diff does not touch the classifier or Jev prompts.",
+  "diff_bytes": 46902,
+  "diff_files": 15,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 46902,
+  "input_issue_bytes": 5154,
+  "input_pr_body_bytes": 7143,
+  "model": "claude-opus-5-5",
+  "duration_ms": 67711,
+  "posted": false
+}

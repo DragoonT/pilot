@@ -1,0 +1,59 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5799,
+  "issue": 5791,
+  "merge_commit": "d814c2381d90af25a47f504aa5191f73b6a4d7a5",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "severity": "blocking",
+      "file": "internal/briefs/receipts.go",
+      "line": "345",
+      "claim": "the receipts digest still shows the per-run cost for every key source except `platform`, so runs with `unknown` or empty key_source get a cost line, but the issue allows the cost line only on the tenant's own key",
+      "evidence": "the condition is `exec.KeySource != memory.KeySourcePlatform`, and internal/memory/store.go:866 reads `COALESCE(NULLIF(key_source, ''), 'unknown')`. So the founder-tenant case from project memory (key_source=unknown on every execution) gets cost lines in the Telegram digest. The structured path at internal/briefs/structured.go:77 does this correctly with `== KeySourceOwn`, so the two disagree."
+    },
+    {
+      "severity": "blocking",
+      "file": "internal/briefs/receipts.go",
+      "line": "369",
+      "claim": "the digest total leaves the cost out only when some row is `platform`, so an all-`unknown` day still prints a $ total",
+      "evidence": "same root cause as above; the check is `exec.KeySource == memory.KeySourcePlatform` and does not test for own key only."
+    },
+    {
+      "severity": "blocking",
+      "file": "PR Body Evidence (make lint)",
+      "claim": "the acceptance bullet \"`make lint` pass\" is not met",
+      "evidence": "the pasted output ends with `3 issues: * staticcheck: 3` and `make: *** [Makefile:94: lint] Error 1` (cmd/pilot/tunnel.go:205/351/433 SA4023)."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/briefs/generator.go",
+      "line": "23",
+      "claim": "`SetPoolSource` has no production caller, so the `pool` section is always null in deployed daemons",
+      "evidence": "a grep for SetPoolSource outside tests finds only the definition. Only structured_test.go wires it."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/memory/store.go",
+      "line": "282",
+      "claim": "the `brief_payloads` table grows one row per daily run and nothing prunes it",
+      "evidence": "no delete or retention exists in internal/memory/brief_payloads.go."
+    }
+  ],
+  "not_verified": [
+    "Not reviewed: the `make test` output in the PR body omits 17523 lines, so the new briefs and gateway tests cannot be confirmed as passing in that run.",
+    "The console consumer of the `/api/v1/briefs` JSON keys (schema, shipped, review_needed, pool, failed, cost_usd) is not in this checkout."
+  ],
+  "notes": "- Single structured brief in types.go with sections in the order shipped, review_needed, pool, failed (types.go struct order; structured_test.go checks the JSON key order): met.\n- Shipped entries carry issue ref, title, PR URL, duration and +a −b: met. Producers: internal/memory/store.go:852 (pr_url, duration_ms, error); `receiptIssueRef` is at internal/briefs/receipts.go:314.\n- review_needed lists items older than 24h first and reduces the reason to one line: met. Fields come from internal/memory/approval_store.go:14-24 (TaskID, Stage, Title, Description, CreatedAt, ExpiresAt), and the PR link comes from store.go:2060 GetExecutionByApprovalRequestID.\n- pool shows the percent when known and null otherwise: the code is present, but nothing in production supplies the percent (see the minor defect).\n- failed lists issue ref, failure class and retryable flag, and hides failures that were later retried and shipped: met.\n- Fold-in and own-key-only cost: met in the structured brief and email (unknown is treated like platform). Not met in the receipts digest, which is still delivered.\n- JSON payload with `schema: 1` and round-trip test: met. Email formatter has the four headings: met. The Slack/Telegram formatters are untouched.\n- Gateway routes: both are registered on apiMux, which is wrapped by `s.auth.Middleware` at server.go:291, the same auth as sibling routes. The tests use a real memory.Store and a real authed server and cover auth, empty store and limit (default, clamp, rejection): met.\n- Migration: additive `CREATE TABLE IF NOT EXISTS` on SQLite, no data at risk. There is no down path, which matches the repo's migration convention. RLS does not apply.\n- Scheduler times are unchanged: met.\n- Project memory: the key_source=unknown pitfall is repeated in receipts.go:345/369 (see the blocking defects) and avoided in structured.go:77. The executions-ownership decision is not touched.",
+  "diff_bytes": 41156,
+  "diff_files": 13,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 41156,
+  "input_issue_bytes": 1832,
+  "input_pr_body_bytes": 8684,
+  "model": "claude-opus-5-5",
+  "duration_ms": 51833,
+  "posted": false
+}

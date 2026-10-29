@@ -1,0 +1,38 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5874,
+  "issue": 5862,
+  "merge_commit": "076bb48f488b1f6538bcf3f8c682f50f54e5d39c",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/commands.go",
+      "line": "311",
+      "claim": "`fetchAdmissionPauseLine` calls `/api/v1/status` without a bearer token. That route is behind `s.auth.Middleware(apiMux)` whenever an api-token is set, so on those daemons `pilot status` quietly leaves out the \"admission paused\" line",
+      "evidence": "evidence: internal/gateway/server.go:308-309 wraps `/api/v1/` in auth; cmd/pilot/main.go:2876-2879 turns auth on when `cfg.Auth` has a token; the client at commands.go:310-311 sets no Authorization header and treats a non-200 reply as \"\" (commands.go:316-318)."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/usage_limit_pause.go",
+      "line": "101",
+      "claim": "The resume buffer comes from `DefaultSchedulerConfig().RetryBuffer`, not from the Scheduler the poller actually runs. If the Scheduler is ever built with a different buffer, admission would resume at a different time than the single-task re-queue fires",
+      "evidence": "evidence: the default is 5m at internal/executor/scheduler.go:24 and the pause never reads the live Scheduler's value."
+    }
+  ],
+  "not_verified": [
+    "Whether every polling-mode execution path finishes through `ProjectWorker.processQueue` (the only place `onRateLimited` is called, dispatcher.go:3967); a path that runs tasks outside the dispatcher would never arm the pause. Not confirmed within the tool budget."
+  ],
+  "notes": "- Knob `executor.usage_limit_pause` (enabled/max_pause/fallback_pause, defaults true/6h/30m): met. The struct is at backend.go, validation at config.go `validateUsageLimitPause` (wired into `Validate`), the YAML example is in pilot.example.yaml, and `TestLoad_UsageLimitPause` checks that YAML durations decode.\n- Hook on the rate_limited finalization, using owner constant `usage-limit`, resuming at reset + RetryBuffer or at fallback, capped by max_pause: met. The call sits in dispatcher.go:3967, and armUsageLimitPause calls PauseAdmissionFor (dispatcher.go:3132, an idempotent owner map). A second hit only moves the resume later and adds no owner. The stale-timer generation guard is correct, and no lock is taken in the reverse order.\n- In-memory and idempotent: met.\n- Status fields `admission_paused` / `admission_pause_owners` / `admission_resumes_at`: met. They are produced in server.go handleStatus and consumed by commands.go `admissionStatusBody` with matching JSON tags. The source is wired at both construction sites (main.go:1416, main.go:3414), and `*executor.Dispatcher` satisfies the interface at compile time.\n- `pilot status` line: met, apart from the auth defect above.\n- Logging: met. One INFO on pause (owner, resumes_at, task_id, reset_at when parsed) and one on resume.\n- Alert: met. The executor event type \"usage_limit_pause\" goes through EngineAdapter (internal/alerts/adapter.go:23,30 copies Type and Metadata) to engine.go `handleUsageLimitPause`, which reads `Metadata[\"resumes_at\"]`, a key the dispatcher sets. The PR says the platform breaker has no severity to copy, and the code agrees: controller.go:1715 emits an ad-hoc `platform_breaker_open` type. Warning is a reasonable choice.\n- Single-task re-queue unchanged: met. ratelimit.go only adds a clock seam; `ParseRateLimitError` still passes `time.Now()`.\n- Dispatcher tests: met. They use a real Dispatcher, store and Runner with a fake backend and a fake clock, and cover pause, block, resume, extension, disabled, fallback and cap.\n- Gateway test: met. It uses a mock source behind a Go interface; the JSON wire contract it checks is the gateway's own.\n- Mutation pins, and the `go test -race` runs for the executor (UsageLimit tests) and the gateway: pasted in the PR Evidence. The gateway result is \"(cached)\", which `go test` only reports after an earlier passing run of the same code.\n- No make build/test/lint re-run: met.\n- Out of scope (manual pause CLI, a pause that survives restart, percentage threshold, drain on stop): not touched.\n- Project-memory pitfalls (dead-owner claims, auto-preserve push, stage strip, in-progress label wedge): none are repeated; the diff doesn't touch claims, labels or pushes.",
+  "diff_bytes": 52411,
+  "diff_files": 19,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 52411,
+  "input_issue_bytes": 4918,
+  "input_pr_body_bytes": 3285,
+  "model": "claude-opus-5-5",
+  "duration_ms": 60418,
+  "posted": false
+}

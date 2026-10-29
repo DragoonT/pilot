@@ -1,0 +1,78 @@
+{
+  "repo": "qf-studio/pilot-console-ui",
+  "pr": 261,
+  "issue": 258,
+  "merge_commit": "b881f20587cd5d1e3a75e432db1f60f0b6835fc4",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/httpAdapter.ts",
+      "line": "589",
+      "claim": "The wire fields `project` and `parentId` that `WireBoardCard` binds have no producer anywhere in the checkout. A search of `src` for `\"project\"`, `\"parentId\"` and `parent_id` returned no matches, and the `src/lib` search for `project:` found nothing in `mockAdapter.ts`. So `mockAdapter.listCards` (`src/lib/api/mockAdapter.ts:1754`) and the board fixtures never send either field. As a result `queue.ts` puts every card into the fallback `NO_PROJECT` \"Board\" group and never nests a child under its epic."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/components/dashboard/__tests__/DashboardQueue.spec.ts",
+      "line": "6",
+      "claim": "The test replaces `getAdapter` with a hand-built `{ listCards, getCardExecution }` stub and hand-fills `project` and `parentId` on its cards (line 19). It therefore proves nothing about whether the real HTTP or mock adapter carries the grouping and nesting fields, and that wire contract is exactly the risk here."
+    },
+    {
+      "severity": "blocking",
+      "file": "PR body",
+      "claim": "The issue asks for `make build`, `make test` and `make lint` output in the PR body. The PR body has no `## Evidence` block and none of that output."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/components/dashboard/DashboardQueue.vue",
+      "line": "1",
+      "claim": "The scope fence is broken. This sub-issue only mounts `\u003cDashboardQueue /\u003e`, but the PR also writes the GH-257 component (the docblock at line 10 cites GH-257), `queue.ts`, and wire-type changes (`src/lib/api/types.ts:298`, `src/lib/api/httpAdapter.ts:720`). Those belong to a sibling sub-issue and change adapter behaviour."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/DashboardView.vue",
+      "line": "68",
+      "claim": "The stale GH-243 docblock line still says the Context column \"sits right of the by-project list\", but this PR deleted that list."
+    },
+    {
+      "severity": "minor",
+      "file": "src/components/dashboard/DashboardQueue.vue",
+      "line": "25",
+      "claim": "`listCards()` has no error handling, so a failure becomes an unhandled rejection. The component also makes one `getCardExecution` request per card for every card, including statuses that `buildQueue` filters out afterwards."
+    },
+    {
+      "severity": "minor",
+      "file": "src/components/dashboard/DashboardQueue.vue",
+      "line": "41",
+      "claim": "It uses the opacity dialect (`text-ds-text/40`, `text-ds-text/60`). CLAUDE.md says to converge on muted-text tokens when touching a file."
+    },
+    {
+      "severity": "minor",
+      "file": "src/components/dashboard/queue.ts",
+      "line": "44",
+      "claim": "`chipFor` takes an `exec` parameter it never uses, and the CI chip is applied to every non-running, non-done status, `queued` included."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/DashboardView.vue",
+      "line": "361",
+      "claim": "The project filter pill no longer reaches the queue section. The PR deleted the filter tests for the by-project list (DashboardView.spec.ts:344, 373) and added nothing to replace them."
+    }
+  ],
+  "not_verified": [
+    "Whether the real BFF `GET /api/v1/board/cards` sends `project` and `parentId`: the backend producer is not in this checkout.",
+    "Whether `make build`, `make test` and `make lint` pass: the PR body has no evidence output, and commands can't be run in this checkout."
+  ],
+  "notes": "SectionHeader \"Queue\" sits directly under the activity panel (`DashboardView.vue:361-366`): met.\n\"Show history\" links to the `/board` fallback (`DashboardView.vue:363`), and the spec asserts `href=\"/board\"`: met.\n`\u003cDashboardQueue /\u003e` is mounted beneath the header: met.\nThe `DashboardShippedByProject` import, its usage, the file and its spec are all removed: met.\nThe view docblock citation is updated for the swap (GH-258 paragraph): met. One line elsewhere in the docblock is stale (see DEFECTS).\n`make build`, `make test` and `make lint` output in the PR body: not met.",
+  "diff_bytes": 33516,
+  "diff_files": 9,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 33516,
+  "input_issue_bytes": 951,
+  "input_pr_body_bytes": 626,
+  "model": "claude-opus-5-5",
+  "duration_ms": 32527,
+  "posted": false
+}

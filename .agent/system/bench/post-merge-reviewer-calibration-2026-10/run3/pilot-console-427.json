@@ -1,0 +1,53 @@
+{
+  "repo": "qf-studio/pilot-console",
+  "pr": 427,
+  "issue": 423,
+  "merge_commit": "b823a0d3c92619b4a5d4837e9b88db634cdd10c8",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "severity": "blocking",
+      "file": "PR #427 body",
+      "line": "1",
+      "claim": "the acceptance bullet asking for `make build`, `make test` and `make lint` output in the PR body is not met",
+      "evidence": "the PR body has no \"## Evidence\" block and no command output, and it says the executor box's `make test` failed (`testdb: migrate pilot_test_secrets`); \"CI on fresh Postgres is the evidence\" is not the pasted output the issue asks for"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/usageapi/routes.go",
+      "line": "239",
+      "claim": "own-key tenants no longer get the ledger's `reportedUsdCents` key when it is null, but the issue says to keep USD fields as today for `own`",
+      "evidence": "adding `omitempty` to the `*float64` drops the key that used to be sent as `\"reportedUsdCents\":null`, so own-key ledger rows with no reported cost change shape"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/allowance/status.go",
+      "line": "352",
+      "claim": "`KeySourceForOrg` is the gate that decides whether USD leaks on `/usage` and `/usage/ledger`, and it has no test",
+      "evidence": "internal/usageapi/routes_test.go:138 always uses the `fakeKeys` stub, and no test in the diff covers the real resolver or the switched-to-own path (`SwitchedToOwnAt` plus `PeriodStart` matching) on any endpoint"
+    },
+    {
+      "severity": "minor",
+      "file": "README.md",
+      "line": "398",
+      "claim": "the allowance docs still list `usd_cents`, `remaining_usd_cents` and `included_usd_cents` as always present, and README.md:393 does not mention `percent_used`, top-level `key_source` or the platform-key USD gate",
+      "evidence": "README.md is not in the diff"
+    }
+  ],
+  "not_verified": [
+    "SPA consumers of `percent_used`, top-level `key_source` and the newly optional `totalCostUsd`, `costUsd`, `estimatedUsdCents`, `reportedUsdCents` and `usd_*` keys: the checkout has no frontend, and Grep finds no non-test reader of these keys outside the handlers that emit them",
+    "Cost reaching platform-key tenants through the C13 instance passthrough: internal/dashboardapi/dto.go:36 says the SPA gets `costPerShipped` there, and that route is outside this diff and the issue's named endpoints"
+  ],
+  "notes": "- `percent_used` on `GET /api/v1/billing/allowance` is met. It is emitted at internal/allowanceapi/routes.go:141, computed by `PoolPercent` (`max(0, min(100, max(ticket, usd)))`), and tested at 0, mid, USD-meter-fuller and over-cap in `TestAllowanceWireContract_PercentUsed`.\n- Top-level `key_source` on the allowance response is met. It is emitted at internal/allowanceapi/routes.go:142 from `st.KeySource`, which internal/allowance/status.go:345 produces.\n- The allowance USD gate is met. `included_usd_cents`, `remaining_usd_cents`, `usd_percent` and `usage.usd_cents` are set to nil when the key is `platform`, and `TestAllowanceWireContract_USDGate` runs the real handler for both key sources.\n- The `/usage` and `/usage/ledger` USD gate is met for `platform`. `totalCostUsd`, `costUsd`, `estimatedUsdCents` and `reportedUsdCents` are omitted; tokens, tasks, `taskId` and token counts stay. `TestUSDGate_ByKeySource` covers both sources.\n- `/usage` and `/usage/ledger` fail closed. A resolver error returns 500 with no body data, and a nil resolver returns 503 (both tested).\n- `KeySourceForOrg` applies the same rule as `StatusForOrg` (internal/allowance/status.go:327-345): the platform-key lookup, then a state row for the current period with `SwitchedToOwnAt` set.\n- The dashboard gate is not needed. `GET /api/v1/dashboard` has no cost fields (internal/dashboardapi/dto.go:21-78 has only counts, cards and PR links).\n- main.go wires `allowance.New` with `Allowances`, `PlatformKeys` and `State` from `orgStore` into `usageapi.Deps.KeySource`. The `boardapi` hunk only realigns whitespace.\n- The diff has no migrations and makes no changes the issue rules out of scope.",
+  "diff_bytes": 29679,
+  "diff_files": 6,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 29679,
+  "input_issue_bytes": 1020,
+  "input_pr_body_bytes": 520,
+  "model": "claude-opus-5-5",
+  "duration_ms": 57692,
+  "posted": false
+}
