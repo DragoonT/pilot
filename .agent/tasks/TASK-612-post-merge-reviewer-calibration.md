@@ -62,6 +62,8 @@ The post-merge reviewer (`internal/executor/post_merge_reviewer.go`, Review) is 
 - https://github.com/qf-studio/pilot/pull/5868
 - https://github.com/qf-studio/pilot/pull/5907
 
+## Rerun 3 — 2026-10-29 12:16Z, reviewer model switched to claude-opus-5-5 (founder call: "best pick for this type of task"; box config `post_merge_review.model`, backup `config.yaml.bak-pmr-opus-20261029`, daemon restarted 12:17Z, boot line model=claude-opus-5-5): same 14 PRs, outputs under box `~/calibration-v3/`; numbers appended to the bench report when scored.
+
 ## Rerun 2 — 2026-10-29 ~11:55Z on v2.298.0 (TASK-614 prompt/parser, TASK-613 M1 memory injection + M2 checkout + M3 confinement, TASK-610 budget): same 14 PRs, outputs under box `~/calibration-v2/`; scoring and numbers appended to the bench report when done.
 
 ## Calibration run (operator leg, after K1 ships; not a Pilot issue)
