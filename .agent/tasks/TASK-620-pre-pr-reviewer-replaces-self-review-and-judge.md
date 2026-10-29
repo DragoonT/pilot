@@ -1,6 +1,6 @@
 # TASK-620: the reviewer moves before the PR — one in-run review after the gates with a resumed fix round; self-review and the in-run intent judge retire; post-merge becomes a sampled audit
 
-**Status**: 🟢 L1 MERGED + SHADOW LIVE 2026-10-29 — pilot#5949 → PR#5951 merged 14:42Z (Opus APPROVE-w-notes: runner call to runPrePRReview untested end-to-end; judge-off gate untested; mode≠off + missing claude binary = no in-run review at all; memory recall gated on MemoryInjection — fold into L2/L3 scope). v2.299.0 by the train 15:00Z; box config `executor.pre_pr_review: {mode: shadow, model: claude-opus-5-5, timeout: 6m}` loaded by the hot-upgrade reload 15:08:46Z (`Pre-PR review initialized mode=shadow`; backup `config.yaml.bak-prepr-shadow-20261029`). Next: first shadow verdict on a live run, then dispatch L2 with `--only L2`; plan approved by the founder (plan file `~/.claude/plans/let-s-use-nav-research-pure-twilight.md`). Dispatch order L1 → L2 (shadow live) → L5 ∥ L3 → enforce → L4 → L6.
+**Status**: 🟢 L1 MERGED + SHADOW LIVE 2026-10-29 — pilot#5949 → PR#5951 merged 14:42Z (Opus APPROVE-w-notes: runner call to runPrePRReview untested end-to-end; judge-off gate untested; mode≠off + missing claude binary = no in-run review at all; memory recall gated on MemoryInjection — fold into L2/L3 scope). v2.299.0 by the train 15:00Z; box config `executor.pre_pr_review: {mode: shadow, model: claude-opus-5-5, timeout: 6m}` loaded by the hot-upgrade reload 15:08:46Z (`Pre-PR review initialized mode=shadow`; backup `config.yaml.bak-prepr-shadow-20261029`). **L2 DISPATCHED 15:20Z → pilot#5956** (`pilot`+`no-decompose`; its own run is the first shadow-mode run and the first `make test-changed` scoped run — read both log lines). Then L5 ∥ L3 (`#L3NUM`/`#L5NUM` placeholders remain; L2's number is filled in); plan approved by the founder (plan file `~/.claude/plans/let-s-use-nav-research-pure-twilight.md`). Dispatch order L1 → L2 (shadow live) → L5 ∥ L3 → enforce → L4 → L6.
 **Spec refs**: nav-research 2026-10-29 (in-run phases) + stage-machine map; `.agent/system/bench/post_merge_reviewer_calibration_2026-10.md` (runs 1–3); TASK-591 (reviewer), TASK-612/613/614/618/619 (reviewer chain); `internal/executor/runner.go` 6614–6838 (today's self-review ∥ judge block), `internal/executor/post_merge_reviewer.go`, `internal/executor/post_merge_checkout.go`, `internal/autopilot/controller.go` handleCIPassed 3760–3890, `internal/autopilot/post_merge_review.go`.
 **Origin**: founder 2026-10-29 "why review after CI at all?" — gates, CI, evidence and self-review check the PR against itself; only the reviewer checks it against the system; a post-merge REQUEST-CHANGES costs a new issue cycle (25–45 min; four in a row on 10-28).
 
@@ -105,7 +105,7 @@ probe: absent  qf-studio/pilot func \(r \*Runner\) runReviewFix\(
 
 ## Context
 
-Depends on #L2NUM. In enforce mode a REQUEST-CHANGES with at least one blocking defect gets one fix attempt in the same conversation before the push. The executor already holds the session id from the stream init event (BackendResult.SessionID) and the claude-code backend supports --resume (`internal/executor/backend_claudecode.go`, with the GH-2377 fallback that retries without resume when the session is gone); the box runs with use_session_resume on. The gate-retry prompt builder in `internal/executor/prompt_builder.go` (buildRetryPrompt) tells the model to delete its approach and start over, so it must not be reused: the fix prompt is narrow. The fix call must go through r.backendExecute, which enforces ProjectPath equals the execution path (the GH-4702 phantom-reimplementation guard); never the reviewer's confined environment. Budget: the fix runs only when at least 12 minutes of task time remain, on a context that is the minimum of fix_timeout and the remaining time; the re-gate runs on a fresh 5-minute context like the GH-4876 retry pass; everything after already runs on detached windows, so push, evidence and PR creation cannot starve (the GH-5861/5867 class).
+Depends on #5956. In enforce mode a REQUEST-CHANGES with at least one blocking defect gets one fix attempt in the same conversation before the push. The executor already holds the session id from the stream init event (BackendResult.SessionID) and the claude-code backend supports --resume (`internal/executor/backend_claudecode.go`, with the GH-2377 fallback that retries without resume when the session is gone); the box runs with use_session_resume on. The gate-retry prompt builder in `internal/executor/prompt_builder.go` (buildRetryPrompt) tells the model to delete its approach and start over, so it must not be reused: the fix prompt is narrow. The fix call must go through r.backendExecute, which enforces ProjectPath equals the execution path (the GH-4702 phantom-reimplementation guard); never the reviewer's confined environment. Budget: the fix runs only when at least 12 minutes of task time remain, on a context that is the minimum of fix_timeout and the remaining time; the re-gate runs on a fresh 5-minute context like the GH-4876 retry pass; everything after already runs on detached windows, so push, evidence and PR creation cannot starve (the GH-5861/5867 class).
 
 ## Implementation
 
@@ -134,7 +134,7 @@ Depends on #L2NUM. In enforce mode a REQUEST-CHANGES with at least one blocking 
 
 ## Refs
 
-- #L2NUM
+- #5956
 
 ### LEG L5 — repo: qf-studio/pilot — title: feat(autopilot): a PR labelled pilot-review-rc whose pre-PR review section says REQUEST-CHANGES escalates to awaiting_approval from handleCIPassed, escalate-only and fail-open
 probe: present qf-studio/pilot func SizeFloorReason\(
@@ -143,7 +143,7 @@ probe: absent  qf-studio/pilot func PreReviewReason\(
 
 ## Context
 
-Depends on #L2NUM (the section parser). When the pre-PR review ends REQUEST-CHANGES and the run pushes anyway, a human must decide before the merge. Autopilot's handleCIPassed in `internal/autopilot/controller.go` already runs an escalate-only chain (size floor, scope drift, test evidence, live smoke) that sets an escalation reason and moves the PR to awaiting_approval (`internal/autopilot/scope_guard.go` documents the pattern: gates only escalate, never relax). The PR body is already fetched there for the live-smoke hold. This leg adds one more reason from the Pre-PR review section. Per the founder decision, a section whose Fix line says fixed does not hold: a clean fix round merges on green and the post-merge audit samples it.
+Depends on #5956 (the section parser). When the pre-PR review ends REQUEST-CHANGES and the run pushes anyway, a human must decide before the merge. Autopilot's handleCIPassed in `internal/autopilot/controller.go` already runs an escalate-only chain (size floor, scope drift, test evidence, live smoke) that sets an escalation reason and moves the PR to awaiting_approval (`internal/autopilot/scope_guard.go` documents the pattern: gates only escalate, never relax). The PR body is already fetched there for the live-smoke hold. This leg adds one more reason from the Pre-PR review section. Per the founder decision, a section whose Fix line says fixed does not hold: a clean fix round merges on green and the post-merge audit samples it.
 
 ## Implementation
 
@@ -166,7 +166,7 @@ Depends on #L2NUM (the section parser). When the pre-PR review ends REQUEST-CHAN
 
 ## Refs
 
-- #L2NUM
+- #5956
 
 ### LEG L4 — repo: qf-studio/pilot — title: refactor(executor): retire the self-review phase and the in-run intent judge now that the pre-PR review covers both; keep the pre-flight issue judge
 probe: present qf-studio/pilot func \(r \*Runner\) runSelfReview\(
@@ -251,3 +251,4 @@ Depends on #L5NUM and on the enforce exit criteria. Once the pre-PR review carri
 ## Refs
 
 - L1 → https://github.com/qf-studio/pilot/issues/5949
+- L2 → https://github.com/qf-studio/pilot/issues/5956
