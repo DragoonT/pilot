@@ -1,6 +1,6 @@
 # TASK-613: post-merge reviewer reads project memory (M1, now) and, if calibration says so, a read-only checkout (M2, held)
 
-**Status**: 🚀 M1 DISPATCHED 2026-10-28 → pilot#5911 (`pilot`+`no-decompose`, Depends on #5910). M2 MERGED as PR#5919 16:21Z (reviewer verdict APPROVE-w-notes named a real hole: Read/Grep not confined to the worktree) → **M3 DISPATCHED → pilot#5920** (`pilot`+`no-decompose`, Depends on #5917). M1 merged via #5915 → PR#5918 15:32Z. M1 is in the autopilot fix cycle (PR#5914 lint fail → #5915).
+**Status**: ✅ ALL THREE LEGS MERGED — M1 memories #5911 → PR#5914 (lint) → #5915/PR#5918 15:32Z · M2 checkout #5916 → PR#5919 16:21Z (its own verdict found the confinement hole) · M3 confinement #5920 → PR#5930 10-29 10:41Z (size-guard approval). All in v2.298.0. Calibration run 2 (10-29) showed no recall gain from M1/M2 → TASK-619 caller tracing.
 **Spec refs**: TASK-387 (executor memory injection: buildMemoryInjectionBlock in `internal/executor/prompt_builder.go`, graphrecall.RecallRelevant in `internal/memory/graphrecall/recall.go`), TASK-591/610/612 (reviewer, diff budget, calibration).
 **Origin**: question 2026-10-28 "does Pilot use nav-research patterns on review?" — no: the reviewer is a fixed five-item checklist over the diff; the executor prompt gets up to five ranked graph memories, the reviewer gets none, and it has no checkout to open the counterpart files its checklist asks about.
 

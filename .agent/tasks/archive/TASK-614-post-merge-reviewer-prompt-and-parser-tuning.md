@@ -1,6 +1,6 @@
 # TASK-614: post-merge reviewer prompt and parser tuning — defects on every verdict, PR-body evidence read, severity-weighted verdict, " - " defect lines parsed, hedges capped
 
-**Status**: 🚀 DISPATCHED 2026-10-28 → pilot#5917 (`pilot`+`no-decompose`, Depends on #5916). From the TASK-612 calibration (recall 39.4 % vs 0.5; report `.agent/system/bench/post_merge_reviewer_calibration_2026-10.md`). Founder: "yes, both" (with TASK-613 M2).
+**Status**: ✅ MERGED 2026-10-28 17:37Z — #5917 → PR#5921 (closed on a flaky gateway test, reopened by hand, merged; reviewer REQUEST-CHANGES was against the wrong issue → TASK-617). In v2.298.0. Run 2: contract holds (defects on every verdict, no RC without blocking, hedges capped) but recall unchanged; evidence-bullet blockers still over-escalate → TASK-618.
 **Spec refs**: `internal/executor/post_merge_reviewer.go` (system prompt ~line 135, Review ~158, parsePostMergeReview ~228, parsePostMergeDefect ~283); the 14 raw outputs in `.agent/system/bench/post-merge-reviewer-calibration-2026-10/`.
 **Origin**: five structural findings from the calibration, none of which need a checkout.
 

@@ -1,6 +1,6 @@
 # TASK-611: worktree isolation is the default — `executor.use_worktree` becomes a tri-state, nil means true, explicit false warns at startup
 
-**Status**: 🚀 DISPATCHED 2026-10-28 → pilot#5908 (`pilot`+`no-decompose`). Founder call "flip it now" after the direct-mode bug class (#5865, #5829, root-clean tripwires) hit an external user while the box, on worktree mode, never saw it.
+**Status**: ✅ MERGED 2026-10-28 10:56Z — #5908 → PR#5909 (reviewer APPROVE-w-notes). In v2.297.0: use_worktree nil = true, explicit false warns. Was: dispatched 10-28.
 **Spec refs**: `internal/executor/backend.go` UseWorktree (bool, default false); the pointer-plus-Effective idiom already used by AutoCreatePR in the same struct; docs `docs/content/concepts/worktree-isolation.mdx`.
 **Origin**: session 2026-10-27/28 — of ~30 fixes in two weeks, every direct-mode-only defect came from one user running the default.
 

@@ -1,6 +1,6 @@
 # TASK-615: TestChatAPI_Composed returns while the runner still writes into its TempDir — flaky "directory not empty" that closed PR#5921
 
-**Status**: 🚀 DISPATCHED 2026-10-28 → pilot#5923 (`pilot`+`no-decompose`). The flake cost one autopilot cycle today (PR#5921 closed, vague fix issue #5922 declined at pre-flight, hand recovery). Same test failed on main on 2026-10-26 19:34Z.
+**Status**: ✅ MERGED 2026-10-28 18:10Z — #5923 → PR#5928 (reviewer REQUEST-CHANGES, valid: pasted FAIL run, waitIdle race) → #5929 → PR#5939 (REQUEST-CHANGES: WaitGroup Add/Wait race, goroutine leak) → #5940 → PR#5942 10-29 10:4xZ. In v2.298.0.
 **Spec refs**: `internal/gateway/chat_test.go` TestChatAPI_Composed (~line 476); CI run 40732926612 (job test, "TempDir RemoveAll cleanup: unlinkat /tmp/TestChatAPI_Composed…: directory not empty").
 **Origin**: queue check 2026-10-28 17:18Z.
 

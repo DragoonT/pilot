@@ -1,6 +1,6 @@
 # TASK-610: post-merge reviewer — own diff budget, largest-first trimming, and a trim report in the log, the prompt and the verdict
 
-**Status**: 🚀 DISPATCHED 2026-10-28 → pilot#5906 (`pilot`+`no-decompose`). Verified by nav-research at main 44b8f7e1f.
+**Status**: ✅ MERGED 2026-10-28 09:17Z — #5906 → PR#5907 (reviewer APPROVE-w-notes). In v2.297.0. Was: dispatched 10-28.
 **Spec refs**: TASK-591 (reviewer), first three live verdicts (PR#5902/#5904/#5905, 2026-10-27).
 **Origin**: every verdict said "in the truncated part … I could not confirm". Verified: only PR#5902 was trimmed; #5904/#5905 "could not see" lines are counterpart files outside the diff (expected: bare `--print`, no tools).
 
