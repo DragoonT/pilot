@@ -1,0 +1,47 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5871,
+  "issue": 5849,
+  "merge_commit": "62fdf98ca4d2de6181ae5eb2e35690fa28e338c9",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/gh5072_needs_human_repick_backoff_test.go",
+      "line": "250",
+      "claim": "the \"fetch error\" case only checks that the result is not a live-gate skip. It never checks that the task went ahead with ev.Labels, which the acceptance bullet asks for",
+      "evidence": "the test returns at the `if tc.wantReason == \"\"` branch without looking at the task's Labels or at dispatch."
+    },
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/handlers.go",
+      "line": "1056",
+      "claim": "once the fetch succeeds, the GH-5056 needs-human backstop can no longer be reached. `githubLiveAdmissionSkipReason` (handlers.go:1384 `case githubEventHasNeedsHumanLabel(liveLabels):`) catches the label first and returns the same reason, so the backstop only runs when the fetch failed and liveLabels fell back to ev.Labels. The existing test at gh5056_needs_human_admission_test.go:86 passes a nil cfg, so it only covers that fallback."
+    },
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/handlers.go",
+      "line": "1084",
+      "claim": "`resolveAutopilotFixBranch(ev.Labels, ev.Body)` still reads the stale snapshot. So do taskDesc (handlers.go:1074 `ev.Body`) and AcceptanceCriteria (handlers.go:1206 `ExtractAcceptanceCriteria(ev.Body)`). This repeats in part the project-memory pitfall about validating the stale list-snapshot body. The issue does not require these to change."
+    }
+  ],
+  "not_verified": [
+    "The JSON keys the test server sends (`state`, `labels[].name`, `user.login`) and the values of `githubSDK.LabelBlocked` / `githubSDK.LabelNeedsClarification` / `githubSDK.StateClosed` could not be checked: their consumer is studio-sdk's `Issue` struct, which is not in the checkout (no vendor dir). The passing test run pasted in the PR Evidence suggests they match.",
+    "The two mutation acceptance bullets were not run; the PR lists them under \"Not verified\" as manual mutations. Reading the code, removing either the trigger-label check or the recordClaimLostDrop call would fail the \"trigger label removed\" case or the `repickBackoff.allow` assertion, but neither mutation was actually run.",
+    "`go test -race ./cmd/pilot/ -run TestHandleGithubIssueEventSDK` output is pasted in the PR Evidence: met. — not traced"
+  ],
+  "notes": "- Live labels come from the fetch, with ev.Labels kept when the fetch fails: met at handlers.go:1000 `liveLabels := ev.Labels` and handlers.go:1012-1015. Live labels feed the needs-human backstop (handlers.go:1056), the spec guard (handlers.go:1114-1115) and the task's Labels (handlers.go:1205).\n- One admission check runs before any side effect: met at handlers.go:1026-1041. It sits before the spec guard (handlers.go:1113), the pilot-in-progress label write (handlers.go:1152) and task construction. The trigger label comes from cfg.Adapters.GitHub.PilotLabel and defaults to \"pilot\", the same as the poller at poller_github.go:580-583. It logs one INFO line with task_id and reason (handlers.go:1032-1035).\n- Each skip returns Success=false and Skipped=true with its own reason (handlers.go:1039, constants at handlers.go:1370-1376 region). It also calls `repickBackoff.recordClaimLostDrop(backoffKey)` on the same key the needs-human path uses (handlers.go:1037 vs handlers.go:1069, key from handlers.go:950): met.\n- Callers: poller_github.go:609 (SDK poller) and poller_github.go:153 (rate-limit retry) both go through the new gate; the retry path only reads result.PRNumber (poller_github.go:176), so a Skipped result does it no harm.\n- Table-driven test next to the GH-5072 test: met at gh5072_needs_human_repick_backoff_test.go:233-360. It runs the real handler against an httptest GitHub server (not a mock of the adapter). For each skip case it asserts no non-GET writes, an armed backoff and a claim-lost drop count of 1. It has the five required cases plus a needs-human case.\n- Existing needs-human test still passes: the wiring check was updated (gh5056_needs_human_admission_test.go:117), and the PR's test output shows `ok github.com/qf-studio/pilot/cmd/pilot 20.811s`.\n- Out of scope respected: no studio-sdk change, no change to the other adapters and no change to tasks already running.\n- Project memories: the pilot-in-progress wedge pitfall is not repeated, since the skip returns before handlers.go:1152 writes any label. The HasTerminalCompletion pitfall is not touched. The stale-body pitfall is partly repeated outside this diff's scope (see the minor defect above).",
+  "files_read": 4,
+  "checkout": true,
+  "diff_bytes": 18610,
+  "diff_files": 3,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 18610,
+  "input_issue_bytes": 4231,
+  "input_pr_body_bytes": 4931,
+  "model": "claude-opus-5-5",
+  "duration_ms": 83256,
+  "posted": false
+}

@@ -1,0 +1,81 @@
+{
+  "repo": "qf-studio/pilot-console-ui",
+  "pr": 252,
+  "issue": 249,
+  "merge_commit": "61aa3b94d34be3eb84ba50a196927e078aa46189",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/httpAdapter.ts",
+      "line": "1046",
+      "claim": "`orgName`, `lastShippedAt` and `poolPercentUsed` are read from `GET /api/v1/dashboard` but nothing in the checkout sends them. The mock's `getDashboard` at src/lib/api/mockAdapter.ts:2083 is just `return buildDashboard(windowDays)`, and grepping `src/` for these names finds them only in httpAdapter.ts, types.ts, DashboardView.vue and the view spec. The fixture src/lib/api/__tests__/fixtures/dashboard.json:3 has only `\"stats\": { \"shipped\": 8, \"needsYou\": 2 }`. So the header shows \"—\" and never shows \"Pool\" in every real or mock run."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/httpAdapter.ts",
+      "line": "1016",
+      "claim": "`timeToPrMinutes` has no producer either. The fixture stats at dashboard.json:3 do not include it and the mock does not emit it, so Time to PR always renders \"—\"."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/views/DashboardView.vue",
+      "line": "89",
+      "claim": "The issue asks for Pool `\u003cpercent_used\u003e%`. That field already exists in the billing allowance contract (src/lib/api/httpAdapter.ts:342 `percent_used?: number`, mapped at httpAdapter.ts:422 `percentUsed:`), but the PR invents a new dashboard field `poolPercentUsed` that no producer sends. The view never calls `getAllowance`."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/views/DashboardView.vue",
+      "line": "84",
+      "claim": "The org name comes from the dashboard payload, which has no producer for it. The app's real org source is `auth.org?.name`, as used at src/design-system/components/AppHeader.vue:151 `const orgName = computed(() =\u003e auth.org?.name ?? '')`. So the header's left side is always \"—\"."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/views/__tests__/DashboardView.spec.ts",
+      "line": "441",
+      "claim": "The new GH-249 tests stub `mockAdapter.getDashboard` with `makeDashboard({ orgName: 'Acme', … poolPercentUsed: 42 })`. httpAdapter.spec.ts has no test for the new wire keys (the grep finds none), so nothing checks that `toDashboard` maps a real payload."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/__tests__/DashboardView.spec.ts",
+      "line": "476",
+      "claim": "The \"no $ or tokens on a platform-key tenant\" test never sets up a platform-key tenant. No session/platformKey state is seeded, and the header markup at DashboardView.vue:297-301 does not branch on tenant type, so the assertion passes trivially."
+    },
+    {
+      "severity": "minor",
+      "file": "src/lib/api/mockAdapter.ts",
+      "line": "2083",
+      "claim": "This breaks the CLAUDE.md rule \"Adapter/mock/fixtures move in lockstep\". The Wire types and mapping changed, but `buildDashboard` and dashboard.json did not."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/DashboardView.vue",
+      "line": "305",
+      "claim": "The Delivered numerator goes through the default slot, so it misses the green `text-ds-green` numerator style that StatCard's `numerator`/`denominator` variant gives (src/design-system/components/StatCard.vue:63). The \"/100\" denominator is also a hardcoded literal, not a value from the payload."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/DashboardView.vue",
+      "line": "301",
+      "claim": "Raw `Math.round(poolPercent)` and `~${Math.round(m)}` formatting is done inline in the template and computed, instead of using a shared formatter. This is a style point only."
+    }
+  ],
+  "not_verified": [
+    "Backend `internal/dashboardapi/dto.go` (sibling repo, not in the checkout): I could not confirm whether the console has started sending orgName/lastShippedAt/poolPercentUsed/timeToPrMinutes, and the PR body has no Evidence block quoting it.",
+    "Build, test and lint gates: the PR body has no `## Evidence` block with pasted `make build`/`make test`/`make lint` output, so green CI is the only signal."
+  ],
+  "notes": "- Four StatCards in the order Delivered / Review needed / Time to PR / Projects: met at src/views/DashboardView.vue:304-316.\n- Missing field → '—': met in the view (DashboardView.vue:83 `dash` helper, :87, :315), but with no producer, three of the header and stat values are always '—'.\n- Review needed links to /board?lane=needs-you: met at src/views/DashboardView.vue:307 `:to=\"{ path: '/board', query: { lane: 'needs-you' } }\"`. Tested at DashboardView.spec.ts:472.\n- Header row with org name left and \"Last shipped · Pool %\" right, Pool hidden when the field is absent: the markup is met at DashboardView.vue:297-301. The data bindings are not met (see the blocking defects).\n- Honest-degrade kept: Time to PR shows `DEGRADED_METRIC_NOTE` at DashboardView.vue:314. The Cost/Shipped desktop tile was removed, and its note now appears only on the mobile glance at DashboardView.vue:353. That removal is documented as a trim in the docblock at DashboardView.vue:55-57.\n- Tests: label order, the N/100 split, the link target and no-$/tokens are present at DashboardView.spec.ts:463-494. All of them run against a stubbed mockAdapter.\n- Docblock cites design/dashboard-v4.html + dashboard-v4-spec.md and records the trims: met at src/views/DashboardView.vue:48-57.\n- Out of scope: no changes outside the slice were found. The Cost tile removal from the desktop grid is documented in the docblock.",
+  "files_read": 4,
+  "checkout": true,
+  "diff_bytes": 14773,
+  "diff_files": 4,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 14773,
+  "input_issue_bytes": 1217,
+  "input_pr_body_bytes": 892,
+  "model": "claude-opus-5-5",
+  "duration_ms": 44006,
+  "posted": false
+}

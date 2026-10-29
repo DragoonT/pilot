@@ -1,0 +1,81 @@
+{
+  "repo": "qf-studio/pilot-console-ui",
+  "pr": 261,
+  "issue": 258,
+  "merge_commit": "b881f20587cd5d1e3a75e432db1f60f0b6835fc4",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/httpAdapter.ts",
+      "line": "589",
+      "claim": "The new wire fields `project` and `parentId` on `WireBoardCard` have no producer in the checkout. The only hit for `parentId` under src/lib/api is the consumer at src/lib/api/httpAdapter.ts:721 (`...(wire.parentId ? { parentId: wire.parentId } : {}),`). The fixtures directory src/lib/api/__tests__/fixtures has no `\"project\"` or `\"parentId\"` key. The mock `listCards` at src/lib/api/mockAdapter.ts:1754 just does `return cards` and never sets either field. As a result `buildQueue` (src/components/dashboard/queue.ts:57, `card.project ?? NO_PROJECT`) puts every card in one \"Board\" group, and epic nesting never runs against any real or mock data."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/components/dashboard/__tests__/DashboardQueue.spec.ts",
+      "line": "7",
+      "claim": "The test replaces the whole adapter with `vi.mock('../../../lib/api/adapter', () =\u003e ({ getAdapter: () =\u003e adapter }))`. It therefore says nothing about the `project`/`parentId` mapping in `toBoardCard`, which is the risky contract here. src/lib/api/__tests__/httpAdapter.spec.ts:1281 (`listCards unwraps the {cards: […]} envelope…`) was not extended to cover the new fields."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/components/dashboard/queue.ts",
+      "line": "1",
+      "claim": "The PR goes outside the scope fence. GH-258 only asks to mount an existing `\u003cDashboardQueue /\u003e`, but this diff also builds the GH-257 sibling: DashboardQueue.vue, queue.ts, the new `BoardCard.project`/`parentId` types (src/lib/api/types.ts:299-301) and adapter wire mapping (src/lib/api/httpAdapter.ts:720-721). That changes behaviour. The dashboard now fires one `getCardExecution` request per card on mount (src/components/dashboard/DashboardQueue.vue:28)."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/DashboardView.vue",
+      "line": "131",
+      "claim": "Stale comment: it still says \"`DashboardShippedByProject`'s docblock already guards against…\" though that file was deleted. The same stale reference appears at src/views/DashboardView.vue:153, src/design-system/components/dashboardShippedColors.ts:3 and src/lib/api/mockAdapter.ts:1043."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/DashboardView.vue",
+      "line": "68",
+      "claim": "The GH-243 docblock line still says the Context column \"sits right of the by-project list\", but that column was removed in this diff."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/DashboardView.vue",
+      "line": "37",
+      "claim": "The GH-139 docblock says the project pill filters \"the chart + the by-project list\". The Queue that replaced the list ignores `selectedProjectKeys`, so the pill now only filters the chart."
+    },
+    {
+      "severity": "minor",
+      "file": "src/components/dashboard/queue.ts",
+      "line": "44",
+      "claim": "The `exec` parameter of `chipFor` is never used. It is a strict-lint hazard and makes the API misleading."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/DashboardView.vue",
+      "line": "64",
+      "claim": "The docblock cites \"Figma 2026-10\" rather than a `design/\u003cfile\u003e.html screen N`, which conformance rule 2 requires."
+    },
+    {
+      "severity": "minor",
+      "file": "PR Body",
+      "claim": "There is no \"## Evidence\" block. The `make build`, `make test` and `make lint` output the issue asks to have pasted into the PR is absent."
+    }
+  ],
+  "not_verified": [
+    "Backend producer of `project`/`parentId` on `GET /api/v1/board/cards`: the pilot-console repo is not in the checkout.",
+    "The `make build`/`make test`/`make lint` bullet: no output was pasted, and commands cannot be run here.",
+    "2 more requirements marked met without a path:line citation: not traced"
+  ],
+  "notes": "- SectionHeader \"Queue\" directly under the activity panel: met. src/views/DashboardView.vue:362 `\u003cSectionHeader title=\"Queue\"\u003e` comes right after `\u003cDashboardActivityChart :events=\"boardActivity\" /\u003e`, and SectionHeader renders the title at src/design-system/components/SectionHeader.vue:8.\n- \"Show history\" on the right linking to `/board` (fallback): met. The link is in the `#action` slot (src/views/DashboardView.vue:363), which SectionHeader renders at src/design-system/components/SectionHeader.vue:9.\n- `\u003cDashboardQueue /\u003e` mounted beneath the header: met, src/views/DashboardView.vue:365.\n- Docblock citation updated for the swap: partially met. The GH-258 paragraph exists at src/views/DashboardView.vue:64-66, but the lines at :37 and :68 are stale.\n- Build/test/lint output pasted: not met (see the PR Body defect).\n- Migrations: none in the diff.",
+  "files_read": 4,
+  "checkout": true,
+  "diff_bytes": 33516,
+  "diff_files": 9,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 33516,
+  "input_issue_bytes": 951,
+  "input_pr_body_bytes": 626,
+  "model": "claude-opus-5-5",
+  "duration_ms": 44230,
+  "posted": false
+}

@@ -119,3 +119,53 @@ Same 14 PRs, same rules, denominator 53. Raw: `run3/`. Two outputs (pilot#5872, 
 1. Keep Opus for the reviewer: 3/3 REQUEST-CHANGES and the lowest false rate are the two properties the policy needs. Cost: ~2× review time, higher per-token price, bounded by the daily cap of 20.
 2. Recall is bounded by behaviour, not model: the reviewer must trace callers. Next prompt change (TASK-619 candidate): for every changed exported function and every wire field, open the callers and the producer in the checkout and cite file:line; a requirement may be marked "met" only with a checkout citation; raise max-turns from 12 to 30; report files_read. Measure on the same 14.
 3. Until recall passes 0.5: hand review stays on tier-1 merges; daemon REQUEST-CHANGES follow-ups are read; APPROVE-WITH-NOTES is "no human needed" for non-tier-1 merges only.
+
+---
+
+# Run 4 — 2026-10-29 20:40–20:58Z, v2.301.0, claude-opus-5-5 (TASK-618 tolerant parse + evidence-minor · TASK-619 caller tracing, cited "met", 30 turns, files_read)
+
+Same 14 PRs, same rules, same scorer prompt. Raw: `run4/` (14 JSONs + `scoring.md` with per-defect detail). Denominator counted 52 this time (run 1's count; runs 2–3 counted 53 — the extra item is not recoverable, candidates listed in `run4/scoring.md`; on 53 the recall below reads 43.4 % / 35.8 %).
+
+| Metric | Run 1 Sonnet | Run 3 Opus | **Run 4 Opus + 618/619** | Bar |
+|---|---|---|---|---|
+| REQUEST-CHANGES caught | 2 of 3 | 3 of 3 | **3 of 3** | ≥2 |
+| Defect recall (HIT + ½ PARTIAL) | 39.4 % | 32.1 % | **44.2 %** (19 + 4 / 52) | ≥ 0.5 — FAIL, best so far |
+| Plain HIT recall | — | — | 36.5 % (19 / 52) | |
+| False notes per verdict | 0.14 | 0.07 | **0.07** (1 / 14) | ≤ 1 |
+| REQUEST-CHANGES on human-approved PRs | 5 of 11 | 5 of 11 | **3 of 11** (ui#254, ui#246, pilot#5799 — all A+defects; each RC carries ≥1 blocking-grade HIT) | — |
+| Defect-bearing approves matched | 10 of 11 | 7 of 11 | **9 of 11** (5874 0/5, 5871 0/1) | — |
+| New valid findings | 44 | 34 | 35 (UNSURE 18) | — |
+| Format failures (verdict unknown) | 0 | 2 | **0** | — |
+| Mean review time | ~25 s | 48 s | 68 s (36–96 s) | — |
+| Files read per review | — | — | 5.0 (2–7) | — |
+
+| PR | hand | daemon | match | hand n | HIT | PARTIAL | MISS | NEW-VALID | FALSE | UNSURE |
+|---|---|---|---|---|---|---|---|---|---|---|
+| ui#252 | RC | RC | Y | 5 | 1 | 2 | 2 | 1 | 0 | 2 |
+| ui#261 | RC | RC | Y | 3 | 2 | 1 | 0 | 4 | 0 | 2 |
+| ui#255 | RC | RC | Y | 5 | 2 | 1 | 2 | 2 | 0 | 3 |
+| ui#254 | A+defects | RC | N | 3 | 2 | 1 | 0 | 3 | 1 | 2 |
+| ui#246 | A+defects | RC | N | 4 | 4 | 0 | 0 | 2 | 0 | 1 |
+| pilot#5799 | A+defects | RC | N | 2 | 1 | 0 | 1 | 3 | 0 | 1 |
+| pilot#5822 | A+defects | AWN | Y | 3 | 1 | 1 | 1 | 1 | 0 | 0 |
+| pilot#5868 | AWN | AWN | Y | 5 | 2 | 0 | 3 | 4 | 0 | 1 |
+| pilot#5874 | AWN | AWN | Y | 5 | 0 | 0 | 5 | 2 | 0 | 3 |
+| pilot#5870 | A+notes | AWN | Y | 6 | 1 | 1 | 4 | 1 | 0 | 2 |
+| pilot#5871 | AWN | AWN | Y | 1 | 0 | 0 | 1 | 4 | 0 | 0 |
+| pilot#5872 | AWN | AWN | Y | 1 | 1 | 0 | 0 | 3 | 0 | 0 |
+| pilot#5875 | AWN | AWN | Y | 2 | 1 | 0 | 1 | 3 | 0 | 1 |
+| console#427 | A+notes | AWN | Y | 7 | 1 | 1 | 5 | 2 | 0 | 0 |
+| **total** | | | 11/14 | 52 | 19 | 8 | 25 | 35 | 1 | 18 |
+
+## Reading
+- **Every structural defect of run 3 is gone**: 0 format failures (tolerant parse), over-escalation 5 → 3 (evidence gaps are minor; the three remaining RCs are on A+defects PRs and each carries a blocking-grade HIT), APPROVE-WITH-NOTES now carries a `defects` list.
+- **Recall moved for the first time**: 32 → 44 %. The new HITs sit where TASK-619 aimed — producers/consumers of the wire fields the diff names (ui#246 D1/D3, ui#252 D1, pilot#5872 ErrNoRows, the #5822 weekly catch-up key mismatch).
+- **The miss class is still the same**: ~18 of 25 misses are behaviour outside the hunks — pre-existing adjacent code (`ratelimit.go` +24h roll, the `git_clean` preflight), cross-repo contracts, cross-subsystem facts (`merged` events only from autopilot; `detectEpic` on long follow-ups). ~4 misses are in-hunk "met" claims (5870 D2 quotes `curErr == nil` as meeting spec; 5874 D4; 5868 D4). Recall does not track files_read (5874: 7 files, 0/5; 5870: 2 files, 1.5/6) — the extra reads follow wire fields, not callers or sibling parsers.
+- **Notes-only hand reviews stay weakest** (5870 1.5/6, 427 1.5/7): their "defects" are judgement calls about adjacent behaviour, not diff facts.
+- Five NEW-VALID claims were verified against the merge commits by the scorer before counting (weekly catch-up key mismatch #5822 · `pilot status` unauthenticated GET #5874 · detached clone on failed recreate #5870 · displaced `ChatSendOptions` docblock ui#246 · `KeySourceForOrg` untested console#427).
+
+## Decision inputs after four runs
+1. **Bar status**: RC 3/3 ✓ · false 0.07 ✓ · recall 44 % ✗ (bar 0.5). Policy unchanged: hand review tier-1 only; daemon REQUEST-CHANGES follow-ups are read; APPROVE-WITH-NOTES = no human for non-tier-1.
+2. The remaining 6 points to the bar are in adjacent-code behaviour. Candidate next prompt step: for each changed function, open its *siblings in the same file* and the *pre-existing branch the diff did not touch* (the `ratelimit.go` / `git_clean` class), and name one adjacent path per defect-bearing file. Measure on the same 14.
+3. Opus stays (founder 10-29). Cost 68 s/review mean; the daily cap of 20 is the bound.
+4. This run is also the first calibration of the **pre-PR reviewer** (TASK-620): same prompt, one sentence swapped, same budget. Shadow-mode evidence on live PRs today: 2 of 2 pre-PR runs missed the expired-git-context blocking defect on PR#5966 that post-merge caught — consistent with 44 % recall, not with enforce mode yet.

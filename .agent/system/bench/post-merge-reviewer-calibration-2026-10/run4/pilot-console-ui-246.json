@@ -1,0 +1,73 @@
+{
+  "repo": "qf-studio/pilot-console-ui",
+  "pr": 246,
+  "issue": 244,
+  "merge_commit": "8b14c8e954e3ed27fd4816e57240f155c5b8fba0",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/httpAdapter.ts",
+      "line": "897",
+      "claim": "The PR binds `durationMs`, `docsRead`, `memoriesRead` and `memoriesCreated`, and keys rows on the `subagent` and `context` event types, but nothing in the checkout produces any of them. The only chat producer, `src/lib/api/mockAdapter.ts:2005/2023/2037`, emits just `type: 'progress'`, `'confirmation'` and `'text'`. The diff admits this at `src/lib/api/types.ts:437`: \"ASSUMED wire contract — not yet confirmed by the daemon\". On a real stack the tree never shows and Context is always `—`."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/httpAdapter.ts",
+      "line": "1649",
+      "claim": "The PR adds a `mode` key to the `POST /api/v1/chat/messages` body, but nothing in the checkout consumes it. The issue says the pills are \"existing chat modes; keep their current semantics\", but no such modes exist: a Grep for `mode` in `src/design-system/components/Chat*.vue` finds nothing. The mock ignores the option; `mockAdapter.ts:1994` reads only `if (options?.projectId) conv.projectId = options.projectId`. So the RESEARCH/DOCS pills do nothing."
+    },
+    {
+      "severity": "blocking",
+      "file": "PR body",
+      "claim": "The issue says \"otherwise `—` and list the missing event fields in the PR body\". The PR body has no such list, even though the counts are assumed fields with no producer."
+    },
+    {
+      "severity": "minor",
+      "file": "src/lib/api/__tests__/httpAdapter.spec.ts",
+      "claim": "There is no test for the new `toChatEvent` fields or the `mode` request body; a case-insensitive Grep for `mode|durationMs|docsRead|subagent` matches only line 1693, which is unrelated. `src/views/__tests__/ChatView.spec.ts` writes fixtures straight into `chat.messages` and stubs `chat.send` with `vi.spyOn(chat, 'send').mockResolvedValue()`, so no test exercises the adapter or event mapping."
+    },
+    {
+      "severity": "minor",
+      "file": "PR body Evidence",
+      "claim": "The acceptance bullet asks for \"one line names the adapter used\". No line in the Evidence block names the adapter."
+    },
+    {
+      "severity": "minor",
+      "file": "src/lib/api/types.ts",
+      "line": "464",
+      "claim": "The new `ChatMode` type was inserted between the `ChatSendOptions` docblock (\"Optional `sendChatMessage` arguments…\") and the interface, so that docblock now sits on `ChatMode`."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/ChatView.vue",
+      "line": "94",
+      "claim": "Muted text uses the opacity dialect `text-ds-text/60` (also at lines 110, 117, 118, 122 and 123). CLAUDE.md says to prefer the token dialect `text-text-2` / `text-muted`."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/ChatView.vue",
+      "line": "1",
+      "claim": "The mobile `/chat` tab no longer mounts `ChatWindow`. Confirmation cards (issue drafts, `mockAdapter.ts:2023`) have no renderer on the new page, so mobile users cannot act on them."
+    }
+  ],
+  "not_verified": [
+    "The daemon's event payloads for `subagent` and `context`, and whether `POST /api/v1/chat/messages` accepts `mode`: the producer is not in this checkout.",
+    "Not reviewed: the test output pasted in the PR is truncated (\"1584 lines omitted\"), so the ChatView.spec and DashboardView.spec results do not appear in it; only the summary \"67 passed / 939 passed\" does.",
+    "1 requirements marked met without a path:line citation: not traced"
+  ],
+  "notes": "- Page title \"Research\" at 15px with the question under it at 15px, 60%: met (src/views/ChatView.vue:93-94).\n- \"Navigator research\" tree header with the count right-aligned, and one ListRow per sub-agent (id, DONE chip, title, duration-only meta): met in the UI (src/views/ChatView.vue:97-104; `formatDuration` at ChatView.vue around line 55). Rows depend on events nothing produces (blocking defect).\n- Report rendered as markdown: met (src/views/ChatView.vue:109; src/lib/reportMarkdown.ts:5 `html: false`).\n- Input with the `Ask your pilot…` placeholder, RESEARCH/DOCS pills and send on Enter: met in the UI (src/design-system/components/ResearchComposer.vue). The pills render uppercase through `src/design-system/components/Pill.vue:7` (`uppercase`). The modes' \"current semantics\" is not met, because no existing modes exist (blocking defect).\n- Dashboard input navigates with `q` and `mode`: met (src/views/DashboardView.vue:116). Research page starts the turn from the query: met (src/views/ChatView.vue:76-81).\n- Context panel `Read N docs · M memories` / `Created K memories` with `—` fallback: met (src/views/ChatView.vue:63-64, 117-118). No judge name is shown. Listing the missing fields in the PR body is not met.\n- Tests: rows, DONE chips and duration meta; markdown; dashboard navigation; no `token` or `$` in rows: present in ChatView.spec.ts and DashboardView.spec.ts.\n- Build and lint output pasted and passing. The test summary reads 67 files and 939 tests passed. The adapter-name line is missing.\n- Caller of the changed `chat.send`: `src/design-system/components/ChatWindow.vue:173` `await chat.send(text)`. The new `mode` parameter is optional, so this call still works.",
+  "files_read": 7,
+  "checkout": true,
+  "diff_bytes": 25745,
+  "diff_files": 9,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 25745,
+  "input_issue_bytes": 2021,
+  "input_pr_body_bytes": 15932,
+  "model": "claude-opus-5-5",
+  "duration_ms": 58534,
+  "posted": false
+}

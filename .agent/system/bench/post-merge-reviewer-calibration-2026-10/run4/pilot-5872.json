@@ -1,0 +1,43 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5872,
+  "issue": 5803,
+  "merge_commit": "bfa013cbc9a4867743dca7454ad1b56fa8f7f7f8",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "internal/approval/github.go:151 — On the rehydrated path a write that really fails is still lost",
+      "claim": "so the retry the issue asks for never happens there. resolvePending runs `h.deletePersisted(resp.RequestID",
+      "evidence": "\"decision\")` before `h.recorder.RecordDecision(ctx, ...)` (line 154). checkApproval has already removed the handler entry and cancelled the poll (github.go:407, github.go:412). After a restart the Manager has no in-memory pending entry, so nothing retries. On the fresh path the retry only works by accident: the Manager's async waiter repeats the write (manager.go:392 `m.stateWriter.SetApprovalDecision(context.Background(), ...)`). No poll tick retries anything."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/approval/manager.go:517 — An unlinked request",
+      "claim": "which returns `sql.ErrNoRows` (store.go:1981 and store.go:2013)",
+      "evidence": "now takes the \"persistence failure\" branch. That changes behaviour for callers the scope said to leave alone. Before, RecordDecision deleted the entry and ran `pr.CancelFn()`. Now an HTTP decision on an unlinked live request (gateway/approvals.go:294, which \"still resolve[s] the request\") leaves the Manager's waiter and the channel handler's armed button alive until the dispatch timeout (manager.go:404). It also logs \"keeping request pending for retry\" for an error that a retry can never fix. The same branch is reached from telegram.go:650 and slack.go:583."
+    },
+    {
+      "severity": "minor",
+      "file": "PR Body Evidence — The pasted `go test -race ./internal/approval/` output is `(cached)`",
+      "claim": "so it does not show a fresh run of the new tests. It does report `ok`."
+    }
+  ],
+  "not_verified": [
+    "The two mutation bullets: the PR lists them as \"run manually\". I checked by reading only: with the poll ctx, `rec.ctxErr` would be set and hit the Fatal at github_test.go assertDetachedApproval. Deleting the entry on a plain error would trip the `n != 1` check in TestRecordDecision_PersistenceErrorKeepsPending."
+  ],
+  "notes": "1) checkApproval now writes on a detached, bounded ctx: github.go:417 `context.WithTimeout(context.WithoutCancel(ctx), approvalWriteTimeout)`, and the timeout is 10 s. The CancelFn call is kept at github.go:412. Met.\n2) There is only one copy of checkApproval. Both callers are in pollForApproval (github.go:359, github.go:370). Fresh-request polls start at github.go:348; rehydrate creates its pollCtx at github.go:225. Both use the same code. The webhook path (github.go:494) still passes the caller's ctx. Met.\n3) RecordDecision now treats a lost race and a write failure differently. Any error other than ErrApprovalAlreadyDecided is logged at WARN and returned before the entry is deleted (manager.go:517-523). \"race lost\" is logged at INFO only for ErrApprovalAlreadyDecided (manager.go:536-538). Met, with the ErrNoRows side effect above.\n4) The github_test detached-ctx test is TestCheckApproval_RecordsDecisionOnDetachedContext. Its fake recorder returns ctx.Err() and the test asserts DecisionApproved plus the waiter's Response. It uses a fake recorder, which matches the contract being guarded: store.go:1984 `s.db.ExecContext(ctx, ...)` fails on a cancelled ctx. Met.\n5) The rehydrated-path test builds its entry through the real `h.Rehydrate` (github.go:179-239) and then wraps CancelFn. Met.\n6) The Manager tests cover both cases: a plain error keeps the entry and logs WARN; ErrApprovalAlreadyDecided removes it and logs race lost. The existing test at manager_test.go:792 was switched to the real sentinel. Met.\n7) Out of scope: no change to the poll interval, timeout or default_action. Persistence from #5764 and the Slack/Telegram handler code are unchanged; the one shared-behaviour change is the ErrNoRows defect above.\n8) Project memory pitfalls: none of the three (CI-failure misclassification, StageReleasing guard, studio-sdk branch fallback) applies to this diff.",
+  "files_read": 4,
+  "checkout": true,
+  "diff_bytes": 10847,
+  "diff_files": 4,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 10847,
+  "input_issue_bytes": 4654,
+  "input_pr_body_bytes": 5327,
+  "model": "claude-opus-5-5",
+  "duration_ms": 81266,
+  "posted": false
+}

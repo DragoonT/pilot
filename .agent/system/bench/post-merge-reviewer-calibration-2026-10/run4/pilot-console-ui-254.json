@@ -1,0 +1,68 @@
+{
+  "repo": "qf-studio/pilot-console-ui",
+  "pr": 254,
+  "issue": 241,
+  "merge_commit": "49b455547f427b9b4aca79880afc263b681007de",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "severity": "blocking",
+      "file": "src/views/DashboardView.vue",
+      "line": "342",
+      "claim": "The issue asked to restyle `DashboardShippedChart` or replace its use on the dashboard. The PR did neither: it added a second chart, so the page now shows two activity charts",
+      "evidence": "`src/views/DashboardView.vue:339` still renders `\u003cDashboardShippedChart :activity=\"filteredActivity\" :projects=\"projects\" /\u003e` inside the old \"Shipped Activity\" section (:332-340), and the new `\u003cDashboardActivityChart :events=\"boardActivity\" /\u003e` sits right below it at :342."
+    },
+    {
+      "severity": "blocking",
+      "file": "PR Body",
+      "claim": "The issue requires that if the endpoint has no range parameter, the PR body must say the bucketing is client-side. The endpoint has no range parameter (`src/lib/api/httpAdapter.ts:1584` `request\u003cWireActivityEnvelope\u003e('/api/v1/board/activity')`), but the PR body only repeats the issue text and the Evidence block. The client-side note appears only in the component docblock (`DashboardActivityChart.vue:10`)."
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/DashboardActivityChart.vue",
+      "line": "17",
+      "claim": "The docblock says the older `DashboardShippedChart` is \"still used by Settings → Usage\", which hides that `DashboardView.vue:339` uses it too."
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/DashboardActivityChart.vue",
+      "line": "82",
+      "claim": "The highlight colour `bg-needs-you` is magenta (`src/design-system/theme.css:27` `--color-needs-you: #b04a92;`), not a warm accent. The deviation is documented, and `dashboardShippedColors.ts:7` really has only neutral `--color-chart-*` greys."
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/DashboardActivityChart.vue",
+      "line": "8",
+      "claim": "The docblock says \"no mock — vocabulary extension (Figma 2026-10…)\", but the dashboard has a design file (`design/dashboard-v4.html`). CLAUDE.md rule 2 asks for the design file citation."
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/DashboardActivityChart.vue",
+      "line": "20",
+      "claim": "`now` defaults to `new Date()` once at mount, and buckets are counted back from that moment, not from calendar day or hour boundaries. On a long-open dashboard the window goes stale and never includes events that arrive later."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/__tests__/DashboardView.spec.ts",
+      "claim": "No test covers the new `loadBoardActivity` wiring or the chart mounting in `DashboardView` (Grep for `listBoardActivity|DashboardActivityChart` in that spec found nothing)."
+    }
+  ],
+  "not_verified": [
+    "Whether the console's `/api/v1/board/activity` returns the full 30-day history or a capped page; the server is not in this checkout, so the 30D bars may undercount.",
+    "Whether 30 bars (about 522px wide) fit at the `md` breakpoint without `overflow-hidden` (:75) cutting off the newest buckets; this needs a real browser, which a read-only checkout can't run."
+  ],
+  "notes": "- Wire fields: `createdAt` is produced at `src/lib/api/httpAdapter.ts:609` (`createdAt: string`) and mapped at :729. `kind: 'pr_merged'` is produced at :640 and mapped at :746-749. The mock mirrors the endpoint at `src/lib/api/mockAdapter.ts:1878`. No field is missing a producer.\n- Panel restyle: met as a new component, not a restyle. The card is at `DashboardActivityChart.vue:59`, with \"Activity\" at :61 and the 12px label size from `theme.css:60` (`--text-ds-label: 12px`). Bars are `w-[9.67px]`, `rounded-[2px]` and `gap-2` (:75, :80), with height scaled to the max bucket (:48-52). The replace/restyle part is not met (see the first blocking defect).\n- Range switch: met client-side. Buckets are 24 hourly, 7 daily and 30 daily (`DashboardActivityChart.vue:26-28`), and the data is fetched once at `DashboardView.vue:236`. The PR-body disclosure is missing (see the second blocking defect).\n- Acceptance: the test with three range buttons and a changing bar count is met (`DashboardActivityChart.spec.ts:15-24`, 7→24→30).\n- Acceptance: the highlighted/muted test is met (`DashboardActivityChart.spec.ts:26-31`). By hand, the fixture puts `pr_merged` in bucket 6 and the other two events in bucket 5, giving 1 `bg-needs-you` bar and 6 `bg-ink/30` bars.\n- Existing chart tests: `DashboardShippedChart.spec.ts` is unchanged; the PR body's pasted output shows 68 test files passed.\n- Tests use the component directly with a fixture; no adapter is mocked, so they don't claim to cover the wire contract.\n- Build, test and lint output is pasted in the PR body Evidence block: build succeeded, 951 tests passed, `vue-tsc` clean.\n- There is no migration and no out-of-scope section.",
+  "files_read": 5,
+  "checkout": true,
+  "diff_bytes": 8270,
+  "diff_files": 3,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 8270,
+  "input_issue_bytes": 1416,
+  "input_pr_body_bytes": 16232,
+  "model": "claude-opus-5-5",
+  "duration_ms": 51495,
+  "posted": false
+}

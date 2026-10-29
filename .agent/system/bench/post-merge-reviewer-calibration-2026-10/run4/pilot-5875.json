@@ -1,0 +1,55 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5875,
+  "issue": 5867,
+  "merge_commit": "57e9356223af656f8d80c56391a24bb4b15ce675",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "internal/executor/acceptance_evidence_run.go",
+      "line": "322",
+      "claim": "when an item has several commands (the standard \"make build, make test, make lint\" bullet) and the budget runs out partway through, the skipped commands are pasted under \"## Evidence\" with \"Not verified: evidence budget exhausted\" as their output, and the item is not listed under \"## Not verified\"",
+      "evidence": "`allErrored` stays false because an earlier command ran (line 336 / line 319), so `NotVerifiedReason` is never set at line 344"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/runner.go",
+      "line": "349",
+      "claim": "re-deriving the window before PR creation only helps once the deadline has already blown; if the task ctx is still alive with a few seconds left after evidence, CreatePR and its 3 retries inherit those few seconds",
+      "evidence": "`if ctx.Err() == context.DeadlineExceeded { ... } return context.WithCancel(ctx)` (this is the existing finalizeCtx behaviour, which the issue kept)"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/acceptance_evidence_run.go",
+      "line": "843",
+      "claim": "the WARN line fires once per reused command, not once per event, so an item with three reused gate commands logs three times",
+      "evidence": "`for _, c := range res.Commands { if c.FromQualityGate { emit(evidenceEventReused, i+1) } }`"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/runner.go",
+      "line": "2612",
+      "claim": "the epic and timeout-salvage paths (runner.go:3570 as well) pass `nil` gates, so they never reuse gate output and only get the budget and the re-derived window",
+      "evidence": "`r.appendAcceptanceEvidence(ctx, task, git.ProjectPath(), prBody, nil)`"
+    }
+  ],
+  "not_verified": [
+    "The three mutation claims (\"remove X -\u003e test fails\"): the PR body lists them as \"freeform mutation, run manually\". I checked each test by reading it, not by running it.",
+    "Whether this repo's quality-gate commands are literally `make build` / `make test` / `make lint`. That is set in operator config on the box, which isn't in the checkout. Reuse only removes the re-run if those strings match exactly."
+  ],
+  "notes": "- Re-derive before PR/MR create: met at internal/executor/runner.go:7236, 7276 and 7312 (`ctx, prCreateCancel := finalizeCtx(ctx, r.finalizeTimeout())`), plus 2615 (epic) and 3575 (salvage). Recovery ref: met at runner.go:400 (`ctx, cancel := finalizeCtx(ctx, finalizeGitTimeout)`). GH-5342 (a real cancellation is not extended) is kept: runner.go:349 extends only on DeadlineExceeded.\n- Evidence budget: met. acceptance_evidence_run.go:523 calls `r.evidenceBudgetCtx(ctx)`, which is WithoutCancel plus a timeout from `EffectiveAcceptanceEvidenceBudget()` (lines 561–576; cancellation is forwarded only for context.Canceled). Remaining items get `evidenceBudgetExhaustedReason` at acceptance_evidence_run.go:827, and the evidence section is still rendered.\n- Knob: the default is 15m at backend.go:579 (`defaultAcceptanceEvidenceBudget = 15 * time.Minute`) and is wired into the default config through config.go:715 (`Executor: executor.DefaultBackendConfig()`). Negative values are rejected at config.go:1347, and the knob is documented at configs/pilot.example.yaml:812. The YAML key `acceptance_evidence_budget` is consumed through the backend.go struct tag. The example yaml only shows it commented out, which is consistent with a default.\n- Reuse: met. The lookup runs after the allowlist check (acceptance_evidence_run.go:306 then 315). Failed gates, gates with a non-zero exit and gates without a command are skipped (`if !g.Passed || g.ExitCode != 0 || g.Command == \"\"`). The marker is rendered at acceptance_evidence.go:531. The wire fields Command/Output are produced at internal/quality/runner.go:143 (`result.Command = command`) and :181 (`result.Output = output`), mapped at runner.go:9238–9240, and converted at runner.go:9103 (`qgResult.Gates[i] = QualityGateResult(detail)`). The direct path gets `result.QualityGates` from runner.go:6524.\n- WARN log: met at acceptance_evidence_run.go:583–593, with task_id, item_index and elapsed.\n- Runner test: TestExecute_PRCreateSurvivesDeadlineBlownDuringEvidence checks `creator.ctxErr == nil` and remaining ≥ 1m, and the recovery_ref subtest checks the recovery ref. It drives the real Execute and real git, with only CreatePR faked. That fake is not the risky wire contract, since what is under test is the ctx handed to it.\n- Evidence and reuse tests: a 1s budget with a 2s sleeper asserts exactly one call and 2 exhausted lines. The reuse test asserts the runner is never called for \"make test\", while a different argv, a failed gate and a longer argv still run. Both would fail if their mechanism were removed.\n- Config test: TestAcceptanceEvidenceBudget covers the default, a configured value and the negative case. TestAppendAcceptanceEvidence_ReadsBudgetFromConfig covers the runner reading the value.\n- Pasted outputs for the three `go test -race` commands are in the PR Evidence block, all `ok`.\n- The PR adds no make build/test/lint bullet, and the issue's out-of-scope items are untouched (allowlist unchanged, complexity timeouts unchanged).\n- Project memories (Jev classifier triage, identical instructions): not repeated. The diff does not touch the classifier or Jev instructions.",
+  "files_read": 4,
+  "checkout": true,
+  "diff_bytes": 46902,
+  "diff_files": 15,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 46902,
+  "input_issue_bytes": 5154,
+  "input_pr_body_bytes": 7143,
+  "model": "claude-opus-5-5",
+  "duration_ms": 74850,
+  "posted": false
+}

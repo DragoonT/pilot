@@ -1,0 +1,47 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5870,
+  "issue": 5829,
+  "merge_commit": "c69964797e24b5d779515a2e764f258839963d76",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "internal/executor/git.go",
+      "line": "199",
+      "claim": "a clean, checked-out stale branch is detached at baseRef before DeleteBranch/checkoutNewBranchFrom at :204/:207; if either of those later steps fails, the clone is left with a detached HEAD and the error does not mention it",
+      "evidence": "the error paths at :205 and :209 return without restoring the branch"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/git.go",
+      "line": "192",
+      "claim": "HasUncommittedChanges uses `git status --porcelain` (git.go:1398), so a lone untracked file also triggers the \"checked out in the clone, refusing\" refusal, even though `checkout --detach` would carry untracked files safely",
+      "evidence": "the dirty test case at git_test.go:2279 only exercises the untracked-file case"
+    },
+    {
+      "severity": "minor",
+      "file": "PR Body \"## Evidence\"",
+      "claim": "the issue's acceptance list says not to re-run make build, make test or make lint as evidence, but the PR body rewrote that bullet as \"`make build`, `make test`, `make lint` pass\" and pasted reruns",
+      "evidence": "the pasted make lint output fails with 3 SA4023 findings in package cmd/pilot (cmd/pilot/tunnel.go:205, :351, :433), which this diff does not touch, so it is a pre-existing failure"
+    }
+  ],
+  "not_verified": [
+    "Mutation bullet (removing the GetCurrentBranch check makes TestEnsureBranchFromOrigin_StaleCheckedOutBranchIsRecreated fail): PR body says \"freeform mutation, run manually\" and gives no output; reasoning says the clean checked-out case would hit git's branch -D refusal at git.go:1681, but it was not run",
+    "Acceptance, `go test -race ./internal/executor/ -run TestEnsureBranchFromOrigin` passes with output pasted: met per the PR Evidence block (`ok github.com/qf-studio/pilot/internal/executor 2.300s`). — not traced"
+  ],
+  "notes": "- Scope, GetCurrentBranch check in the stale path before DeleteBranch: met, internal/executor/git.go:190-191 (`current, curErr := g.GetCurrentBranch(ctx)` / `if curErr == nil \u0026\u0026 current == branchName`), placed after the stale gate at git.go:178 and before DeleteBranch at git.go:204.\n- Scope, dirty tree returns an error that contains \"checked out in the clone, refusing\" and names the branch: met, internal/executor/git.go:197.\n- Scope, clean tree runs `git checkout --detach baseRef` and then delete + recreate: met, internal/executor/git.go:199 and :215, then :204 and :207.\n- Scope, branches that are not checked out keep the current behaviour: met, the guard at git.go:191 skips straight to git.go:204.\n- Scope, stale decision unchanged: met, git.go:170-183 is not in the diff.\n- Scope, CreateOrResetBranchFromOrigin, worktree mode and repick cap untouched: met, git.go:118-128 is unchanged, and the only caller of EnsureBranchFromOrigin is the direct-mode path at runner.go:4652.\n- Acceptance, checked-out clean case returns created true with HEAD on the recreated branch at the new base: met, internal/executor/git_test.go:2264 (table row) and :2312-2323 (assertions). It runs on a real temp repo with an origin (setupSyncTestRepos at runner_git_test.go:18, pushExtraCommitFromSecondClone at runner_git_test.go:86). baseRef resolves to origin/main after a real fetch (git.go:615-623). No mock is involved.\n- Acceptance, dirty case returns the error and leaves the branch and the dirty file untouched: met, git_test.go:2265 and :2291-2309.\n- Acceptance, stale branch not checked out is deleted and recreated as before: met, git_test.go:2266 and :2276-2277 (`runGit(t, local, \"checkout\", \"main\")`).\n- Wire fields: none. The diff only changes local git commands and error strings.\n- Migrations: none.\n- Out of scope: respected. There is no end-of-task switch back to the default branch, and no change to worktree mode, the identical-failure threshold or the needs-human sweep.\n- Project memories: the diff does not repeat any listed pitfall. It touches neither the repick cap, the stalled-row handling, nextRetryGeneration nor the identical-failure streak. It removes a deterministic identical-text failure that fed the streak described in the \"Failed-execution wedge\" learning.",
+  "files_read": 2,
+  "checkout": true,
+  "diff_bytes": 6211,
+  "diff_files": 2,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 6211,
+  "input_issue_bytes": 4348,
+  "input_pr_body_bytes": 11682,
+  "model": "claude-opus-5-5",
+  "duration_ms": 35760,
+  "posted": false
+}

@@ -1,5 +1,7 @@
 # TASK-612: post-merge reviewer calibration — an offline `pilot review-merge` command, then a scored run against 14 hand-reviewed merges
 
+**Run 4 (2026-10-29 20:58Z, v2.301.0, Opus + TASK-618/619): RC 3/3 · recall 44.2 % (best; bar 0.5 not met) · false 0.07 · 0 format failures · over-escalation 5→3 · files_read 5.0 mean. Report + `run4/scoring.md`.**
+
 **Status**: 📊 CALIBRATION RUN DONE 2026-10-28 14:53Z (K1 merged as PR#5912, v2.297.0 on the box). **RC caught 2/3 PASS · recall 39.4 % FAIL (threshold 0.5) · false notes 0.14/verdict PASS · 44 new valid findings · 16 hedges.** Report: `.agent/system/bench/post_merge_reviewer_calibration_2026-10.md`. Rule applied: below threshold → M2 (checkout+tools, TASK-613) gate MET (miss class = code outside the diff) + prompt/parser tuning (TASK-614 candidate). Was: Founder "calibrate" after six live verdicts (pilot PR#5902/#5904/#5905/#5907, studio-sdk PR#150/#151) were all APPROVE-WITH-NOTES with zero defects, while hand reviews on 10-22 found 3 REQUEST-CHANGES and 26 follow-ups on 10 merges.
 **Spec refs**: TASK-591 (reviewer), TASK-610 (diff budget, merged PR#5907), `internal/autopilot/post_merge_review.go` runPostMergeReview (the gather path), `internal/executor/post_merge_reviewer.go` Review.
 **Origin**: review-policy decision 2026-10-26 13:00Z — humans review tier-1 only once the daemon reviewer is trusted. Trust needs a measured catch rate.

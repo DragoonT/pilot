@@ -1,0 +1,76 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5868,
+  "issue": 5861,
+  "merge_commit": "018e450d0e48ff63552c2a401b65aa9b03ddcd61",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "internal/autopilot/feedback_loop.go",
+      "line": "449",
+      "claim": "The follow-up issue title is \"fix(#\u003cPR\u003e): ...\" so it does not literally start with the PR number as the acceptance asks; the test at internal/autopilot/post_merge_review_test.go:284 checks the \"fix(#42)\" form instead.",
+      "evidence": "internal/ghissue/create.go:64 rejects titles that do not match `^(feat|fix|...)(\\([^)]+\\))?: .+$` (create.go:21). The change is a reasoned deviation and the exact-title dedup still holds because findExistingFixIssue compares `issue.Title == title` (feedback_loop.go:519)."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/autopilot/post_merge_review.go",
+      "line": "172",
+      "claim": "The daily_cap counter belongs to each controller, but wirePostMergeReviewer installs the reviewer on every controller (cmd/pilot/main.go:2659). So the real daily limit is N projects × daily_cap, not one shared cap of 20.",
+      "evidence": "postMergeBudget lazily creates `c.postMergeReviewBudget` on each Controller. Every controller is built from the same `cfg.Orchestrator.Autopilot` (main.go:2560, main.go:2631)."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/autopilot/post_merge_review.go",
+      "line": "135",
+      "claim": "The budget is held in memory only, so a daemon restart resets the day's count. The issue asks for a daily_cap and this lets one day spend more than it.",
+      "evidence": "This is documented as a decision in the postMergeReviewBudget comment. Only the per-PR flag persists (state_store.go migration)."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/autopilot/post_merge_review_test.go",
+      "line": "396",
+      "claim": "The cap test does not check that the 21st review was \"logged\". It only checks the call count and the PostMergeReviewPosted flags.",
+      "evidence": "No log capture appears anywhere in TestPostMergeReview_DailyCapAndTicketCap."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/autopilot/post_merge_review.go",
+      "line": "144",
+      "claim": "PostMergeReviewPosted is set before the gather step and the model call, so a temporary failure in GetPullRequest, git fetch or the subprocess means the PR is never reviewed again. If the comment post fails, the verdict is also left out of the ledger (post_merge_review.go:278 returns when commentID \u003c= 0).",
+      "evidence": "This follows from the attempt-once design. Nothing retries or warns beyond the log line and the \"error\" counter."
+    },
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/post_merge_reviewer.go",
+      "line": "56",
+      "claim": "The startup log prints `pmr.Model`, which is empty whenever the model falls back to the executor default, so the log hides the model actually in use.",
+      "evidence": "The resolved `model` local in buildPostMergeReviewer is not the value logged."
+    },
+    {
+      "severity": "minor",
+      "file": "PR Body",
+      "claim": "The PR body has no \"## Evidence\" block with pasted `go test -race ./internal/autopilot/ -run PostMergeReview` and `./internal/executor/ -run PostMergeReview` output, so acceptance bullets 5 and 6 are not met.",
+      "evidence": "The PR body only has Summary, Changes and Review sections. No failing output is shown, so this is minor."
+    }
+  ],
+  "not_verified": [
+    "The studio-sdk GitHub client wire fields (`merge_commit_sha`, the comment `id`, issue `labels`) that the controller reads through `github.PullRequest`/`github.Comment` could not be checked because the SDK is not in the checkout. The in-tree equivalent internal/adapters/github/types.go:290 has `MergeCommitSHA string \\`json:\"merge_commit_sha,omitempty\"\\``.",
+    "The SavePRState placeholder count matching its column list was not counted by hand; this rests on green CI plus TestPostMergeReviewPostedPersists.",
+    "Budget: met per controller (see the cap defects). There are no executions rows, so the ticket cap is unchanged, which the DailyCapGate check confirms. — not traced"
+  ],
+  "notes": "- Knob: met. PostMergeReviewConfig {enabled, model, daily_cap, timeout} sits on autopilot.Config (types.go diff) and defaults to off because DefaultConfig leaves it nil. Validation is in internal/config/config.go (GH-5861 block). It is documented under orchestrator.autopilot at configs/pilot.example.yaml:611. The model falls back via `cfg.Executor.ResolveModel(\"\")`, which is nil-safe (internal/executor/backend.go:614-618).\n- Trigger: met. It is called at internal/autopilot/controller.go:6217, after the learning loop (6133) and eval/parent steps and before the SkipPostMergeCI branch (6219). It runs in a goroutine guarded by PostMergeReviewPosted, which is persisted in the state_store column `post_merge_review_posted` (added to the migration, the rebuild lists, Save and both scans).\n- Reviewer: met. It lives in internal/executor/post_merge_reviewer.go and borrows the intent judge's cmdRunner. It truncates each file's diff with buildJudgeDiffPayload (internal/executor/intent_judge.go:437, manifest at :450), passes the issue, the CI status and the PR \"## Evidence\" block, uses the fixed checklist prompt, and parses the output. Malformed output gives `unknown`.\n- Posting: met. AddComment goes to `/repos/%s/%s/issues/%d/comments` (internal/adapters/github/client.go:464 equivalent). REQUEST-CHANGES files one issue through FeedbackLoop with labels from cfg.IssueLabels (default `pilot`, `autopilot-fix`, types.go:755) plus `post-merge-review`. Nothing re-opens or reverts the PR.\n- Ledger: met. UpsertPRReview runs through reviewLedger() (review_ledger.go:102-108) with reviewer `post-merge-reviewer` and the verdict mapped to the memory vocabulary (memory/pr_review.go:15).\n- Observability: met. Metrics.RecordPostMergeReview feeds `pilot_post_merge_reviews_total{verdict}` in gateway/prometheus.go, and one log line per review carries the PR, verdict, defect count and duration (post_merge_review.go:228).\n- Tests: the controller tests drive the real SDK GitHub client against an httptest server and replace only the model reviewer, which the issue explicitly allows. The reviewer tests use the fake runner `mockJudgeRunner` (intent_judge_test.go:14). If the guard were removed, the second handleMerged pass would re-acquire the budget and TestHandleMerged_PostMergeReviewRunsOnce would fail.\n- Migrations: the change adds one column `INTEGER NOT NULL DEFAULT 0`, so no data is lost. There is no down path, which matches the existing ALTER list convention. SQLite has no RLS, so it does not apply.\n- Out of scope: respected. Only controller-tracked PRs with IssueNumber \u003e 0 are reviewed, and nothing reverts or re-opens a PR.\n- Memory pitfall (CI conclusion trusted blindly): not repeated. CIStatus is only passed to the reviewer as prompt text.\n- Memory pitfall (top-level autopilot YAML): not repeated. The example config nests post_merge_review under orchestrator.autopilot, and main.go reads `cfg.Orchestrator.Autopilot.PostMergeReview`.",
+  "files_read": 6,
+  "checkout": true,
+  "diff_bytes": 82850,
+  "diff_files": 17,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 82850,
+  "input_issue_bytes": 4865,
+  "input_pr_body_bytes": 758,
+  "model": "claude-opus-5-5",
+  "duration_ms": 95711,
+  "posted": false
+}
