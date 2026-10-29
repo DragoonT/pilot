@@ -1,0 +1,74 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5799,
+  "issue": 5791,
+  "merge_commit": "d814c2381d90af25a47f504aa5191f73b6a4d7a5",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "severity": "blocking",
+      "file": "internal/briefs/generator.go",
+      "line": "21",
+      "claim": "The pool section can never be populated in production. SetPoolSource is called only in internal/briefs/structured_test.go:282, so `pool` is always null in stored briefs. The issue asks for pool \"when the daemon knows it\", but nothing in the daemon supplies it.",
+      "evidence": "Grep for SetPoolSource across *.go found only the definition and the test call."
+    },
+    {
+      "severity": "blocking",
+      "file": "PR body Evidence",
+      "claim": "The acceptance bullet \"make test and make lint pass\" is not met. The pasted `make lint` output ends with \"3 issues\", \"staticcheck: 3\" and \"make: *** [Makefile:94: lint] Error 1\". The `make test` output has 17523 lines omitted, so the PR body never shows it passing.",
+      "evidence": "PR body `$ make lint` block."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/briefs/receipts.go",
+      "line": "345",
+      "claim": "The receipts digest hides cost only for `platform`. The structured brief also hides it for `unknown` and empty, because it uses `== KeySourceOwn` at structured.go:78. The two paths disagree on the same rule.",
+      "evidence": "structured.go:78 compared with receipts.go:345."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/briefs/receipts.go",
+      "line": "370",
+      "claim": "If any row in the day ran on the platform key, the whole-day cost total is dropped, including the own-key spend. This is a behaviour choice the issue did not specify.",
+      "evidence": "receipts.go:366-374."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/briefs/structured.go",
+      "line": "93",
+      "claim": "`FailedRun` has no title or PR field. The `ClassifyFailure` keyword matching is loose: \"conflict\", \"eof\" and \"network\" are matched as bare substrings.",
+      "evidence": "structured.go:117-131."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/briefs/scheduler.go",
+      "line": "182",
+      "claim": "The structured brief is stored only when `runBriefWithResults` runs, so it exists only when the daily brief is enabled. The receipts digest scheduler never writes one. The folding is also only partial: the receipts digest is still a separate Telegram message, and its output is not built from the `shipped` section.",
+      "evidence": "scheduler.go:182."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/gateway/briefs.go",
+      "line": "18",
+      "claim": "The store assertion is done on the dashboard store. The issue says the routes should be \"plain text\", and the handlers return JSON. The routes do sit behind the shared `s.auth.Middleware(apiMux)` at server.go:291, which matches the sibling routes.",
+      "evidence": "gateway/server.go:291."
+    }
+  ],
+  "not_verified": [
+    "Not reviewed: the `make test` output, because 17523 lines were omitted from the PR body and I cannot see whether the new briefs and gateway tests ran.",
+    "The `brief_payloads` migration has no down path. I did not confirm how the repo's other `migrate()` entries handle that, and the table is additive only.",
+    "The field `Execution.KeySource` was not opened at its definition. I confirmed only the constants and `NormalizeKeySource` at store.go:2450-2459."
+  ],
+  "notes": "- Section order (shipped, review_needed, pool, failed): met, through the struct field order in types.go and the ordering test.\n- Overdue items first in review_needed: met, through the `sort.SliceStable` in `BuildStructured`.\n- Cost line only on own-key: met in `BuildStructured`, with table tests for own, platform, unknown and empty. The receipts line also hides cost on platform.\n- JSON payload with `schema: 1` and round trip: met.\n- Email formatter with four headings: met through `FormatStructured`, and its test checks heading order.\n- Gateway routes with auth, empty and limit tests: met, using the real `memory.Store` and a real server. The auth middleware is at server.go:291.\n- Slack and Telegram formatters kept working: nothing in the diff touches them. Scheduler times unchanged.\n- Pool section: the struct exists but no production source feeds it, as noted in the first defect.\n- Project memory pitfalls: the diff does not repeat any of them. It treats `key_source=unknown` as no cost, which is consistent with the first pitfall.",
+  "diff_bytes": 41156,
+  "diff_files": 13,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 41156,
+  "input_issue_bytes": 1832,
+  "input_pr_body_bytes": 8684,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 16741,
+  "posted": false
+}

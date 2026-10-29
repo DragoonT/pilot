@@ -1,0 +1,69 @@
+{
+  "repo": "qf-studio/pilot-console-ui",
+  "pr": 252,
+  "issue": 249,
+  "merge_commit": "61aa3b94d34be3eb84ba50a196927e078aa46189",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/httpAdapter.ts",
+      "line": "1046",
+      "claim": "`orgName`, `lastShippedAt` and `poolPercentUsed` have no producer",
+      "evidence": "Grep of the checkout found them only in this diff's own types and adapter. `src/lib/api/mockAdapter.ts:1066` builds `stats` and the rest of the payload without them. The fixtures `src/lib/api/__tests__/fixtures/dashboard.json:3` and `dashboard-empty.json:3` have only `shipped` and `needsYou`. The header will always show '—' and never show Pool."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/httpAdapter.ts",
+      "line": "1016",
+      "claim": "`stats.timeToPrMinutes` has no producer",
+      "evidence": "`mockAdapter.ts:1066` and `fixtures/dashboard.json:3` omit it, so the Time to PR card always shows the degraded note."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/httpAdapter.ts",
+      "line": "1046",
+      "claim": "the issue says Pool comes from `percent_used`, but the diff binds a new camelCase dashboard key `poolPercentUsed`. The only `percent_used` consumer is the allowance wire at `httpAdapter.ts:342` and `httpAdapter.ts:423`. `getDashboard` never reads it, so the wire name was invented."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/views/__tests__/DashboardView.spec.ts",
+      "line": "466",
+      "claim": "the header and stat tests stub `mockAdapter.getDashboard` with hand-built objects, so they prove nothing about the real wire contract. No `httpAdapter.spec.ts` test was added for the new fields. The 'platform-key tenant' test sets no platform key, so it only checks that a literal string lacks '$'."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/views/DashboardView.vue",
+      "line": "303",
+      "claim": "the link targets `/board?lane=needs-you`, but `src/views/BoardView.vue` never reads `route.query` (it only calls `useRouter` at line 37). The `lane` param has no consumer, so the filter does nothing. The test only checks the href."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/DashboardView.vue",
+      "line": "306",
+      "claim": "`\u003cStatCard\u003e` is wrapped in a `RouterLink` inside an `h-full` block. The anchor is not given a label or focus style, and the `\u003ctemplate v-if=\"!timeToPr\" #footer\u003e` is conditional. Neither is covered by a test."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/DashboardView.vue",
+      "line": "90",
+      "claim": "the Time to PR card shows the degraded note but the diff does not record that note in its trims. The docblock does mention it. The `/100` target is a hardcoded literal, not from the payload."
+    }
+  ],
+  "not_verified": [
+    "Backend console dashboard handler, which would be the real producer of the new keys, is not in this checkout.",
+    "Design files `design/dashboard-v4.html` and `dashboard-v4-spec.md` were not opened, so header and card layout conformance is unchecked."
+  ],
+  "notes": "- Four StatCards in order Delivered, Review needed, Time to PR, Projects: met, with a test.\n- `/100` split span: met. The test checks `[data-stat-secondary]` text.\n- Review needed as a RouterLink to `/board?lane=needs-you`: the href is met, but BoardView ignores `lane`.\n- Header with org name left and Last shipped plus Pool right, with Pool hidden when absent: the UI is implemented, but no data source feeds it.\n- Honest-degrade when the instance is not running: the existing `v-else` branch is untouched.\n- Test that '$' and 'tokens' are absent from the header: present, but run against a stubbed adapter with no platform-key setup.\n- Docblock cites the design files and records trims: met.",
+  "diff_bytes": 14773,
+  "diff_files": 4,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 14773,
+  "input_issue_bytes": 1217,
+  "input_pr_body_bytes": 892,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 22353,
+  "posted": false
+}

@@ -1,0 +1,64 @@
+{
+  "repo": "qf-studio/pilot-console-ui",
+  "pr": 261,
+  "issue": 258,
+  "merge_commit": "b881f20587cd5d1e3a75e432db1f60f0b6835fc4",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/httpAdapter.ts",
+      "line": "589",
+      "claim": "the wire fields `project` and `parentId` on WireBoardCard have no producer in the checkout",
+      "evidence": "a Grep for `parentId|parent_id` across the repo finds only the consumers (queue.ts:65, httpAdapter.ts:721, types.ts:301) and the new spec. No board-card fixture under src/lib/api/__tests__/fixtures has a `project` key, and the mock adapter's seed cards never set either field. With no `project`, every card falls into the single \"Board\" group (queue.ts:8 NO_PROJECT). With no `parentId`, epic children never nest."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/components/dashboard/__tests__/DashboardQueue.spec.ts",
+      "line": "6",
+      "claim": "the test mocks `getAdapter` and hand-builds cards that carry `project` and `parentId`, so it proves nothing about the wire contract",
+      "evidence": "the httpAdapter mapping at httpAdapter.ts:720-721 has no spec, and the mock adapter and fixtures were not updated in lockstep as CLAUDE.md requires."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/components/dashboard/DashboardQueue.vue",
+      "line": "2",
+      "claim": "scope fence breach",
+      "evidence": "the issue (GH-258) says to mount `DashboardQueue` and does not ask for its creation, yet this PR adds the component, queue.ts, the BoardCard type fields and the wire mapping. These belong to sibling GH-257, and the diff includes them as new files, so GH-257 either was not merged or is duplicated here."
+    },
+    {
+      "severity": "minor",
+      "file": "src/components/dashboard/DashboardQueue.vue",
+      "line": "25",
+      "claim": "the component fetches `getCardExecution` once per card (N+1) on mount, so every card triggers a request."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/DashboardView.vue",
+      "line": "361",
+      "claim": "the Queue section ignores the dashboard's project and window filter, because `DashboardQueue` takes no props. The removed list was filtered by `isProjectSelected`."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/__tests__/DashboardView.spec.ts",
+      "line": "81",
+      "claim": "the assertions `toContain('Queue')` and `toContain('Ship StatusDot needs-you token')` are weak. The old by-project list also carried the card title, so the second assertion no longer shows that queue rows render."
+    }
+  ],
+  "not_verified": [
+    "The \"make build / test / lint\" evidence bullet: the PR body contains no Evidence block, so no command output was available to check.",
+    "Whether the live backend sends `project` and `parentId` on `GET /api/v1/board/cards`: no backend source or captured fixture is in the checkout."
+  ],
+  "notes": "- SectionHeader \"Queue\" with a right-side \"Show history\" link, directly under the activity chart: met. The link goes to `/board` (DashboardView.vue:361-364), which the issue allows as the fallback.\n- `\u003cDashboardQueue /\u003e` mounted beneath the header: met.\n- `DashboardShippedByProject.vue` import and usage removed, with the file and its spec deleted: met. The `filteredProjectsForByProjectList` computed was also removed.\n- Docblock citation updated (the GH-258 paragraph): met.\n- Run `make build`, `make test` and `make lint` and paste the output: the PR body shows no output.",
+  "diff_bytes": 33516,
+  "diff_files": 9,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 33516,
+  "input_issue_bytes": 951,
+  "input_pr_body_bytes": 626,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 17956,
+  "posted": false
+}

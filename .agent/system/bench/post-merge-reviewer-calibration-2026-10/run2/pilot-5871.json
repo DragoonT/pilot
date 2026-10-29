@@ -1,0 +1,39 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5871,
+  "issue": 5849,
+  "merge_commit": "62fdf98ca4d2de6181ae5eb2e35690fa28e338c9",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/gh5072_needs_human_repick_backoff_test.go",
+      "line": "318",
+      "claim": "the fetch-error case does not prove it proceeds with ev.Labels",
+      "evidence": "the test only checks that no live-gate skip reason came back, and asserts nothing about dispatch or the labels used."
+    },
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/handlers.go",
+      "line": "1205",
+      "claim": "AcceptanceCriteria still reads the stale ev.Body although the fresh realIssue.Body is now fetched earlier in the same function",
+      "evidence": "this repeats the stale-body pitfall, though it was already there and the issue does not ask for a fix."
+    }
+  ],
+  "not_verified": [
+    "Constants githubSDK.LabelNeedsClarification and githubSDK.LabelBlocked - the studio-sdk module sits outside the read-only checkout, so I could not open the SDK source. githubSDK.StateClosed is already used elsewhere in the repo.",
+    "Acceptance bullets 3 and 4 (the two mutation checks) - the PR body's \"Not verified\" section says they were run manually and not shown, so the PR gives no evidence for them."
+  ],
+  "notes": "- Fetch before admission: met. The fetch is moved ahead of the admission checks, and liveLabels is derived from realIssue.Labels (handlers.go ~1005-1012). On fetch failure it stays ev.Labels, so the handler fails open.\n- Needs-human backstop and task Labels read liveLabels: met (handlers.go:1056 and the task struct at ~1205).\n- Admission check before side effects: met. githubLiveAdmissionSkipReason covers closed state, a missing trigger label (cfg PilotLabel, defaulting to \"pilot\"), needs-human, blocked and needs-clarification. It runs before the spec guard, label write, comment and task construction. It logs one INFO line with task_id and reason.\n- Skip result and backoff: met. Each skip returns Success false, Skipped true and a distinct SkipReason. It calls repickBackoff.recordClaimLostDrop(backoffKey) with the same backoffKey the needs-human path uses (handlers.go:950, 1037, 1069).\n- Table-driven test: met. It covers closed, trigger removed, blocked, needs-clarification, an extra needs-human case, and fetch error. It runs against the real githubSDK client through an httptest server and asserts that no non-GET request is made, that the backoff is armed, and that ClaimLostDropCount is 1. It does not mock the adapter.\n- Existing needs-human test: met. The wiring test was updated to the liveLabels expression.\n- Out of scope: respected. There is no SDK change, and no change to GitLab, Linear or Jira.\n- Test evidence: the `go test -race` output is pasted in the PR body.\n- Memory pitfalls: the claim-lost unwind and terminal re-arm pitfalls are not repeated by this diff. The stale-body pitfall is partly repeated, as noted in DEFECTS.",
+  "diff_bytes": 18610,
+  "diff_files": 3,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 18610,
+  "input_issue_bytes": 4231,
+  "input_pr_body_bytes": 4931,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 19523,
+  "posted": false
+}

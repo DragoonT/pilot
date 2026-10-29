@@ -1,0 +1,73 @@
+{
+  "repo": "qf-studio/pilot-console-ui",
+  "pr": 246,
+  "issue": 244,
+  "merge_commit": "8b14c8e954e3ed27fd4816e57240f155c5b8fba0",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/httpAdapter.ts",
+      "line": "897-900",
+      "claim": "wire fields `durationMs`, `docsRead`, `memoriesRead` and `memoriesCreated` have no producer in the checkout",
+      "evidence": "Grep for these names across the repo (excluding node_modules) matched only httpAdapter.ts, types.ts, stores/chat.ts, ChatView.vue and ChatView.spec.ts, all consumers. The mockAdapter and its fixtures never emit them. `src/lib/api/types.ts:437` admits the contract is \"ASSUMED\", so the issue's \"otherwise `—` and list the missing event fields in the PR body\" step was not done."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/views/ChatView.vue",
+      "line": "41",
+      "claim": "the sub-agent tree binds `m.type === 'subagent'` and the Context panel binds `type: 'context'` events, but no producer in the checkout emits either event type",
+      "evidence": "Grep for `subagent` found no code that emits it. `src/lib/api/mockAdapter.ts` emits no such event, so the tree and counts may never render against a real or mock backend."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/httpAdapter.ts",
+      "line": "1645-1651",
+      "claim": "the send body now emits a `mode` key, and no consumer for it exists in the checkout",
+      "evidence": "the daemon relay is not in the repo and the mockAdapter ignores `options.mode` (Grep for `mode` in mockAdapter.ts found nothing relevant). The issue says to keep the pills' current semantics, yet no existing code sends `mode`."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/views/__tests__/ChatView.spec.ts",
+      "line": "15",
+      "claim": "the tests prove nothing about the wire contract",
+      "evidence": "they assign `chat.messages` directly and spy on `chat.send`, so they never go through `toChatEvent` or `listChatEvents`. The issue asked for rows rendered from a \"fixture event stream\", and the fixture bypasses the adapter. No httpAdapter spec covers the new fields or `mode`, and the PR body's Evidence does not include the required one-line adapter statement."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/ChatView.vue",
+      "line": "89",
+      "claim": "when the dashboard navigates here with `?q=`, the turn is only sent after `router.replace`, and the onMounted `chat.send` result is swallowed by an empty catch",
+      "evidence": "a failed send is not visible except through the store flags."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/ChatView.vue",
+      "line": "117",
+      "claim": "the component uses `text-ds-text` and `text-ds-text/60`, which are the legacy opacity dialect",
+      "evidence": "CLAUDE.md prefers `text-text-2` and `text-muted`."
+    },
+    {
+      "severity": "minor",
+      "file": "src/lib/api/types.ts",
+      "line": "464-466",
+      "claim": "the `ChatMode` type was inserted between the `ChatSendOptions` docblock and its interface, so the docblock now sits on the wrong declaration."
+    }
+  ],
+  "not_verified": [
+    "Whether the daemon (`internal/chatapi`) actually emits `subagent` or `context` events with these fields, and whether it accepts `mode` - the daemon source is not in this checkout.",
+    "Whether the PR body lists the missing event fields - the issue requires it, and the PR body supplied has no such list."
+  ],
+  "notes": "- Sub-agent rows with DONE chips and duration-only meta: implemented in ChatView.vue and tested, but only against hand-assigned store messages.\n- Markdown report: met (`reportMarkdown.ts` with `html: false`, plus an HTML-escape test).\n- Dashboard input navigates with `q` and `mode` query params: met and tested.\n- A test asserts no `token` or `$` in the tree: met.\n- Context panel: shows `—` when counts are absent, but the missing-fields list in the PR body is absent.\n- Judge name and version removed: met, since the panel renders none.\n- `Create tickets` not added: met.\n- `make build`, `make test`, `make lint` output: pasted in the PR body, but there is no line naming the adapter, so that bullet is not met.",
+  "diff_bytes": 25745,
+  "diff_files": 9,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 25745,
+  "input_issue_bytes": 2021,
+  "input_pr_body_bytes": 15932,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 19020,
+  "posted": false
+}

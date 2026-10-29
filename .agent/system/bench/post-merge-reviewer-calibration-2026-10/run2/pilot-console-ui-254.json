@@ -1,0 +1,45 @@
+{
+  "repo": "qf-studio/pilot-console-ui",
+  "pr": 254,
+  "issue": 241,
+  "merge_commit": "49b455547f427b9b4aca79880afc263b681007de",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "src/views/DashboardView.vue",
+      "line": "231",
+      "claim": "The issue asks for the client-side bucketing to be stated in the PR body, and the PR body never says so. It is only in the docblock at DashboardActivityChart.vue:7-11.",
+      "evidence": "PR Body has no mention of it."
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/DashboardActivityChart.vue",
+      "line": "73",
+      "claim": "30 bars at 9.67px with 8px gaps need about 522px. The container uses `overflow-hidden` with no wrap or scroll, so a narrow panel clips the oldest bars silently.",
+      "evidence": "`flex items-end gap-2 overflow-hidden`, with `shrink-0` on every bar."
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/DashboardActivityChart.vue",
+      "line": "5",
+      "claim": "The highlight colour deviates from the issue. `dashboardShippedColors.ts` was meant to supply the warm accent but holds no warm colour, so the diff uses the `needs-you` token (`--color-needs-you` at src/design-system/theme.css:27). The deviation is documented in the docblock."
+    }
+  ],
+  "not_verified": [
+    "Server-side limits on `GET /api/v1/board/activity` (row cap or time window): the console backend is not in this checkout. If it returns only the latest N rows, the 30D view could be undercounted.",
+    "Dashboard integration: no test covers `DashboardView` mounting `DashboardActivityChart` or calling `listBoardActivity`. The truncated test log does not show whether the existing DashboardView spec exercises it."
+  ],
+  "notes": "- Panel card with \"Activity\" at 12px on the left and the `1D · 7D · 30D` switch on the right (`text-ds-label` is 12px at theme.css:60): met.\n- Bar styling: 9.67px wide, gap-2 (8px), 2px radius, heights scaled to the max bucket: met.\n- Highlighted bars versus muted bars (`ink` at 30%): met, with the colour deviation noted under DEFECTS.\n- Range switch changing the bucket size (1D = 24 hourly, 7D = 7 daily, 30D = 30 daily): met.\n- Re-requesting the endpoint per range: not applicable. The endpoint has no range parameter, and `listBoardActivity()` at src/lib/api/httpAdapter.ts:1583 takes no arguments. Client-side bucketing was the issue's own fallback.\n- Wire fields the component reads: `createdAt` is produced at httpAdapter.ts:729 and `kind: 'pr_merged'` at httpAdapter.ts:746-749. Both are typed in src/lib/api/types.ts:327 and :369. The adapter mapping is covered by httpAdapter.spec.ts:1486.\n- Unit test for three range buttons and a changing bucket count (7, then 24, then 30): met.\n- Unit test for both the highlighted and muted classes with mixed events (1 `bg-needs-you`, 6 `bg-ink/30`): met. The component tests use prop fixtures, but the wire contract is covered separately by the real httpAdapter spec.\n- `make build`, `make test` and `make lint` output is pasted in the PR body: met. All three pass, with 951 tests passing.\n- Existing `DashboardShippedChart` left untouched: met.",
+  "diff_bytes": 8270,
+  "diff_files": 3,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 8270,
+  "input_issue_bytes": 1416,
+  "input_pr_body_bytes": 16232,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 26022,
+  "posted": false
+}

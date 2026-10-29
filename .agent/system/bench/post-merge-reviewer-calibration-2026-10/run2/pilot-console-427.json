@@ -1,0 +1,42 @@
+{
+  "repo": "qf-studio/pilot-console",
+  "pr": 427,
+  "issue": 423,
+  "merge_commit": "b823a0d3c92619b4a5d4837e9b88db634cdd10c8",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "severity": "blocking",
+      "file": "PR body",
+      "claim": "the acceptance bullet \"make build, make test, make lint pass, paste the output into the PR body\" is not met",
+      "evidence": "the PR body has no Evidence block and no command output. It only says CI on fresh Postgres is the evidence."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/allowanceapi/routes_test.go",
+      "line": "659",
+      "claim": "the key_source assertion is weak",
+      "evidence": "the `||` fallback `!strings.Contains(body, \"key_source\":\"\u003csrc\u003e\")` also matches the nested `usage.key_source` (the diff's `usageResponse.KeySource` field in allowanceapi/routes.go), so it would pass even if the top-level `key_source` were missing."
+    },
+    {
+      "severity": "minor",
+      "file": "main.go",
+      "line": "1050",
+      "claim": "unrelated gofmt realignment of the `boardapi.Deps` fields in `registerBoard`",
+      "evidence": "this is noise outside the issue's scope and does not change behaviour."
+    }
+  ],
+  "not_verified": [],
+  "notes": "- Allowance `percent_used`: met. `allowance.PoolPercent` takes the larger of the ticket and dollar percents and clamps to 0–100 (internal/allowance/status.go, diff hunk at line 346). It is emitted in internal/allowanceapi/routes.go. `TestAllowanceWireContract_PercentUsed` covers 0, mid, USD-fuller and over-cap, and it runs the real handler.\n- Allowance `key_source`: met. It is emitted at the top level from `st.KeySource`. The producer is `KeySource()` at internal/allowance/status.go:395, and `KeySourcePlatform = \"platform\"` is at line 28.\n- USD omitted on `/billing/allowance`: met. `included_usd_cents`, `remaining_usd_cents`, `usd_percent` and `usage.usd_cents` are pointers with omitempty, and they are set only when `st.KeySource` is not platform. `TestAllowanceWireContract_USDGate` checks absence for platform and presence for own.\n- USD omitted on `/usage` and `/usage/ledger`: met. `totalCostUsd`, `costUsd`, `estimatedUsdCents` and `reportedUsdCents` are omitted for platform keys. Tokens, tasks, ticket ids and timestamps are kept. `TestUSDGate_ByKeySource` covers both key sources.\n- The `/usage` and `/usage/ledger` gate uses a new `KeySourceForOrg`, which mirrors the `StatusForOrg` rule. `main.go` wires it with the real `allowance.New`. A lookup error returns 500 and a nil resolver returns 503, and both have tests.\n- The `/usage` and `/usage/ledger` tests use a fake `KeySourceResolver`, not the real `allowance.Service`. The rule inside `KeySourceForOrg` is not tested on its own, so a divergence from `StatusForOrg` would not be caught.\n- Dashboard gate: not applicable. internal/dashboardapi/dto.go, handlers.go and routes.go mention cost only in comments, so the dashboard payload has no cost fields.\n- Out-of-scope changes: none that alter behaviour. The only extra change is the whitespace realignment in `main.go`.",
+  "diff_bytes": 29679,
+  "diff_files": 6,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 29679,
+  "input_issue_bytes": 1020,
+  "input_pr_body_bytes": 520,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 20490,
+  "posted": false
+}

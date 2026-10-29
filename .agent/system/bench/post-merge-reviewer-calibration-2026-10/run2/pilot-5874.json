@@ -1,0 +1,46 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5874,
+  "issue": 5862,
+  "merge_commit": "076bb48f488b1f6538bcf3f8c682f50f54e5d39c",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "internal/executor/dispatcher.go",
+      "line": "3965",
+      "claim": "the hook runs only in ProjectWorker.processQueue, so a rate_limited finalization on any other path would not pause admission",
+      "evidence": "the diff adds no second call site, and no test drives the hook through a worker other than the processQueue path"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/alerts/types.go",
+      "line": "714",
+      "claim": "the issue asks for the same severity as the platform breaker, but the rule uses warning because no breaker severity exists",
+      "evidence": "the PR body states that platform_breaker_open has no matching rule, and I did not search the alerts package for it"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/usage_limit_pause_test.go",
+      "line": "236",
+      "claim": "the \"never shortened\" and \"capped\" tests call armUsageLimitPause directly instead of going through a rate_limited run",
+      "evidence": "the end-to-end run is covered only by TestDispatcher_UsageLimitPausesAdmission and the Extends test"
+    }
+  ],
+  "not_verified": [
+    "Not reviewed: the PR body shows the gateway test result as \"(cached)\", so I could not confirm TestStatusEndpoint_AdmissionPause ran in that invocation.",
+    "Not reviewed: I did not open internal/executor/dispatcher.go:3132-3181 (PauseAdmissionFor, ResumeAdmissionFor) to check that resume wakes held workers. I saw only the function signatures in the grep output."
+  ],
+  "notes": "- Config knob (enabled, max_pause, fallback_pause): met. Defaults are in internal/executor/backend.go, validation is in internal/config/config.go, and the knob is documented in configs/pilot.example.yaml.\n- Hook, owner constant `usage-limit`, resume at reset plus RetryBuffer (5m, internal/executor/scheduler.go:24), the max_pause cap, the fallback when no reset parses, and extend-without-stacking: met in internal/executor/usage_limit_pause.go.\n- Status fields: met.\n- Producer: internal/gateway/server.go:710-719 emits `admission_paused`, `admission_pause_owners` and `admission_resumes_at`.\n- Consumer: cmd/pilot/commands.go:289-291 binds the same keys.\n- The pilot status line is implemented.\n- The gateway test covers both the paused and the cleared response.\n- Logging and alert: met. Each pause and each resume logs one INFO line, and one warning alert fires per episode. The alert rule, handler and event-type constant are all added.\n- Scheduler re-queue: unchanged. Nothing in the diff touches it.\n- Out of scope (CLI pause/resume, persisted pause, percentage threshold, drain on stop): none of these were added.\n- Dispatcher tests: the real Dispatcher is exercised with a fake clock and a stub backend. The pins for removing the PauseAdmissionFor call and the max_pause cap are shown failing in the PR body.\n- Evidence bullets: the `go test -race` outputs are pasted for both packages, and the daemon's make gates were not re-run, as the issue instructs.\n- Project memory pitfalls: none are repeated. The diff has no claim, label or lifecycle-status changes, no push or branch handling, and no stage-strip code.",
+  "diff_bytes": 52411,
+  "diff_files": 19,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 52411,
+  "input_issue_bytes": 4918,
+  "input_pr_body_bytes": 3285,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 19212,
+  "posted": false
+}

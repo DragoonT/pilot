@@ -1,0 +1,43 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5872,
+  "issue": 5803,
+  "merge_commit": "bfa013cbc9a4867743dca7454ad1b56fa8f7f7f8",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "internal/approval/github.go",
+      "line": "405-412",
+      "claim": "The Manager now keeps its pending entry on a plain write error, but the poll path never retries the write",
+      "evidence": "checkApproval deletes `h.pending[requestID]` (github.go:407), calls `pending.CancelFn()` (github.go:412) and then calls resolvePending (github.go:150-170), which logs the error, delivers the response and closes the channel. No poll tick is left to retry, so the \"retry on next poll tick\" intent holds only for non-poll callers."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/approval/github_test.go",
+      "line": "900-918",
+      "claim": "The rehydrated test replaces `p.CancelFn` without holding `h.mu`, while the poll goroutine started by Rehydrate is still alive. This is a latent data race under `-race`, though the one-hour poll interval makes a hit unlikely."
+    },
+    {
+      "severity": "minor",
+      "file": "PR body Evidence",
+      "claim": "The `go test -race` output is `ok ... (cached)`, which is not a fresh run, and both mutation bullets are listed as not verified. The PR body therefore has no run evidence for them."
+    }
+  ],
+  "not_verified": [
+    "Not reviewed: whether both mutation checks fail as the issue requires. I cannot run tests, and the PR body marks them \"run manually\".",
+    "Not reviewed: callers of `Manager.RecordDecision` in `internal/gateway/approvals.go` and Slack/Telegram. I did not read how each handles a plain error now that the pending entry is kept. Only the `errors.Is` check sites were grepped."
+  ],
+  "notes": "- Detached write context: met. github.go:417 uses `context.WithTimeout(context.WithoutCancel(ctx), approvalWriteTimeout)`, with `approvalWriteTimeout = 10s`, and `CancelFn` is kept at github.go:412.\n- Second call site: met. `checkApproval` is the only place the poll goroutine resolves an entry (github.go:370 calls it). Webhook and changes-requested paths still pass the caller's ctx (github.go:494), so they are unchanged.\n- `Manager.RecordDecision`: met. A non-`ErrApprovalAlreadyDecided` error logs WARN \"failed to persist approval decision\", returns, and keeps the pending entry (manager.go:517-524). The \"race lost\" INFO line is reachable only for `ErrApprovalAlreadyDecided` (manager.go:536-538). The sentinel is defined at `internal/memory/store.go:1967`.\n- Wire fields: no JSON/YAML/HTTP fields are read or emitted. The only contract is the `SetApprovalDecision` error sentinel, and its producer is `internal/memory/store.go:2018`.\n- Fresh-path test: met. `TestCheckApproval_RecordsDecisionOnDetachedContext` uses a ctx-checking recorder and wires the poll cancel as `CancelFn`. The recorder asserts a non-done ctx and `DecisionApproved`, and the waiter response is checked.\n- Rehydrated-path test: met. It uses the real `Rehydrate` entry with a wrapped `CancelFn`.\n- Manager tests: met. `TestRecordDecision_PersistenceErrorKeepsPending` and `TestRecordDecision_AlreadyDecidedRemovesPendingAndLogsRaceLost` cover both branches. The existing test now uses the real sentinel.\n- The recorder fakes sit behind the `DecisionRecorder` interface. The risk is ctx propagation, which the fake models faithfully, so these tests do exercise the contract.\n- Out of scope: no change to poll interval, timeout, default_action, persistence or the Slack/Telegram handlers.\n- Evidence bullet (`go test -race`): the output is only `(cached)`.\n- Evidence bullet (make build/test/lint): correctly not run.\n- Project memories: none of the three pitfalls (CI-failure conclusion trust, `StageReleasing` guard, studio-sdk branch fallback) is repeated by this diff.",
+  "diff_bytes": 10847,
+  "diff_files": 4,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 10847,
+  "input_issue_bytes": 4654,
+  "input_pr_body_bytes": 5327,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 22904,
+  "posted": false
+}

@@ -1,0 +1,55 @@
+{
+  "repo": "qf-studio/pilot-console-ui",
+  "pr": 255,
+  "issue": 243,
+  "merge_commit": "c05dbd11b039898701b81df285a25223a10c8998",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/ContextPanel.vue",
+      "line": "67",
+      "claim": "the Docs header value and the \"Updated this week\" row come from `docs.entries`, which the tree response may cap through `?limit=`",
+      "evidence": "the types say counts are server-authoritative and entries must not be recounted - src/lib/api/types.ts:644-645"
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/DashboardView.vue",
+      "line": "324",
+      "claim": "the grid has three columns, `minmax(0,1fr)_400px_270px`, but the template has only two children besides ContextPanel (main column and by-project section), and the by-project section was already the 400px column",
+      "evidence": "the Context panel may land in the wrong track or wrap, and no test mounts DashboardView with it - src/views/DashboardView.vue:324,363-367"
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/ContextPanel.vue",
+      "line": "12",
+      "claim": "the health rule (7d Healthy, 30d Drift, then Stale) is invented and not backed by any endpoint, though the code comment admits this",
+      "evidence": "src/design-system/components/ContextPanel.vue:12-17"
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/ContextPanel.vue",
+      "line": "98",
+      "claim": "the \"Needs API\" listing is missing from the PR body; the `—` fields are documented only in the component docblock, so the PR body does not list the fields that fell back to `—` or the endpoints that would supply them"
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/ContextPanel.vue",
+      "line": "67",
+      "claim": "the issue says the Docs header may be the total size or count, and the diff shows the entry count only; the muted secondary number beside each row count is not rendered"
+    }
+  ],
+  "not_verified": [],
+  "notes": "- Three cards with the Context header and the labels Created this week, Updated this week, Read by Pilot this week, Nodes, Edges and Last updated: met. `ContextPanel.spec.ts` asserts the labels and the `—` fallback.\n- Data source: met. `getDocsTree` is the only existing endpoint, and it is the real `DocsTreeEntry.modifiedAt` field (src/lib/api/types.ts:641, httpAdapter.ts:519). Memory and graph have no endpoint, and I found no memory or graph producer in `src/lib/api`.\n- Health word replaces the bare percentage: met. The test asserts no `\\d+%`, `Healthy` renders, and the tooltip title contains the rule text.\n- Layout: 270px at ≥1280px is partially met via the `xl:` grid column (see the grid defect above). Stacking below that breakpoint follows from the grid collapsing to a single column.\n- Acceptance 1 (unit test of labels and `—`): met.\n- Acceptance 2 (PR body lists the fallback fields): not met in the PR body, which has no \"Needs API\" section.\n- Acceptance 3 (build, test, lint output pasted in the PR body): met. The evidence block has all three outputs and they pass.\n- Tests: the panel tests mount `ContextPanel` with props only, so they do not exercise the adapter. The adapter wiring in `loadContextDocs` has no test.",
+  "diff_bytes": 10956,
+  "diff_files": 3,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 10956,
+  "input_issue_bytes": 1713,
+  "input_pr_body_bytes": 15974,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 16334,
+  "posted": false
+}

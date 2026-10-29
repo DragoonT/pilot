@@ -60,3 +60,32 @@ Stricter on verdict, softer on substance. REQUEST-CHANGES on 7 of 14 vs the huma
 
 ## Rerun recipe
 Same 14 PRs, same command, after each change; compare the three numbers. Script and outputs: box `~/calibration/calib.sh`, local copies in the raw folder.
+
+---
+
+# Rerun 2 — 2026-10-29 11:51–11:56Z, v2.298.0 (TASK-614 prompt/parser · TASK-613 M1 memories, M2 checkout + tools, M3 confinement · TASK-610 budget)
+
+Same 14 PRs, same scorer rules (hand defects 53 under this scorer's counting; run 1 counted 52). Raw: `run2/`.
+
+| Metric | Run 1 (v2.297.0) | Run 2 (v2.298.0) | Bar |
+|---|---|---|---|
+| REQUEST-CHANGES caught | 2 of 3 | 2 of 3 (ui#255 approved again) | ≥2 |
+| Defect recall | 39.4 % | **34.9 %** (18.5 / 53) | ≥ 0.5 — FAIL |
+| False notes per verdict | 0.14 | **0.36** (5 / 14) | ≤ 1 |
+| Daemon REQUEST-CHANGES on hand-approved PRs | 5 of 11 | 5 of 11 | — |
+| Defect-bearing approves matched | 10 of 11 | 10 of 11 | — |
+| New valid findings | 44 | 27 | — |
+| Unverifiable hedges | 16 | 4 (now a capped NOT-VERIFIED list) | — |
+| Contract: empty defect lists / RC without blocking | 10 empty | 0 / 0 | — |
+
+## What changed and what did not
+- **Structure is fixed.** Every verdict carries a defect list with severity tags; no REQUEST-CHANGES without a [blocking] item; hedges are a short list, not inline prose; dash-separated defect lines parse. Review time 16–33 s.
+- **Substance did not move.** Recall fell within noise. The misses are the same class as run 1: behaviour in code adjacent to the diff (pre-existing paths, cross-repo consumers, design-token rules). The checkout and read tools were available; the only tool-use evidence in the logs is one denied Grep into the Go module cache (confinement working). Nothing logs how many files the model read in the CLI path, so tool use cannot be quantified from this run.
+- **Over-escalation is unchanged and has one cause.** Four of the five REQUEST-CHANGES on human-approved PRs hang on a single [blocking] item about PR-body evidence (make output missing or showing a failure), not on code. The human waived those via CI. The severity rule in TASK-614 defines "a requirement of the issue not met" as blocking, and the model reads an evidence bullet as a requirement.
+- **False notes rose** (0.14 → 0.36): claims contradicted by the PR body or the project's conventions (bucketing "not stated" when it was; ds-* called legacy; JSON routes called a deviation from "plain text").
+
+## Decision inputs
+1. Prompt rule, one line: PR-body evidence gaps are [minor] unless the pasted output shows a failing test or build for code the diff changed. Expected effect: daemon REQUEST-CHANGES falls from 7 to about 3, matching the human, and the review→fix→review loop stops firing on bookkeeping.
+2. Recall is a model-capability question now, not a plumbing one. Cheapest test: rerun the same 14 with `post_merge_review.model: claude-opus-5-5` (one knob, no code) and compare recall. If Opus moves recall past 0.5, pay the per-review cost for the daemon reviewer only.
+3. Make tool use measurable: the review-merge JSON and the "post-merge review" log line carry files_read; a rerun then shows whether the model opens counterpart files or answers from the diff.
+4. Until recall passes: keep hand review on tier-1 merges; read daemon REQUEST-CHANGES follow-ups; treat APPROVE-WITH-NOTES as "no human needed" only for non-tier-1 merges.

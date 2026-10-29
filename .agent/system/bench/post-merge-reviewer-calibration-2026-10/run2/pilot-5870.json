@@ -1,0 +1,37 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5870,
+  "issue": 5829,
+  "merge_commit": "c69964797e24b5d779515a2e764f258839963d76",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "internal/executor/git.go",
+      "line": "188",
+      "claim": "If GetCurrentBranch fails (curErr != nil), the error is silently ignored and the code falls through to DeleteBranch. The old failure mode (git's refusal) is then possible with no clear message.",
+      "evidence": "git.go:188 `if curErr == nil \u0026\u0026 current == branchName`."
+    },
+    {
+      "severity": "minor",
+      "file": "PR body Evidence",
+      "claim": "the issue's final acceptance bullet forbids re-running make build, make test and make lint as evidence. The PR body pastes all three, and make lint shows 3 staticcheck SA4023 failures in cmd/pilot/tunnel.go. These are outside the diff and are not caused by it."
+    }
+  ],
+  "not_verified": [
+    "Not reviewed: the mutation bullet (removing the GetCurrentBranch check makes TestEnsureBranchFromOrigin_StaleCheckedOutBranchIsRecreated fail). The PR body marks it \"freeform mutation, run manually\", and I cannot run tests.",
+    "Not reviewed: the stale decision logic above git.go:182. It is outside the diff hunk, so I did not check that the test's seeded branch counts as stale once origin advances."
+  ],
+  "notes": "- Scope, clean checked-out stale branch: met. The code detaches HEAD at baseRef via `git checkout --detach`, then deletes and recreates the branch (git.go:185-203).\n- Scope, dirty checked-out branch: met. It returns an error containing \"checked out in the clone, refusing\" and naming the branch (git.go:198-199).\n- Scope, branches not checked out: met. They skip the new block and keep the old path.\n- Out-of-scope items: met. The diff does not touch worktree mode, CreateOrResetBranchFromOrigin or the repick cap.\n- Table test, three cases: met. They cover checked-out and clean, checked-out and dirty, and not checked out. They use a real temp repo with a real origin through setupSyncTestRepos, pushExtraCommitFromSecondClone, headSHA, runGit and gitOutput (all in runner_git_test.go:18-86), not a mock.\n- Dirty case assertions: met. The test checks the error text, the branch name in the error, created=false, the current branch, the branch SHA and the dirty file content. Untracked files count as dirty because HasUncommittedChanges uses `git status --porcelain` (git.go:1398).\n- Wire fields: the diff reads or emits none.\n- Migrations: none.\n- Project memory pitfalls (the four listed): the diff does not repeat any of them.\n- `go test -race` bullet: the PR body shows `ok` for the run.",
+  "diff_bytes": 6211,
+  "diff_files": 2,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 6211,
+  "input_issue_bytes": 4348,
+  "input_pr_body_bytes": 11682,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 16822,
+  "posted": false
+}

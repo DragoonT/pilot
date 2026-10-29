@@ -1,0 +1,51 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5868,
+  "issue": 5861,
+  "merge_commit": "018e450d0e48ff63552c2a401b65aa9b03ddcd61",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "severity": "blocking",
+      "file": "PR body",
+      "claim": "the acceptance bullets require pasting the output of `go test -race ./internal/autopilot/ -run PostMergeReview` and `go test -race ./internal/executor/ -run PostMergeReview` into the PR body, and neither is there",
+      "evidence": "the PR body has no \"## Evidence\" block and no test output. Its Changes section says only \"See the issue body\", so these two acceptance bullets are unmet."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/autopilot/feedback_loop.go",
+      "line": "445",
+      "claim": "the follow-up issue title is `fix(#N): address defects...`, so it does not literally start with the PR number as the issue asks",
+      "evidence": "the code comment explains that `ghissue.CreatePilotIssue` rejects titles that are not conventional-commits, and the title is still unique per PR so exact-title dedup holds."
+    },
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/post_merge_reviewer.go",
+      "line": "55",
+      "claim": "the startup log prints `pmr.Model`, which is the raw config value and is empty when the executor's default model is used",
+      "evidence": "the resolved model is computed at line 37 but not logged."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/autopilot/post_merge_review.go",
+      "line": "134",
+      "claim": "the review budget is taken before `PostMergeReviewPosted` is persisted and is never refunded. A review that then fails (input fetch or subprocess error) is not retried and still uses a cap slot. This matches the attempt-once comment in the diff, so it is a behaviour note only."
+    }
+  ],
+  "not_verified": [
+    "Not reviewed: whether `ghissue.CreatePilotIssue` accepts the `fix(#N): ...` title. I did not open `internal/ghissue/create.go` for its title validation. The diff's own test only runs it against an httptest server.",
+    "Not reviewed: the claim in the PR body that the quality gates passed (build, test, lint in 36m22s). I cannot run anything and the PR body carries no output for it."
+  ],
+  "notes": "- Knob in `types.go`, `config.go` and `pilot.example.yaml`: met. It has enabled (default off), model, daily_cap (default 20, own counter), timeout, and validation of negative values.\n- Trigger in handleMerged: met. It runs after `maybeCloseParentIssue` and before the SkipPostMergeCI branch, in a goroutine, guarded by `PostMergeReviewPosted`. The flag is persisted through `post_merge_review_posted` in the migration, the repo-scoping rebuild, Save, Get, Load and scan.\n- Reviewer file: met. `post_merge_reviewer.go` reuses `NewIntentJudge(...).cmdRunner`, `buildJudgeDiffPayload` and `truncatePreflightBody`. The fixed checklist is in the system prompt, and the verdict, defects and notes output contract is parsed.\n- Posting: met. One comment is posted through `AddComment`. REQUEST-CHANGES files one issue with the configured labels plus post-merge-review, deduplicated by exact title.\n- Ledger: met. The row is upserted with reviewer `post-merge-reviewer` and a negated comment id as `review_id`. `UpsertPRReview` is at `internal/memory/pr_review.go:93`, and the verdict constants it uses exist at lines 13-17.\n- Budget and observability: met. The review has its own daily budget and logs once at the cap. `pilot_post_merge_reviews_total` is emitted per verdict and there is one log line per review.\n- Wire fields: all have producers. `merge_commit_sha` is at `internal/adapters/github/types.go:290`, comment `id` and `body` at `types.go:374-375`, and the PR `body` at `types.go:427`.\n- Tests: the controller tests use the real `github.Client` against an httptest server and only fake the model runner, as the issue specifies. They cover run-once, disabled, the 21st review being skipped, the ticket count staying unchanged, posting for each verdict, and unknown or malformed output posting nothing.\n- Out of scope: not violated. There is no revert or re-open path and no non-Pilot PR handling.\n- Project memories: the diff repeats neither pitfall. It adds no CI-failure classification, and the config lives under `orchestrator.autopilot`.",
+  "diff_bytes": 82850,
+  "diff_files": 17,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 82850,
+  "input_issue_bytes": 4865,
+  "input_pr_body_bytes": 758,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 33354,
+  "posted": false
+}

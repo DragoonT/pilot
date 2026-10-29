@@ -1,0 +1,45 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5875,
+  "issue": 5867,
+  "merge_commit": "57e9356223af656f8d80c56391a24bb4b15ce675",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "internal/executor/acceptance_evidence_run.go:~780",
+      "claim": "the budget-kill rewrite matches free-text prefixes (\"timed out after\", \"execution error running\", \"could not run\") in NotVerifiedReason",
+      "evidence": "if those message formats change, a budget-killed command is blamed on the command again, with no typed error to catch it - the same file builds these strings in runPasteOutputItem and runMutationItem."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/runner.go:2612 and ",
+      "line": "3570",
+      "claim": "the epic-branch and timeout-salvage paths call appendAcceptanceEvidence with nil gates, so quality-gate reuse is not wired there",
+      "evidence": "only the three direct-path call sites at ~7231, ~7271 and ~7307 pass result.QualityGates, so the epic and salvage paths still re-run duplicate gate commands. The issue does not name these paths, so this is a coverage gap rather than a miss."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/runner.go",
+      "line": "348",
+      "claim": "finalizeCtx only grants a fresh window when ctx.Err() == DeadlineExceeded at call time, so a task ctx with a few seconds left is passed to CreatePR unchanged",
+      "evidence": "the PR retries can still run out of time mid-call. The recovery ref is protected because it re-derives the window after the failure."
+    }
+  ],
+  "not_verified": [
+    "Not reviewed: the PR body's \"Not verified\" section says the \"remove the change and the test fails\" mutation checks for the three named tests were not run, so I cannot confirm those tests fail without the fix.",
+    "Not reviewed: the `slowUntilEvidenceRunner` test in internal/executor/runner_gh5867_test.go depends on helpers (`setupFreshnessRepo`, `newGH4964Runner`, `mockGH4964Backend`) that are not in the diff, and I did not read them."
+  ],
+  "notes": "- Re-derive the finalize window before PR/MR create: met. All five PR/MR create sites in runner.go, including the epic and salvage paths, call `finalizeCtx(ctx, r.finalizeTimeout())` after the evidence step. `formatGitStepFailureWithRecovery` re-derives its own window (runner.go:395-400). `finalizeCtx` (runner.go:348-353) extends only `DeadlineExceeded`, so a real `context.Canceled` is still not extended, as the GH-5342 rule requires.\n- Evidence budget: met. `evidenceBudgetCtx` uses `WithoutCancel` bounded by `EffectiveAcceptanceEvidenceBudget()`. A real cancel is forwarded through `context.AfterFunc`. Remaining items render \"Not verified: evidence budget exhausted\", and the evidence block is still appended to the PR body. The budget knob has a field on `BackendConfig` and an example in `configs/pilot.example.yaml`, and config.go validates it as non-negative. `DefaultConfig` (config.go:715) uses `DefaultBackendConfig()`, which sets the 15m default.\n- Reuse of quality-gate output: met on the direct path. Only gates with `Passed`, exit code 0 and a non-empty `Command` are indexed. Matching is by argv after `splitCommandFields`. Output goes through `finalizeEvidenceOutput` and is marked \"(from the quality-gate run)\". `QualityGateResult` has the `Command` and `Output` fields the diff reads (runner.go:890, 894).\n- WARN log with task id, item index and elapsed time: met. `logEvidenceEvent` emits it for both reuse and budget exhaustion.\n- Acceptance tests: all named tests are present, and the config test covers the default, a configured value, a negative value and zero. The PR body pastes the three required `go test` outputs. The make build, make test and make lint bullet was not added.\n- Out of scope: not violated. The allowlist is unchanged and no complexity timeouts are touched. The extra `finalizeCtx` around `runDiffCoverageCheck` is small and related.\n- Project memory: neither pitfall is repeated, because the diff adds no Jev/TypeSafe classifier call or shared-state instruction.",
+  "diff_bytes": 46902,
+  "diff_files": 15,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 46902,
+  "input_issue_bytes": 5154,
+  "input_pr_body_bytes": 7143,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 28533,
+  "posted": false
+}

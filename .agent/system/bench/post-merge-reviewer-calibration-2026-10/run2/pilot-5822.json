@@ -1,0 +1,51 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5822,
+  "issue": 5792,
+  "merge_commit": "b8fa43099badcefcbf2b57ee6f8c6c798e13399b",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "severity": "blocking",
+      "file": "PR body Evidence",
+      "claim": "the acceptance bullet \"`make test` and `make lint` pass\" is not met",
+      "evidence": "the pasted `make test` output ends in `FAIL` / `make: *** [Makefile:60: test] Error 1`, and `make lint` ends in `Error 1` with 3 staticcheck SA4023 hits in cmd/pilot/tunnel.go:205, 351 and 433. The lint hits are in files this diff does not touch. The failing test is hidden in the \"36099 lines omitted\" part of the output, so the PR does not show the failure is unrelated."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/briefs/generator.go",
+      "line": "257",
+      "claim": "GenerateWeekly now delegates to GenerateWeeklyEnding, so the manual weekly trigger also gets `kind: weekly` and the proof block. That is consistent with the issue but changes manual behaviour",
+      "evidence": "evidence: the removed `start := end.Add(...)` line."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/briefs/scheduler.go",
+      "line": "381",
+      "claim": "weekly catch-up fires only when a weekly record already exists, so a tenant whose first Monday slot is missed gets no brief",
+      "evidence": "evidence: the `requirePrior \u0026\u0026 lastRecord == nil` return. The catch-up also checks only the \"telegram\" channel, as the daily one does."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/memory/weekly_proof.go",
+      "line": "61",
+      "claim": "`merged_count` is computed from `execution_events` rows with stage \"merged\", not from the autopilot PR state as the issue says. The deviation is documented in the code comment and the FEATURE-MATRIX entry. Producers of \"merged\" events exist: internal/autopilot/controller.go:2636-2637 maps StageMerged to memory.StageMerged, and internal/memory/store.go:2786 and 3313 write it in the heal paths."
+    }
+  ],
+  "not_verified": [
+    "Not reviewed: the `make test` failure cause, because the output is cut (\"36099 lines omitted\") and I cannot run commands.",
+    "Not reviewed: whether the autopilot controller writes the ledger event on every merge path, because I only grepped for the producers and did not read the controller's merge handler."
+  ],
+  "notes": "- Schedule on `weekly_day` (default monday) at the daily hour and timezone: met. `WeeklySchedule` in internal/briefs/weekly.go derives the cron spec from the daily schedule, `Scheduler.Start` registers it, and config default, validation and the cmd/pilot wiring (`WeeklyDay: briefCfg.WeeklyDay`) are present.\n- The three proof numbers plus the top 3 shipped runs by diff: met. `BuildWeeklyProof` computes them. The ledger counterparts exist: `execution_events` has the columns `execution_id`, `stage` and `occurred_at` (internal/memory/store.go:393-400), and `earliestStageOccurrences` is at store.go:5392.\n- Brief object reuse and the `kind: weekly` marker: met. `StructuredBrief.Kind` has the JSON key `kind`, and the email carries a `pilot-brief-kind` meta tag, the subject and the heading.\n- Empty week gives zeros, not an error: met, covered by `TestGenerateWeeklyEnding_EmptyWeekIsZerosNotError`.\n- Scheduler fires on Monday only: met. `TestWeeklySchedule_FiresOnMondayOnly` runs the real cron parser across a DST change, and `TestSchedulerWeeklyNextRun` uses the real scheduler.\n- Tests use a real SQLite store, not mocks.\n- Project-memory pitfalls: the diff does not repeat the top-level autopilot YAML pitfall, the GitHub rate-limit pitfall or the executions.project_path pitfall. The project filter uses `e.project_path IN (...)` the same way the existing queries do.\n- Migrations: none.",
+  "diff_bytes": 51095,
+  "diff_files": 18,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 51095,
+  "input_issue_bytes": 1027,
+  "input_pr_body_bytes": 7100,
+  "model": "claude-sonnet-5-5",
+  "duration_ms": 17934,
+  "posted": false
+}
