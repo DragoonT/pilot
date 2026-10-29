@@ -9584,6 +9584,20 @@
         ],
         "created": "2026-10-26",
         "last_validated": "2026-10-26"
+      },
+      "pre-pr-reviewer-replaces-self-review-and-judge": {
+        "type": "decision",
+        "summary": "Founder decision 2026-10-29 (TASK-620) \u2014 the code review moves before the push: Opus reviewer in the executor's confined checkout after the gates + one session-resumed fix round in enforce mode; self-review and the in-run intent judge retire; post-merge review becomes a sampled audit; clean fix merges on green, still-RC escalates via pilot-review-rc",
+        "file": ".agent/knowledge/memories/decisions/mem-275.md",
+        "created": "2026-10-29",
+        "last_validated": "2026-10-29"
+      },
+      "daemon-posted-review-cannot-hold-autopilot-merge": {
+        "type": "pitfall",
+        "summary": "A REQUEST_CHANGES review posted by the daemon never holds a merge: isTrustedReviewer drops [bot]/-bot/own-login reviews by design (GH-5326), the GitHub client has only ApprovePullRequest, GitHub 422s self-reviews, and the review-fix path closes the PR into a new fix-issue cycle \u2014 place automated review inside the run or use a label read by handleCIPassed",
+        "file": ".agent/knowledge/memories/pitfalls/mem-276.md",
+        "created": "2026-10-29",
+        "last_validated": "2026-10-29"
       }
     }
   },
