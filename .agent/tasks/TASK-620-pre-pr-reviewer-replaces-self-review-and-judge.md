@@ -1,6 +1,6 @@
 # TASK-620: the reviewer moves before the PR — one in-run review after the gates with a resumed fix round; self-review and the in-run intent judge retire; post-merge becomes a sampled audit
 
-**Status**: 🟢 L1 MERGED + SHADOW LIVE 2026-10-29 — pilot#5949 → PR#5951 merged 14:42Z (Opus APPROVE-w-notes: runner call to runPrePRReview untested end-to-end; judge-off gate untested; mode≠off + missing claude binary = no in-run review at all; memory recall gated on MemoryInjection — fold into L2/L3 scope). v2.299.0 by the train 15:00Z; box config `executor.pre_pr_review: {mode: shadow, model: claude-opus-5-5, timeout: 6m}` loaded by the hot-upgrade reload 15:08:46Z (`Pre-PR review initialized mode=shadow`; backup `config.yaml.bak-prepr-shadow-20261029`). **L2 → pilot#5956 → PR#5957 MERGED 16:05Z** (run 15:28→15:51Z, 22m54). **FIRST SHADOW VERDICT 15:50:39Z on that run: `mode=shadow verdict=REQUEST-CHANGES blocking=1 minor=1 files_read=6 duration=50.6s`** — the run pushed anyway (shadow) and autopilot merged. **Gap found: L1 persists counts only** (the `pre_pr_review` execution event carries mode/verdict/blocking/minor/files_read/duration_ms, no defect text), so the shadow verdict cannot be compared with the post-merge one until L2's PR-body section is on the box. **Post-merge Opus on PR#5957: REQUEST-CHANGES ×2 blocking** — `RecordPrePRReview` (the `pilot_pre_pr_reviews_total` counter) is never called in production; the prometheus test injects the increment itself; 2 minor (misplaced godoc; "Pre-PR review: verdict" goes to the log line, not the learning record) → daemon fix #5958 → **PR#5959 merged 16:38Z** (post-merge Opus APPROVE-w-notes: gateway prometheus test loop checks nothing; the wiring is covered in executor). GH-5958's own shadow verdict: `APPROVE-WITH-NOTES blocking=0 minor=2 files_read=6 49.9s`, gates 2m47. **v2.300.0 cut by hand 16:51Z** (founder call; main green at a371c0cfc) → **box hot-upgraded 16:55:27Z, `Pre-PR review initialized mode=shadow model=claude-opus-5-5` — L1+L2 LIVE.** Watch the next pilot PR for the `## Pre-PR review` section, the `pilot-review-rc` label on a REQUEST-CHANGES, and a `pr_reviews` row with reviewer `pre-pr-reviewer` beside the post-merge row (compare the two). Then L5 ∥ L3 (`#L3NUM`/`#L5NUM` placeholders remain; L2's number is filled in); plan approved by the founder (plan file `~/.claude/plans/let-s-use-nav-research-pure-twilight.md`). Dispatch order L1 → L2 (shadow live) → L5 ∥ L3 → enforce → L4 → L6.
+**Status**: 🟢 L1 MERGED + SHADOW LIVE 2026-10-29 — pilot#5949 → PR#5951 merged 14:42Z (Opus APPROVE-w-notes: runner call to runPrePRReview untested end-to-end; judge-off gate untested; mode≠off + missing claude binary = no in-run review at all; memory recall gated on MemoryInjection — fold into L2/L3 scope). v2.299.0 by the train 15:00Z; box config `executor.pre_pr_review: {mode: shadow, model: claude-opus-5-5, timeout: 6m}` loaded by the hot-upgrade reload 15:08:46Z (`Pre-PR review initialized mode=shadow`; backup `config.yaml.bak-prepr-shadow-20261029`). **L2 → pilot#5956 → PR#5957 MERGED 16:05Z** (run 15:28→15:51Z, 22m54). **FIRST SHADOW VERDICT 15:50:39Z on that run: `mode=shadow verdict=REQUEST-CHANGES blocking=1 minor=1 files_read=6 duration=50.6s`** — the run pushed anyway (shadow) and autopilot merged. **Gap found: L1 persists counts only** (the `pre_pr_review` execution event carries mode/verdict/blocking/minor/files_read/duration_ms, no defect text), so the shadow verdict cannot be compared with the post-merge one until L2's PR-body section is on the box. **Post-merge Opus on PR#5957: REQUEST-CHANGES ×2 blocking** — `RecordPrePRReview` (the `pilot_pre_pr_reviews_total` counter) is never called in production; the prometheus test injects the increment itself; 2 minor (misplaced godoc; "Pre-PR review: verdict" goes to the log line, not the learning record) → daemon fix #5958 → **PR#5959 merged 16:38Z** (post-merge Opus APPROVE-w-notes: gateway prometheus test loop checks nothing; the wiring is covered in executor). GH-5958's own shadow verdict: `APPROVE-WITH-NOTES blocking=0 minor=2 files_read=6 49.9s`, gates 2m47. **v2.300.0 cut by hand 16:51Z** (founder call; main green at a371c0cfc) → **box hot-upgraded 16:55:27Z, `Pre-PR review initialized mode=shadow model=claude-opus-5-5` — L1+L2 LIVE.** **L3 → pilot#5961 + L5 → pilot#5962 DISPATCHED 17:10Z** (`pilot`+`no-decompose`; the daemon serialises them on this repo; their own PRs are the first with the `## Pre-PR review` section — compare the `pre-pr-reviewer` and `post-merge-reviewer` rows in `pr_reviews`). After both merge + a release: box `pre_pr_review.mode: enforce` only when the exit criteria below are met (founder call); then L4 (#5961 dep) and L6 (#5962 dep), both gated on the enforce exit criteria. Was: Then L5 ∥ L3 (`#5961`/`#5962` placeholders remain; L2's number is filled in); plan approved by the founder (plan file `~/.claude/plans/let-s-use-nav-research-pure-twilight.md`). Dispatch order L1 → L2 (shadow live) → L5 ∥ L3 → enforce → L4 → L6.
 **Spec refs**: nav-research 2026-10-29 (in-run phases) + stage-machine map; `.agent/system/bench/post_merge_reviewer_calibration_2026-10.md` (runs 1–3); TASK-591 (reviewer), TASK-612/613/614/618/619 (reviewer chain); `internal/executor/runner.go` 6614–6838 (today's self-review ∥ judge block), `internal/executor/post_merge_reviewer.go`, `internal/executor/post_merge_checkout.go`, `internal/autopilot/controller.go` handleCIPassed 3760–3890, `internal/autopilot/post_merge_review.go`.
 **Origin**: founder 2026-10-29 "why review after CI at all?" — gates, CI, evidence and self-review check the PR against itself; only the reviewer checks it against the system; a post-merge REQUEST-CHANGES costs a new issue cycle (25–45 min; four in a row on 10-28).
 
@@ -100,7 +100,7 @@ Depends on #5949. The pre-PR review (shadow mode) records a verdict on the execu
 
 ### LEG L3 — repo: qf-studio/pilot — title: feat(executor): pre-PR review fix round in enforce mode — one session-resumed fix on blocking defects, one gate re-check, reset to the pre-fix SHA on failure
 probe: present qf-studio/pilot ResumeSessionID
-probe: present qf-studio/pilot func buildRetryPrompt\(
+probe: present qf-studio/pilot func \(r \*Runner\) buildRetryPrompt\(
 probe: absent  qf-studio/pilot func \(r \*Runner\) runReviewFix\(
 
 ## Context
@@ -175,7 +175,7 @@ probe: present qf-studio/pilot func \(j \*IntentJudge\) JudgeIssue\(
 
 ## Context
 
-Depends on #L3NUM and on the enforce exit criteria in TASK-620 (do not dispatch before the founder marks them met). With the pre-PR review and its fix round live, the self-review phase (runSelfReview in `internal/executor/runner.go`, buildSelfReviewPrompt in `internal/executor/prompt_builder.go`) and the in-run intent judge (Judge in `internal/executor/intent_judge.go`, wired in the runner's parallel block) duplicate work: the self-review's build and lint checks are the quality gates, and the judge's text-only verdict reaches only a log string and a Telegram line. The pre-flight issue judge (JudgeIssue, used by `cmd/pilot/poller_github.go`) stays; IntentWarning stays because the pre-push lint path also writes it.
+Depends on #5961 and on the enforce exit criteria in TASK-620 (do not dispatch before the founder marks them met). With the pre-PR review and its fix round live, the self-review phase (runSelfReview in `internal/executor/runner.go`, buildSelfReviewPrompt in `internal/executor/prompt_builder.go`) and the in-run intent judge (Judge in `internal/executor/intent_judge.go`, wired in the runner's parallel block) duplicate work: the self-review's build and lint checks are the quality gates, and the judge's text-only verdict reaches only a log string and a Telegram line. The pre-flight issue judge (JudgeIssue, used by `cmd/pilot/poller_github.go`) stays; IntentWarning stays because the pre-push lint path also writes it.
 
 ## Implementation
 
@@ -197,7 +197,7 @@ Depends on #L3NUM and on the enforce exit criteria in TASK-620 (do not dispatch 
 
 ## Refs
 
-- #L3NUM
+- #5961
 
 ### LEG L6 — repo: qf-studio/pilot — title: feat(autopilot): post-merge review sampling — post_merge_review.sample_rate reviews one PR in N, always reviews a PR whose pre-PR review was not an enforce-mode approve
 probe: present qf-studio/pilot type PostMergeReviewConfig struct
@@ -206,7 +206,7 @@ probe: absent  qf-studio/pilot EffectiveSampleRate\(
 
 ## Context
 
-Depends on #L5NUM and on the enforce exit criteria. Once the pre-PR review carries the load, the post-merge reviewer becomes an audit: it samples one merged PR in N to measure the pre-PR reviewer, and always reviews the PRs the pre-PR review did not clear — section missing, mode not enforce, verdict not an approve, fix outcome not clean, or the PR body could not be fetched. PostMergeReviewConfig lives in `internal/autopilot/types.go`; the start decision is maybeStartPostMergeReview in `internal/autopilot/post_merge_review.go`, where the daily budget is acquired. Sampling by PR number modulo N is restart-safe; a counter is not.
+Depends on #5962 and on the enforce exit criteria. Once the pre-PR review carries the load, the post-merge reviewer becomes an audit: it samples one merged PR in N to measure the pre-PR reviewer, and always reviews the PRs the pre-PR review did not clear — section missing, mode not enforce, verdict not an approve, fix outcome not clean, or the PR body could not be fetched. PostMergeReviewConfig lives in `internal/autopilot/types.go`; the start decision is maybeStartPostMergeReview in `internal/autopilot/post_merge_review.go`, where the daily budget is acquired. Sampling by PR number modulo N is restart-safe; a counter is not.
 
 ## Implementation
 
@@ -229,7 +229,7 @@ Depends on #L5NUM and on the enforce exit criteria. Once the pre-PR review carri
 
 ## Refs
 
-- #L5NUM
+- #5962
 
 ## Budget arithmetic (complex task, 60 m)
 
@@ -252,3 +252,5 @@ Depends on #L5NUM and on the enforce exit criteria. Once the pre-PR review carri
 
 - L1 → https://github.com/qf-studio/pilot/issues/5949
 - L2 → https://github.com/qf-studio/pilot/issues/5956
+- L3 → https://github.com/qf-studio/pilot/issues/5961
+- L5 → https://github.com/qf-studio/pilot/issues/5962
