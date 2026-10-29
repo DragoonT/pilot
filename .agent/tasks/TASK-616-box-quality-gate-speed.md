@@ -99,7 +99,7 @@ Depends on #5924 (it lands the -short guards the scoped run relies on). The qual
 
 ## Operator steps (box, after the legs merge and the release lands)
 
-1. ✅ Interim APPLIED 2026-10-28 20:02Z (founder "yes, after 5923"): test gate command `go test -short ./...` (no -race; CI keeps it), `export GOFLAGS=-trimpath` in the wrapper (verified in the daemon's /proc environ); backups `config.yaml.bak-gate-20261028`, `start-pilot.sh.bak-gate-20261028`; graceful restart, 1 proc, no 409. GH-5929 (1 min in) and GH-5924 (queued) re-pick from scratch. **Measure: first gate wall time under the new command goes here.**
+1. ✅ Interim APPLIED 2026-10-28 20:02Z (founder "yes, after 5923"): test gate command `go test -short ./...` (no -race; CI keeps it), `export GOFLAGS=-trimpath` in the wrapper (verified in the daemon's /proc environ); backups `config.yaml.bak-gate-20261028`, `start-pilot.sh.bak-gate-20261028`; graceful restart, 1 proc, no 409. GH-5929 (1 min in) and GH-5924 (queued) re-pick from scratch. **Measured (daemon log, Quality gates passed total_time): GH-5924 4m19s · GH-5926 3m54s · GH-5932 2m59s · GH-5934 5m03s — vs 21m37s for GH-5927 (last run under `make test`). Gates 22 min → 3–5 min. Claude 7–15 min per run; CI ~12 min remains the long pole.**
 2. After G2: test gate command `make test-changed`, timeout 10m, max_retries 1.
 3. Record before/after gate wall times in this doc. Target: non-executor diffs under 3 min, executor diffs under 6 min.
 4. Separately: the Go build cache is 36 GB on the data volume; add it to the disk watch (pitfall go-caches-on-root-volume-fill-disk).
