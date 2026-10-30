@@ -1,5 +1,7 @@
 # TASK-612: post-merge reviewer calibration — an offline `pilot review-merge` command, then a scored run against 14 hand-reviewed merges
 
+**Run 6 (2026-10-30 14:13Z, v2.303.0, two passes): recall 51.0 % — BAR MET (A 34.6 / B 42.3 / union 51.0), RC 3/3, false 0.07, 162 s, 10.4 files; union mechanics need one fix leg before the box switch. Report + `run6/scoring.md`.**
+
 **Run 5 (2026-10-30 11:22Z, v2.302.0, TASK-622 adjacent-code item): recall 43.3 % (flat), fixtures 3.5/8, 7 in-hunk HIT→MISS flips — prompt rules redistribute a fixed finding budget; next lever is budget-shaped (two passes / per-file loop / more turns). Report + `run5/scoring.md`.**
 
 **Run 4 (2026-10-29 20:58Z, v2.301.0, Opus + TASK-618/619): RC 3/3 · recall 44.2 % (best; bar 0.5 not met) · false 0.07 · 0 format failures · over-escalation 5→3 · files_read 5.0 mean. Report + `run4/scoring.md`.**

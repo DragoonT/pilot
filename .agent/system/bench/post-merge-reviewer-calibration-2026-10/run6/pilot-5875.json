@@ -1,0 +1,94 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5875,
+  "issue": 5867,
+  "merge_commit": "57e9356223af656f8d80c56391a24bb4b15ce675",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "internal/executor/runner.go:3570 — On the timeout-salvage path",
+      "claim": "`appendAcceptanceEvidence(ctx",
+      "evidence": "task, git.ProjectPath(), prBody, nil)` passes nil gates. That run already filled `result.QualityGates = r.buildQualityGatesResult(outcome, 0)` at runner.go:3157, so commands that match a gate which passed are re-run instead of reused on this path. The reuse requirement is met only on the direct paths (runner.go:7231/7271/7307)."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/acceptance_evidence_run.go:844 — `emit(evidenceEventReused",
+      "claim": "i+1)` fires once per reused command",
+      "evidence": "so one task can log several WARN lines. The issue asks for \"One WARN log line when evidence reuse or budget exhaustion happens\". No test checks the WARN line (r.log.Warn at :588)."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/runner_gh5867_test.go — The live-deadline runner test reaches only the shared PRCreator branch (`task.SourceAdapter = \"linear\"`",
+      "claim": "which resolves to prCreatorKindShared at pr_creator_resolve.go:62-63). The re-derivations in the GitHub SDK branch (runner.go:7236) and the gh CLI branch (runner.go:7312) have no test that fails if they are removed."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/runner.go",
+      "line": "349",
+      "claim": "The PR-create re-derivation at runner.go:7236/7276/7312 only gives a fresh window when the deadline has already passed. If the task ctx comes out of evidence with only seconds left, CreatePR still runs on that nearly spent deadline and can time out mid-call, and the retries then fail instantly. The recovery ref survives this because it re-derives its own window. Evidence: `if ctx.Err() == context.DeadlineExceeded { ... } return context.WithCancel(ctx)`."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/acceptance_evidence_run.go",
+      "line": "322",
+      "claim": "Suppose one command in a multi-command paste-output item runs or is reused, and a later command in the same item is then skipped because the budget ran out. `allErrored` stays false, so the item gets no Not-verified reason. The budget text is pasted inside the \"## Evidence\" code block as if it were command output, and no budget WARN line is emitted. Evidence: `Command: command, Output: evidenceBudgetExhaustedReason, Err: evidenceBudgetExhaustedReason` with `allErrored` set to false only on the other paths."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/acceptance_evidence_run.go",
+      "line": "840",
+      "claim": "The issue asks for \"One WARN log line\". The code emits one WARN for every reused command plus one for budget exhaustion, so a \"make build, make test, make lint\" bullet produces three lines. Evidence: `if c.FromQualityGate { emit(evidenceEventReused, i+1) }` inside the per-command loop."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/runner_gh5867_test.go",
+      "line": "76",
+      "claim": "The runner test sets `task.SkipQualityGates = true`, so `result.QualityGates` is nil. The wiring of `result.QualityGates` into appendAcceptanceEvidence at runner.go:7231/7271/7307 is therefore never exercised through Execute. Reuse is only tested by calling appendAcceptanceEvidence directly."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/runner.go",
+      "line": "6524",
+      "claim": "Reused gate output comes from the quality-gate run that happened before self-review. If self-review later commits changes, the pasted \"(from the quality-gate run)\" output describes an earlier tree. The issue allows this (\"ran and passed in this run\"), but nothing in the rendered marker says it."
+    }
+  ],
+  "not_verified": [
+    "Not reviewed: the epic-path call at runner.go:2610-2617 (`finalizeEpicBranchPR`). I did not trace whether quality gates run on that path, so I can't say whether passing nil gates there misses a reuse.",
+    "The PR body's Evidence block shows only the summary `ok` lines for the three `go test -race` commands. It does not show the per-test names, so I can't confirm from it that the mutation-style acceptance claims were actually exercised; the PR's own \"Not verified\" lists them as \"run manually\".",
+    "No make build/test/lint evidence bullet was added: met. — not traced",
+    "The PR body pastes passing output for all three `go test -race` bullets. The three \"Remove X -\u003e test fails\" mutation bullets are listed as \"freeform mutation, run manually\" and were never executed. I traced them by reading the code instead (see NOTES)."
+  ],
+  "notes": "[pass A (hunk)]\n- Re-derive the window before PR/MR create: met. The calls are at runner.go:7236, :7276 and :7312 (direct path), :3575 (salvage) and :2617 (epic). finalizeCtx at runner.go:349-350 grants a fresh window only when `ctx.Err() == context.DeadlineExceeded`. A deadline that blew during evidence therefore gets a new window. A context.Canceled ctx falls through to `context.WithCancel(ctx)` at :352 and is not extended, which keeps GH-5342.\n- Re-derive inside formatGitStepFailureWithRecovery: met at runner.go:400 (`ctx, cancel := finalizeCtx(ctx, finalizeGitTimeout)`), before CreateRecoveryRef. TestExecute_PRCreateSurvivesDeadline_RecoveryRefOnExpiredCtx covers both the expired case and the cancelled case.\n- Evidence budget ctx: met at acceptance_evidence_run.go:523 and :561. It uses WithoutCancel of the task ctx with a timeout of EffectiveAcceptanceEvidenceBudget, and an AfterFunc passes on only context.Canceled. An expired task deadline does not shorten the budget. Once the budget is spent, remaining items render the exhausted reason (:826) and the section is still appended. A command the budget killed mid-run is relabelled from \"timed out after\" to budget-exhausted.\n- Knob and validation: met. The default is set at backend.go:1265 and reaches Load via `Executor: executor.DefaultBackendConfig()` (config.go:715). Values ≤0 fall back to 15m (backend.go:590). Negative values are rejected at config.go:1347. The runner reads the knob because NewRunnerWithConfig stores it (`runner.config = config`, runner.go:1442). The knob is documented in configs/pilot.example.yaml:810-814.\n- Reuse: met on the direct paths. The match runs after the allowlist check (acceptance_evidence_run.go:306) and compares the exact argv key (:315-321). Output goes through finalizeEvidenceOutput, which applies the trim and redaction (:271). Gate fields are produced at runner.go:9238-9240 and cmd/pilot/adapters.go:340-342 (`Command: r.Command`, `ExitCode: r.ExitCode`, `Output: r.Output`). Those come from quality/runner.go:143 (`result.Command = command`) and :181 (`result.Output = output`). Failed gates and gates with a non-zero exit are skipped, so a failing gate never stands in as evidence.\n- Wire field `acceptance_evidence_budget`: consumed by the yaml tag on BackendConfig (backend.go, `yaml:\"acceptance_evidence_budget,omitempty\"`). It is parsed by yaml.v3 (config.go:14), which decodes \"20m\" into time.Duration, and the config subtest \"configured value is read\" exercises that.\n- Tests: the evidence tests use a fake AcceptanceCommandRunner. That is appropriate here because the contract under test is the budget and argv matching, not subprocess behaviour. The runner test drives the real Execute against a real git repo and only fakes the PRCreator.\n- Pasted test output: all three `go test -race` bullets have `ok` output in the PR's Evidence block.\n- Out of scope: the diff does not touch the evidence allowlist, the complexity timeouts or the re-pick lease.\n- Memory pitfalls: neither the Jev triage rule nor the byte-identical-instruction pitfall applies. The diff does not touch the classifier prompts or add a classifier gate.\n[pass B (adjacent)]\nScope 1, re-derive the finalize window before PR/MR create: met on the direct path at runner.go:7236, runner.go:7276 and runner.go:7312, on the epic path in finalizeEpicBranchPR and on the salvage path in pushAndCreatePRAfterTimeout. Each re-derivation runs after appendAcceptanceEvidence, so a deadline that expires during evidence reaches finalizeCtx's `DeadlineExceeded` branch (runner.go:349). A context.Canceled ctx falls through to WithCancel and is not extended, which keeps the GH-5342 rule.\nScope 1, re-derive inside formatGitStepFailureWithRecovery: met at runner.go:395–401, before `git.CreateRecoveryRef`. TestExecute_PRCreateSurvivesDeadline_RecoveryRefOnExpiredCtx checks both the expired-deadline case and the cancelled case.\nScope 2, evidence budget: met. evidenceBudgetCtx (acceptance_evidence_run.go:561–577) wraps WithoutCancel in WithTimeout with EffectiveAcceptanceEvidenceBudget, and the AfterFunc propagates only Canceled. Items reached after expiry get evidenceBudgetExhaustedReason (acceptance_evidence_run.go:826). A command killed mid-run returns acceptanceCommandTimeoutError, whose message is \"timed out after …\" (acceptance_evidence_run.go:206); that prefix is rewritten to the budget reason. The evidence block is still returned, and the PR create follows.\nScope 2, config knob: met. The default is set in DefaultBackendConfig (backend.go:1265) and loaded through config.go:715 `Executor: executor.DefaultBackendConfig()`. Negative values are rejected at config.go:1347. The knob is documented in pilot.example.yaml, and the runner reads it through r.config (acceptance_evidence_run.go:566).\nScope 3, reuse instead of re-run: met. The allowlist check runs first (acceptance_evidence_run.go:305–310), then the argv lookup (315). Only gates with `Passed \u0026\u0026 ExitCode == 0 \u0026\u0026 Command != \"\"` qualify. The producer populates Command and Output at cmd/pilot/adapters.go:340–342 from quality/runner.go:143 and :181, and the output goes through the existing trim and redaction.\nScope 4, WARN line: met, with task_id, item_index and elapsed (acceptance_evidence_run.go:589–593). The line is emitted per reuse event; see DEFECTS.\nAcceptance tests: the runner, evidence, reuse and config tests all exist. Reading them, removing the PR-create re-derivation would make CreatePR see a dead ctx (`creator.ctxErr != nil`). Removing the budget ctx would let all three items run. Removing the argv match would invoke the runner for \"make test\".\nOut of scope: I found no change to the allowlist, to complexity timeouts or to the re-pick lease. The PR body adds no make build/test/lint evidence bullet.\nMemory pitfalls: neither Jev/TypeSafe pitfall applies. The diff adds no classifier and no shared-state instructions; Classify is unchanged at acceptance_evidence_run.go:520.",
+  "files_read": 9,
+  "passes": 2,
+  "files_read_by_pass": [
+    4,
+    5
+  ],
+  "duration_ms_by_pass": [
+    96088,
+    94090
+  ],
+  "defects_by_pass": [
+    3,
+    5
+  ],
+  "pass_failed": [
+    false,
+    false
+  ],
+  "overlap": 0,
+  "checkout": true,
+  "diff_bytes": 46902,
+  "diff_files": 15,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 46902,
+  "input_issue_bytes": 5154,
+  "input_pr_body_bytes": 7143,
+  "model": "claude-opus-5-5",
+  "duration_ms": 190530,
+  "posted": false
+}

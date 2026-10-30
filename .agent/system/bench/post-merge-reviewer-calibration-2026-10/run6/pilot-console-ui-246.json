@@ -1,0 +1,141 @@
+{
+  "repo": "qf-studio/pilot-console-ui",
+  "pr": 246,
+  "issue": 244,
+  "merge_commit": "8b14c8e954e3ed27fd4816e57240f155c5b8fba0",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/httpAdapter.ts",
+      "line": "897",
+      "claim": "The PR binds the wire fields `durationMs`, `docsRead`, `memoriesRead` and `memoriesCreated`, and the event types `subagent` and `context`, but nothing in the checkout produces them. They come only from an assumed contract",
+      "evidence": "The diff's own comment at src/lib/api/types.ts:437 says \"ASSUMED wire contract — not yet confirmed by the daemon\". The mock producer emits only `progress` (src/lib/api/mockAdapter.ts:2005 `type: 'progress'`), `confirmation` (:2023) and `text` (:2037) events, and none of them carry these keys. The fixtures README describes `chat-events.json` as holding only text and progress events (src/lib/api/__tests__/fixtures/README.md:65)."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/httpAdapter.ts",
+      "line": "1649",
+      "claim": "The PR adds a new `mode` key to the `POST /api/v1/chat/messages` body that nothing in the checkout consumes. The issue says the pills are \"existing chat modes; keep their current semantics\", but no chat mode existed before this PR",
+      "evidence": "A Grep for `ChatMode|mode` over src finds only lines this diff added. The mock consumer reads only `options?.projectId` (src/lib/api/mockAdapter.ts:1994 `if (options?.projectId) conv.projectId = options.projectId`). The composer defaults to `research` (ResearchComposer.vue:24), so every send now carries `mode: 'research'`, where before the body had no mode at all (types.ts:471 \"omitted → the daemon's default (plain chat)\")."
+    },
+    {
+      "severity": "blocking",
+      "file": "PR Body",
+      "claim": "The PR body does not do the two things the issue asks of it. The issue says that if the events lack the counts, the PR body must list the missing event fields; it has no such list. The acceptance criteria say \"one line names the adapter used\"; no line does",
+      "evidence": "The Evidence section contains only the build, test and lint output. The Context panel can only ever show `—` on real data, because nothing produces the counts (see the first defect), and the PR body never says so."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/views/__tests__/ChatView.spec.ts",
+      "line": "43",
+      "claim": "The tests never exercise the wire contract they depend on",
+      "evidence": "Each test writes `chat.messages` directly. That skips `httpAdapter.toChatEvent` (httpAdapter.ts:925) and the store's mapping in poll (src/stores/chat.ts:329-333). Neither the httpAdapter spec nor the chat store spec covers the new fields or `mode`: a Grep of the test directories finds `durationMs`/`docsRead`/`memoriesCreated` only in ChatView.spec.ts:11-14."
+    },
+    {
+      "severity": "minor",
+      "file": "src/stores/chat.ts",
+      "line": "339",
+      "claim": "\"Researching…\" disappears too early. Any non-progress event, including the first `subagent` event, sets `isWaitingForReply.value = false`, so ChatView.vue:110 hides the waiting line before the report arrives",
+      "evidence": "`isWaitingForReply.value = false` runs whenever `newMessages.length \u003e 0`."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/ChatView.vue",
+      "line": "52",
+      "claim": "The report is taken from the last `text` event of the run. Mobile `/chat` previously rendered ChatWindow, and that view no longer shows confirmation cards. That removes the \"file an issue\" decision flow from the mobile tab (mockAdapter.ts:2023 still emits `type: 'confirmation'`)",
+      "evidence": "The template renders only `subagent` rows and the `text` report."
+    },
+    {
+      "severity": "minor",
+      "file": "src/lib/api/types.ts",
+      "line": "464",
+      "claim": "The `ChatSendOptions` docblock now sits above `ChatMode` instead of `ChatSendOptions`, because the new type was inserted between them",
+      "evidence": "The two adjacent `/** */` blocks at :464 and :466."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/ChatView.vue",
+      "line": "93",
+      "claim": "The new view uses the legacy opacity text dialect (`text-ds-text/60`) instead of the `text-text-2` / `text-muted` tokens",
+      "evidence": "CLAUDE.md says to converge to tokens when touching a file."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/types.ts",
+      "line": "437",
+      "claim": "The Context counts and sub-agent duration rely on wire fields that nothing produces. The issue asked for `—` plus a list of the missing event fields in the PR body. Instead the PR invents `durationMs`/`docsRead`/`memoriesRead`/`memoriesCreated` as an \"ASSUMED wire contract — not yet confirmed by the daemon\", and the PR body's Evidence section lists no missing fields.",
+      "evidence": "A Grep for `subagent|docsRead|durationMs` matches only ChatView.vue, ChatView.spec.ts, httpAdapter.ts, types.ts and chat.ts. The mock adapter's `sendChatMessage` (mockAdapter.ts:1999-2041) emits only `progress`, `text` and `confirmation` events."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/views/__tests__/ChatView.spec.ts",
+      "line": "9",
+      "claim": "The issue requires sub-agent rows rendered \"from a fixture event stream\". The test instead writes `CHAT_STORE_MESSAGES` straight into `chat.messages` (spec:42). That skips both `toChatEvent` (httpAdapter.ts:925-928) and the poll mapping (chat.ts:329-333), so the test proves nothing about the assumed event contract. No httpAdapter.spec test covers the new fields or the `mode` body key either: Grep for `mode`/`research` in httpAdapter.spec.ts finds only `phase: 'research'` at :1917/:1933/:1985."
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/ChatWindow.vue",
+      "line": "196",
+      "claim": "Closing the Operator panel while on the Research page stops the Research page's poll loop, so the report never arrives. ChatWindow runs `onUnmounted(() =\u003e chat.stopPolling())` with no condition, and ChatView only calls `startPolling` on mount (ChatView.vue:75)."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/ChatView.vue",
+      "line": "33",
+      "claim": "After a reload or a poll with no local user bubble, `run` covers the whole rolling conversation. User bubbles exist only locally (chat.ts:222-225), so the sub-agent tree and the Context totals add up every past run, not \"the current run\"."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/DashboardView.vue",
+      "line": "315",
+      "claim": "The dashboard composer sits inside `v-else class=\"hidden … md:grid\"` (line 273), so it is missing whenever the dashboard load fails and on mobile."
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/ResearchComposer.vue",
+      "line": "42",
+      "claim": "The composer uses the opacity dialect `placeholder:text-ds-text/60`, and ChatView.vue repeats `text-ds-text/60`, where CLAUDE.md prefers token muted text."
+    }
+  ],
+  "not_verified": [
+    "Figma node `13-994` is not in `design/`, so the visual fidelity of the title, tree and Context column could not be checked against a design file.",
+    "The real daemon/console relay (`internal/chatapi/handlers.go`) is not in this checkout, so whether `mode`, the `subagent`/`context` events or the counts exist upstream is not confirmed.",
+    "No `Create tickets` action: met. The out-of-scope rule is respected. — not traced",
+    "Whether the daemon accepts or rejects an unknown `mode` key on POST /chat/messages: the backend counterpart is not in this checkout.",
+    "How ChatWindow renders a `context` event with empty `text` in the Operator panel (it probably shows as an empty bubble): not traced past ChatWindow.vue:95.",
+    "`Create tickets` not added: met. — not traced"
+  ],
+  "notes": "[pass A (hunk)]\n- Title \"Research\" plus question: met at src/views/ChatView.vue:92-93. The h1 renders whatever the state; the question appears only when a user message exists (`question` at :38 falls back to '').\n- \"Navigator research\" header with right-aligned count: met at ChatView.vue:97-98 and SectionHeader.vue:9 (`justify-between`). It is hidden when there are no sub-agents, which is acceptable.\n- One ListRow per sub-agent with id, DONE chip, title and duration meta: the rendering is met at ChatView.vue:100-104. `Chip.vue:8` is `uppercase`, so \"Done\" displays as DONE, and `formatDuration` (:55) emits only `N m` or `N s`. The source data has no producer (defect 1).\n- Report as markdown: met at ChatView.vue:108 and reportMarkdown.ts:5 (`html: false`). Raw `\u003cimg onerror\u003e` is escaped, as ChatView.spec.ts:72 checks.\n- Composer with placeholder, RESEARCH/DOCS pills and send on Enter: met at ResearchComposer.vue:14, :18-21 and :42. Pill.vue:7 is `uppercase`. The pill semantics have no consumer (defect 2).\n- Dashboard composer navigates with q and mode: met at DashboardView.vue:116 and :315, and tested at DashboardView.spec.ts:435.\n- Research page starts the turn from the query: met at ChatView.vue:76-81. The `replace` drops the params, so a reload does not re-send.\n- Context panel shows `—` when counts are absent, with no judge name or version: met at ChatView.vue:58-64 and :115-118.\n- No `token`/`$` test: met at ChatView.spec.ts:62-69.\n- build/test/lint: the pasted output shows them passing (939 tests passed, vue-tsc clean). The adapter-naming line is missing (defect 3).\n[pass B (adjacent)]\n- Title \"Research\" in 15px and the question at 15px/60%: met at ChatView.vue:91-92. The question is the latest `role === 'user'` message; it hides when no local question exists.\n- \"Navigator research\" header with the count on the right: met at ChatView.vue:95-97 via the SectionHeader `action` slot (SectionHeader.vue:9).\n- ListRow per sub-agent with id, title, duration-only meta and a Done chip: met at ChatView.vue:98-103 against ListRow.vue:22-25. The chip is only rendered when `phase === 'done'`. The meta is only `formatDuration`, so no token or cost can reach a row.\n- Report rendered as markdown: met at ChatView.vue:106 via reportMarkdown.ts:5 (`html: false`). The report is the last `text` event of the run.\n- Composer with the `Ask your pilot…` placeholder, RESEARCH/DOCS pills and send on Enter: met at ResearchComposer.vue:14,18-21,43. The \"current semantics\" part is not met (see the second defect).\n- Dashboard input navigates with the question and mode in the query: met at DashboardView.vue:115-116. The Research page starts the turn and clears the query at ChatView.vue:76-81. Route `chat` exists at router/index.ts:113-114.\n- Context panel shows `Read N docs · M memories` / `Created K memories`, falling back to `—`: the rendering is met at ChatView.vue:60-64, but the PR body never lists the missing fields (see the first defect). No judge name is shown.\n- Test asserting no `token`/`$` in rows: present at ChatView.spec.ts:62-69.\n- `make build`, `make test`, `make lint`: the pasted output shows them passing (67 files / 939 tests). The PR body has no line naming the adapter used ([minor] acceptance gap).\n- Migrations: none in this diff.",
+  "files_read": 15,
+  "passes": 2,
+  "files_read_by_pass": [
+    8,
+    7
+  ],
+  "duration_ms_by_pass": [
+    57966,
+    101165
+  ],
+  "defects_by_pass": [
+    8,
+    8
+  ],
+  "pass_failed": [
+    false,
+    false
+  ],
+  "overlap": 2,
+  "checkout": true,
+  "diff_bytes": 25745,
+  "diff_files": 9,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 25745,
+  "input_issue_bytes": 2021,
+  "input_pr_body_bytes": 15932,
+  "model": "claude-opus-5-5",
+  "duration_ms": 159212,
+  "posted": false
+}

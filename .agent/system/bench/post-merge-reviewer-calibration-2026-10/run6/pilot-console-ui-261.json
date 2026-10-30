@@ -1,0 +1,137 @@
+{
+  "repo": "qf-studio/pilot-console-ui",
+  "pr": 261,
+  "issue": 258,
+  "merge_commit": "b881f20587cd5d1e3a75e432db1f60f0b6835fc4",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/httpAdapter.ts:589 — The new wire fields `project` and `parentId` on `WireBoardCard` have no producer anywhere in the checkout. A Grep for `project: {`",
+      "claim": "`parentId:`",
+      "evidence": "`\"project\"` and `\"parentId\"` across `src/` matches only the diff's own lines and `DashboardQueue.spec.ts`. The `src/lib/api/__tests__/fixtures/board*` files contain neither key, and the mockAdapter card seeds (e.g. `src/lib/api/mockAdapter.ts:679` `title: 'Ship StatusDot needs-you token',`) never set them. So `queue.ts` always falls back to `NO_PROJECT = { key: '_none', name: 'Board' }` and never nests children. This also breaks the CLAUDE.md rule that adapter, mock and fixtures move in lockstep."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/components/dashboard/__tests__/DashboardQueue.spec.ts:6 — The test mocks the very adapter whose contract is at risk: `vi.mock('../../../lib/api/adapter'",
+      "claim": "() =\u003e ({ getAdapter: () =\u003e adapter }))`. Its hand-built cards inject `project: { key: 'p1'",
+      "evidence": "name: 'alpha' }` (line 18), so neither `toBoardCard`'s new mapping (`httpAdapter.ts:720-721`) nor the mock's missing fields are tested. No httpAdapter.spec case covers `project` or `parentId`."
+    },
+    {
+      "severity": "minor",
+      "file": "src/components/dashboard/DashboardQueue.vue:10 — This file",
+      "claim": "`queue.ts` and the `BoardCard`/`WireBoardCard` type additions implement sibling GH-257 (the docblock cites \"(GH-257)\"). The issue's scope fence says \"Implement ONLY the slice described above\" and its text treats `\u003cDashboardQueue /\u003e` as something to mount",
+      "evidence": "not build. The extra code is needed for the mount and only adds fields, so it doesn't change existing behaviour."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/DashboardView.vue:68 — The docblock still says the Context column \"sits right of the by-project list\"",
+      "claim": "and lines 36–37 still say the project pill filters \"the by-project list\". The grid at `DashboardView.vue:325` is now `xl:grid-cols-[minmax(0",
+      "evidence": "1fr)_270px]`, so there is no by-project list. The project pill no longer touches the Queue either."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/DashboardView.vue:131 — Comments still refer to the deleted component: here (\"`DashboardShippedByProject`'s docblock already guards against…\")",
+      "claim": "at `DashboardView.vue:153`",
+      "evidence": "at `src/design-system/components/dashboardShippedColors.ts:3` and at `src/lib/api/mockAdapter.ts:1043`."
+    },
+    {
+      "severity": "minor",
+      "file": "PR Body — There is no \"## Evidence\" block and no pasted `make build`/`make test`/`make lint` output",
+      "claim": "which the issue asks for."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/httpAdapter.ts",
+      "line": "589-590",
+      "claim": "the new wire fields `project` and `parentId` have no producer anywhere in this checkout. The mock adapter does not emit them (`listCards` at mockAdapter.ts:1754-1756 is just `return cards`), so in mock mode every card lands in queue.ts's `NO_PROJECT` group \"Board\" and epic nesting never happens. This breaks the repo's lockstep rule that adapter, mock and fixtures change together",
+      "evidence": "a Grep for `project:`/`parentId` under src/lib/api finds only httpAdapter.ts and types.ts"
+    },
+    {
+      "severity": "blocking",
+      "file": "src/components/dashboard/__tests__/DashboardQueue.spec.ts",
+      "line": "7",
+      "claim": "the test mocks the whole adapter (`vi.mock('../../../lib/api/adapter', () =\u003e ({ getAdapter: () =\u003e adapter }))`) and hand-builds `project` and `parentId` on its card fixtures. So it proves nothing about the new `toBoardCard` mapping at httpAdapter.ts:720-721, and httpAdapter.spec.ts has no case covering `project` or `parentId` (the `listCards` test at :1281 predates them)"
+    },
+    {
+      "severity": "blocking",
+      "file": "src/components/dashboard/queue.ts",
+      "line": "1",
+      "claim": "this file, DashboardQueue.vue and the types.ts/httpAdapter.ts wire additions are sibling GH-257's slice, and the issue's scope fence says \"do NOT implement parts of it that fall outside this subtask\". The bundled code changes behaviour: dashboard load now fetches `/board/cards` plus one `/execution` request per card"
+    },
+    {
+      "severity": "minor",
+      "file": "src/components/dashboard/DashboardQueue.vue",
+      "line": "24-31",
+      "claim": "nothing catches a failure in `adapter.listCards()`, so a failed fetch is an unhandled rejection. Every other loader in DashboardView degrades instead, for example `loadBoardActivity` (DashboardView.vue:242 `} catch {`)"
+    },
+    {
+      "severity": "minor",
+      "file": "src/components/dashboard/DashboardQueue.vue",
+      "line": "27-29",
+      "claim": "`getCardExecution` runs for every card before the status filter in queue.ts:55 drops non-queued cards, so the dashboard makes N+1 requests that grow with board size"
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/DashboardView.vue",
+      "line": "36-37",
+      "claim": "the docblock is stale. It still says the project pill \"filters the chart + the by-project list\", and :68 says \"sits right of the by-project list\". :131 and :153 still cite the deleted `DashboardShippedByProject`, as do dashboardShippedColors.ts:3 and mockAdapter.ts:1043"
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/DashboardView.vue",
+      "line": "111",
+      "claim": "the project filter pill no longer reaches the Queue, which `DashboardQueue` renders with no props (`\u003cDashboardQueue /\u003e` at :365). Selecting projects now only filters the chart"
+    },
+    {
+      "severity": "minor",
+      "file": "src/components/dashboard/queue.ts",
+      "line": "85",
+      "claim": "`shipped` counts every `done` card on the board, not the dashboard's `windowDays` window, so it can disagree with the \"Delivered\" tile beside it"
+    },
+    {
+      "severity": "minor",
+      "file": "PR body",
+      "claim": "there is no \"## Evidence\" block, so the pasted `make build` / `make test` / `make lint` output the issue asks for is missing"
+    }
+  ],
+  "not_verified": [
+    "Backend producer of `project`/`parentId` on `GET /api/v1/board/cards`: it lives in a sibling repo outside this checkout (CLAUDE.md forbids reading sibling repos), and no fixture records it.",
+    "Build, test and lint results: no output was pasted and I can't run commands in this checkout.",
+    "`DashboardShippedByProject` import and usage removed, file and spec deleted: **met.** A Grep for `DashboardShippedByProject` finds no import. The only remaining hits are the stale comments listed above. — not traced",
+    "Whether the backend's `GET /api/v1/board/cards` actually sends `project` and `parentId`: the producer is in a sibling repo the project rules say not to read",
+    "Whether `dashboard-v4.html` has a Queue section to cite: the docblock cites \"Figma 2026-10\", not a design file screen; the design file was not opened"
+  ],
+  "notes": "[pass A (hunk)]\n- SectionHeader with \"Queue\" on the left: **met.** `src/views/DashboardView.vue:362` `\u003cSectionHeader title=\"Queue\"\u003e` renders through `SectionHeader.vue:8` `\u003ch2 ... data-section-title\u003e`. This would break if the title slot were overridden, but the view passes only the prop.\n- \"Show history\" on the right, linking to the history view or the `/board` fallback: **met with the fallback.** `DashboardView.vue:363` uses `:to=\"{ name: 'board' }\"`. It is in the `#action` slot, which `SectionHeader.vue:9` renders on the right of a `justify-between` row. No history view exists and the docblock records this at `DashboardView.vue:65-66`. The test `DashboardView.spec.ts` \"GH-258\" checks `href` `/board`.\n- Placed directly under the activity panel: **met.** `DashboardView.vue:359` `\u003cDashboardActivityChart ... /\u003e` comes right before the Queue block at line 361.\n- `\u003cDashboardQueue /\u003e` mounted beneath the header: **met** at `DashboardView.vue:365`. But it renders only ungrouped \"Board\" rows with real adapters, per the blocking defect above.\n- Docblock design citation updated: **partially met.** A GH-258 paragraph was added at `DashboardView.vue:64-66`, but older paragraphs (lines 36–37, 68) still describe the removed list.\n- Run make build/test/lint and paste the output: **not met.** The PR body has no evidence block.\n[pass B (adjacent)]\n- SectionHeader \"Queue\" sits directly under the activity panel: met. DashboardView.vue:359 `\u003cDashboardActivityChart …/\u003e` is followed by :362 `\u003cSectionHeader title=\"Queue\"\u003e`. This would fail if the header sat inside the `v-else` grid's ContextPanel column; it does not.\n- \"Show history\" links to the history view or falls back to `/board`: met. DashboardView.vue:363 uses `:to=\"{ name: 'board' }\"`. A history route would have taken priority, but none exists (src/router/index.ts:104 `name: 'board'` is the only board route).\n- `\u003cDashboardQueue /\u003e` mounted beneath the header: met, DashboardView.vue:365.\n- DashboardShippedByProject import, usage, file and spec removed: met. A Grep for the name finds only comments, with no imports left in DashboardView.vue:1-19.\n- Docblock design citation updated: partially met. DashboardView.vue:64-66 adds the GH-258 paragraph, but the stale lines listed under DEFECTS remain.\n- Adjacent paths: DashboardView.vue was read in full (load, selectWindow, filteredActivity, latestShipped). `filteredProjectsForByProjectList` was removed cleanly. The project pill (:111) is the path that now bypasses the Queue.\n- Migrations: none in the diff.",
+  "files_read": 8,
+  "passes": 2,
+  "files_read_by_pass": [
+    4,
+    4
+  ],
+  "duration_ms_by_pass": [
+    43608,
+    52896
+  ],
+  "defects_by_pass": [
+    6,
+    9
+  ],
+  "pass_failed": [
+    false,
+    false
+  ],
+  "overlap": 0,
+  "checkout": true,
+  "diff_bytes": 33516,
+  "diff_files": 9,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 33516,
+  "input_issue_bytes": 951,
+  "input_pr_body_bytes": 626,
+  "model": "claude-opus-5-5",
+  "duration_ms": 96578,
+  "posted": false
+}

@@ -1,0 +1,114 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5799,
+  "issue": 5791,
+  "merge_commit": "d814c2381d90af25a47f504aa5191f73b6a4d7a5",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "internal/briefs/receipts.go:345 — The Telegram receipts digest now shows cost whenever the key source is not `platform`",
+      "claim": "so `unknown` runs still print `$x.xx`. The issue's rule is \"cost only when the key source is the tenant's own key\"",
+      "evidence": "and the structured brief follows that rule at internal/briefs/structured.go:78 (`if run.KeySource == memory.KeySourceOwn`). The two outputs therefore disagree. The scanner turns empty into unknown at internal/memory/store.go:866 (`COALESCE(NULLIF(key_source, ''), 'unknown')`). This is the project-memory case where the founder tenant records `key_source=unknown` on every run: its digest keeps showing per-run cost and totals (receipts.go:370 checks only `== KeySourcePlatform`)."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/briefs/generator.go:23 — `SetPoolSource` is never called in production. The only call is in internal/briefs/structured_test.go",
+      "line": "282",
+      "claim": "and the generator built at cmd/pilot/main.go:3992 never gets a pool source. So `pool` is always `null` in stored briefs. The issue does allow this (\"when the daemon knows it\")",
+      "evidence": "and a grep for `allowance|PercentUsed` found no daemon-side allowance reader."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/briefs/generator.go:254 — `review_needed` comes from `LoadPendingApprovals()`",
+      "claim": "which has no project filter (internal/memory/approval_store.go:85-92 selects from `approval_pending` without a WHERE clause). Shipped and failed items are scoped by `Filters.Projects` (generator.go:248)",
+      "evidence": "so a filtered brief can still list review items from other projects."
+    },
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/tunnel.go:205 — The `make lint` output pasted in the PR body fails with 3 staticcheck SA4023 errors",
+      "claim": "all in cmd/pilot/tunnel.go. That file is not in this diff",
+      "evidence": "so this is an existing failure outside the change."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/briefs/receipts.go",
+      "line": "345",
+      "claim": "The Telegram receipts digest still shows a cost for runs whose key_source is unknown or empty. It hides the cost only on `platform`, while the structured brief hides it unless the key is `own`, so the two delivery paths now use different rules",
+      "evidence": "`if exec.KeySource != memory.KeySourcePlatform {`, and store.go:866 reads empty as unknown: `COALESCE(NULLIF(key_source, ''), 'unknown')`. The memory pitfall says the founder tenant records key_source=unknown on every execution, so that tenant's Telegram digest still shows per-run cost."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/briefs/receipts.go",
+      "line": "369",
+      "claim": "The day total still includes cost when rows mix `own` and `unknown`, which adds up costs from unattributed runs",
+      "evidence": "the loop returns early only on `exec.KeySource == memory.KeySourcePlatform`."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/briefs/generator.go",
+      "line": "254",
+      "claim": "review_needed takes every pending approval and ignores the `Filters.Projects` scoping that executions get at generator.go:248, so a project-filtered brief can list approvals from other projects",
+      "evidence": "`pending, err := g.store.LoadPendingApprovals()` has no project argument, and `PendingApproval.Project` is available at approval_store.go:29."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/briefs/generator.go",
+      "line": "23",
+      "claim": "Nothing in production calls `SetPoolSource`. A Grep finds it only in structured_test.go:282, so `pool` is always null in production. That matches \"when the daemon knows it\", because no allowance reader exists outside key_source.go:11, but the hook has no caller."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/briefs/structured.go",
+      "line": "84",
+      "claim": "If a task fails more than once in the window and never ships, it gets one Failed entry per attempt. The dedup only skips failures for tasks that later shipped",
+      "evidence": "`if delivered[e.TaskID] {`."
+    },
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/tunnel.go",
+      "line": "205",
+      "claim": "The pasted `make lint` output fails with 3 staticcheck SA4023 issues. They are in cmd/pilot, which the diff does not touch, so this failure was already there and did not come from this PR."
+    }
+  ],
+  "not_verified": [
+    "The console consumer of the `/api/v1/briefs` JSON (`schema`, `shipped`, `review_needed`, `pool`, `failed`, `cost_usd`, `key_source`) is not in this checkout. The producer side is internal/briefs/types.go and the payload is stored by internal/briefs/scheduler.go:222.",
+    "Not reviewed: most of the `make test` output (17523 lines omitted in the PR body). The briefs and gateway packages' PASS lines are not visible in what was pasted.",
+    "Scheduler times unchanged. Met: no cron or schedule lines in the diff. — not traced",
+    "Not reviewed: the pasted `make test` output cuts 17523 lines and shows only the internal/dashboard package. No pass/fail lines for internal/briefs, internal/gateway or internal/memory are visible.",
+    "FormatStructured is not wired to any delivery. A Grep finds only test callers, and delivery.go:77 still uses the old email formatter, so this PR adds the email rendering but never sends it.",
+    "5 more requirements marked met without a path:line citation: not traced"
+  ],
+  "notes": "[pass A (hunk)]\n- Single structured brief in types.go, sections in the order shipped, review_needed, pool, failed. Met. The JSON key order follows the struct field order in internal/briefs/types.go (StructuredBrief), and the test at internal/briefs/structured_test.go:36 checks it. Shipped entries carry ref, title, PR URL, duration and +a −b (structured.go:65-73). review_needed puts overdue items first; an item waiting exactly 24h is not overdue because the check is a strict `\u003e` (structured.go:104). Failed entries carry ref, class and retryable flag (structured.go:86-91). A run that failed and later succeeded is left out of failed (structured.go:84).\n- Receipts folded into shipped, cost only on own key. Met for the structured brief: structured.go:78 sets `CostUSD` only for `own`, so `platform`, `unknown` and empty all omit it. The data comes from `GetExecutionsForReceipts`, which reads `key_source` (store.go:866). The separate Telegram digest is still sent and uses the looser \"not platform\" rule (defect above).\n- JSON payload with `schema: 1`. Met: `StructuredBriefSchema = 1` in types.go, and the round-trip test is at structured_test.go:199.\n- Email rendering in formatter_email.go with the four sections. Met: internal/briefs/formatter_email.go:156. Slack/Telegram formatters are unchanged apart from the receipts cost change.\n- Gateway routes. Met: internal/gateway/server.go:265-266 registers them on `apiMux`, which goes through `s.auth.Middleware` (server.go:291). Production passes a `*memory.Store` (main.go:764 `var gwStore *memory.Store`, main.go:2944 `SetDashboardStore(store)`), so the `BriefPayloadStore` type assertion succeeds. Stored briefs come from storeStructured, which is called at scheduler.go:182 inside `runBriefWithResults`, and the scheduler gets a non-nil store (main.go:4009). Nothing is stored when the daily brief is disabled, so the routes return 404 in that case.\n- Tests. The briefs and gateway tests use a real `memory.NewStore` and a real gateway server with bearer auth (internal/gateway/briefs_test.go:30-41), not mocks. They cover auth, empty store, limit, clamping and bad input.\n- Migration. Additive `CREATE TABLE IF NOT EXISTS brief_payloads` (internal/memory/store.go:282). It has no down path and cannot lose data. This is SQLite, so RLS does not apply.\n- Project memories. The key_source=unknown pitfall shows up in the receipts digest (receipts.go:345) but not in the structured brief. The other two memories are unrelated to this diff.\n[pass B (adjacent)]\n- **Shipped fields (issue ref, title, PR URL, duration, +a −b): met.** See structured.go around line 66. Executions come from `GetExecutionsForReceipts` (store.go:2402, `status IN ('completed', 'failed')`), and executionDetailColumns (store.go:852–866) includes pr_url, task_title, lines and key_source. An empty title would show blank, but the code falls back to TaskID.\n- **review_needed with over-24h items first and a one-line reason: met.** See structured.go:103 and :107. Exactly 24h counts as not overdue (strict `\u003e`), and the test covers that case.\n- **Pool shown when known: met in code** (structured.go:116). It is never fed in production; see the defects.\n- **Failed section with class and retryable flag: met** (structured.go:84 plus ClassifyFailure).\n- **Cost only on own key, omitted on platform: met for the structured brief** (structured.go:78, `== memory.KeySourceOwn`). Unknown and empty are omitted too. The legacy receipts digest uses a looser rule (see the defects).\n- **Gateway routes with sibling bearer auth: met.** They are registered on apiMux at server.go:265–266, which is wrapped by `s.auth.Middleware(apiMux)` at server.go:291. The production store is `var gwStore *memory.Store` (main.go:764) and is passed in at main.go:1469, so the BriefPayloadStore type assertion succeeds.\n- **Payload stored on each daily run: met** (scheduler.go:182). It is skipped when the store is nil (scheduler.go:209). main.go:4009 passes the store.\n- **Migration:** the `CREATE TABLE IF NOT EXISTS` is additive, matching the existing migrate() pattern. It has no down path and loses no data. RLS does not apply because this is local SQLite.\n- **Memory pitfalls:** the key_source=unknown learning is handled correctly in the structured brief but repeated in receipts.go:345 (see the defects). The other two memories (one redacted, one about the executions-row ownership signal) do not apply to this diff.",
+  "files_read": 13,
+  "passes": 2,
+  "files_read_by_pass": [
+    6,
+    7
+  ],
+  "duration_ms_by_pass": [
+    58126,
+    94330
+  ],
+  "defects_by_pass": [
+    4,
+    6
+  ],
+  "pass_failed": [
+    false,
+    false
+  ],
+  "overlap": 0,
+  "checkout": true,
+  "diff_bytes": 41156,
+  "diff_files": 13,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 41156,
+  "input_issue_bytes": 1832,
+  "input_pr_body_bytes": 8684,
+  "model": "claude-opus-5-5",
+  "duration_ms": 152886,
+  "posted": false
+}

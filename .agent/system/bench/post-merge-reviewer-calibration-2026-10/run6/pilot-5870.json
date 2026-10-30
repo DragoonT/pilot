@@ -1,0 +1,69 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5870,
+  "issue": 5829,
+  "merge_commit": "c69964797e24b5d779515a2e764f258839963d76",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "internal/executor/git.go",
+      "line": "199",
+      "claim": "if `detachHeadAt` succeeds but the following `DeleteBranch` (git.go:204) or `checkoutNewBranchFrom` (git.go:207) fails, the function returns with the clone left on a detached HEAD at baseRef. Nothing restores the original branch. The next re-pick still works, because `GetCurrentBranch` returns \"\" there (`git branch --show-current`, git.go:1343) and the plain delete path runs. An operator inspecting the clone would see a detached HEAD, though."
+    },
+    {
+      "severity": "minor",
+      "file": "PR Body \"## Evidence\"",
+      "claim": "the PR ran `make build`, `make test` and `make lint` as evidence even though the issue's acceptance bullet forbids it (\"Do not re-run make build, make test or make lint as evidence\"). The PR body also swapped that bullet for a \"make … pass\" bullet. The pasted `make lint` output fails with 3 SA4023 findings in `cmd/pilot/tunnel.go:205/351/433`. That is a pre-existing failure in the unrelated `cmd/pilot` package that the diff does not touch."
+    },
+    {
+      "severity": "minor",
+      "file": "PR body \"## Evidence\" make lint block",
+      "claim": "pasted `make lint` output ends in `make: *** [Makefile:101: lint] Error 1` because of three SA4023 findings in package `cmd/pilot` (tunnel.go:205, 351, 433). That failure was already there and the diff does not touch that package. The PR body also lists the old acceptance bullet \"`make build`, `make test`, `make lint` pass\" and re-ran all three, which the issue's current acceptance list says not to do."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/git.go",
+      "line": "196",
+      "claim": "a dirty tree on the checked-out stale branch returns the same error text on every re-pick. Under the identical-failure rule (threshold 2) this still parks the task as stalled/pilot-blocked. The issue intends this: the operator now sees \"checked out in the clone, refusing\" instead of git's message, so this is an operational note and not a regression."
+    }
+  ],
+  "not_verified": [
+    "The mutation bullet (\"remove the GetCurrentBranch check → TestEnsureBranchFromOrigin_StaleCheckedOutBranchIsRecreated fails\") was never run: the PR body says \"freeform mutation, run manually\". Reading the code, the failure is expected: without the check, the clean checked-out subtest reaches `git branch -D` on HEAD's branch (git.go:1681), gets an error, and `t.Fatalf` fires at git_test.go:2312. That is inferred from the code, not from a run.",
+    "Acceptance, `go test -race … -run TestEnsureBranchFromOrigin` passes: met. The PR's Evidence block shows `ok github.com/qf-studio/pilot/internal/executor 2.300s`. — not traced",
+    "The mutation bullet (remove the GetCurrentBranch check -\u003e TestEnsureBranchFromOrigin_StaleCheckedOutBranchIsRecreated fails) was not run, and the PR body says so. Tracing the code says it would fail: without git.go:190-202, case 1 reaches `git branch -D` on the checked-out branch at git.go:204 and hits `t.Fatalf(\"EnsureBranchFromOrigin: %v\", err)`.",
+    "Acceptance, `go test -race ... -run TestEnsureBranchFromOrigin`: met. The PR body pastes `ok github.com/qf-studio/pilot/internal/executor 2.300s`. — not traced"
+  ],
+  "notes": "[pass A (hunk)]\n- Scope, call GetCurrentBranch before DeleteBranch: met. git.go:190 `current, curErr := g.GetCurrentBranch(ctx)` sits in the stale path, after `if !stale` (git.go:178) and before `DeleteBranch` (git.go:204). A failing `GetCurrentBranch` (for example on a detached HEAD, which returns \"\") skips the block and falls through to the old behaviour, so an error there cannot wrongly refuse the call.\n- Scope, a dirty tree returns \"checked out in the clone, refusing\" and names the branch: met. git.go:197 formats `\"stale branch %s is checked out in the clone, refusing to recreate it…\"` with branchName. `HasUncommittedChanges` uses `git status --porcelain` (git.go:1398), so the untracked dirty.txt in the test counts as dirty. Untracked-only work is refused instead of being dropped, which is the safe direction.\n- Scope, a clean tree detaches at baseRef and then deletes and recreates: met. git.go:215 runs `exec.CommandContext(ctx, \"git\", \"checkout\", \"--detach\", ref)`, then git.go:204 deletes and git.go:207 recreates. baseRef comes from `resolveGuardBaseRef` (git.go:623 `return \"origin/\" + baseBranch`), and a detached checkout of origin/main is valid.\n- Scope, a branch that is not checked out keeps the old behaviour: met. The new block is guarded by `current == branchName` (git.go:191). When the clone is on another branch the block is skipped and the code reaches the unchanged lines 204–210.\n- Scope, the stale decision is unchanged: met. `branchIsBehind` (git.go:243–254) and the `stale` handling at git.go:170–183 are untouched by the diff.\n- Scope, worktree mode, CreateOrResetBranchFromOrigin and the repick cap are untouched: met. CreateOrResetBranchFromOrigin (git.go:118–128) is unchanged, and the only production caller is the direct-mode path at runner.go:4652 `git.EnsureBranchFromOrigin(ctx, task.Branch, baseBranch)`. The other callers are tests (git_gh4594_test.go:152/189/232), and their branches are not the checked-out stale case.\n- Acceptance, checked-out clean case is recreated with created true and HEAD at the new base: met by the test at git_test.go:2312–2324. It uses a real bare origin (`setupSyncTestRepos`, runner_git_test.go:28 `git init --bare`) and advances origin with `pushExtraCommitFromSecondClone` (runner_git_test.go:102 `git push origin`). The branch is cut at the old main HEAD, so `rev-list branch..origin/main` is greater than 0 and the stale path actually runs.\n- Acceptance, the dirty case leaves the branch and the dirty file untouched: met by the asserts at git_test.go:2291–2309 (current branch, `rev-parse` SHA, file contents).\n- Acceptance, the not-checked-out case behaves as before: met by the subtest at git_test.go:2264 combined with `runGit(t, local, \"checkout\", \"main\")` at git_test.go:2277.\n- Wire fields: none. The diff only adds git CLI arguments and adds or reads no JSON, YAML, HTTP or DB fields.\n- Tests: they run real `git` against temp repos with a real origin and do not mock git, so they do exercise the contract at risk.\n- Migrations: none.\n- Out of scope: respected. There is no end-of-task switch back to the default branch, no worktree-mode change, and no threshold change.\n- Memories: no pitfall is repeated. The diff does not touch the identical-failure streak, stalled rows or generation logic. The dirty-tree refusal is still a deterministic error and will park after 2 identical failures, as the streak memory describes, but it now names the real cause, which is what the issue asks for.\n[pass B (adjacent)]\n- Scope, check before DeleteBranch: met at internal/executor/git.go:190-191 (`current, curErr := g.GetCurrentBranch(ctx)` / `if curErr == nil \u0026\u0026 current == branchName {`), placed before `g.DeleteBranch` at git.go:204. If GetCurrentBranch errors or HEAD is already detached (`git branch --show-current` at git.go:1343 returns \"\"), the code falls through to the old delete path. That is the old behaviour, and git does not refuse to delete a branch that is not checked out.\n- Scope, dirty refusal: met at git.go:192-198. HasUncommittedChanges at git.go:1398 runs `git status --porcelain`, which counts untracked files too, so the test's untracked `dirty.txt` triggers the refusal. The error contains \"checked out in the clone, refusing\" and names the branch.\n- Scope, detach at baseRef: met at git.go:199 and git.go:214-222 (`git checkout --detach ref`). A clean tree is guaranteed just before this, so no untracked file can block the checkout. `checkoutNewBranchFrom` at git.go:207 then recreates the branch from baseRef.\n- Scope, stale decision unchanged: met. git.go:170-183 (`branchIsBehind`, fail-open `stale = false`, SwitchBranch) is unmodified.\n- Scope, CreateOrResetBranchFromOrigin, worktree mode and repick cap untouched: met. git.go:118-128 is unchanged. The only production caller is runner.go:4652, inside `if task.Branch != \"\" \u0026\u0026 !task.DirectCommit \u0026\u0026 !useWorktree {` (runner.go:4626), so worktree mode never reaches the new path. The other callers are git_gh4594_test.go:152/189/232, which are unchanged and green.\n- Adjacent paths: no other `.DeleteBranch(` call on a local branch exists in internal/ (grep). Files read: git.go, runner.go:4600-4690, runner_git_test.go:18-103. No adjacent path found that defeats the fix.\n- Acceptance, clean checked-out case: met at git_test.go:2263 (`checkedOut: true, wantCreated: true`). It uses a real bare origin (runner_git_test.go:28 `git init --bare`) and a second clone pushing an advance (runner_git_test.go:86-103), and asserts created, current branch and HEAD == rev-parse origin/main != staleSHA. headSHA and gitOutput both return untrimmed output, so the comparisons are consistent.\n- Acceptance, dirty case: met at git_test.go:2264. It asserts the error text and branch name, created=false, the current branch, the unchanged branch SHA and the preserved dirty file.\n- Acceptance, not-checked-out case: met at git_test.go:2265, which does `runGit(t, local, \"checkout\", \"main\")` before the call.\n- Tests use a real git binary and real repos, not a mock of the git layer.\n- Migrations: none.\n- Out of scope: no direct-mode end-of-task checkout was added, worktree/lease code is untouched, and the threshold/sweep is untouched.\n- Project memories: the cap-stalled re-arm, identical-failure streak, dead-owner claim and stalled-is-recovery pitfalls are not repeated. The diff touches no dispatcher, execution-row or label code. The only link is the dirty-refusal streak noted above.",
+  "files_read": 5,
+  "passes": 2,
+  "files_read_by_pass": [
+    2,
+    3
+  ],
+  "duration_ms_by_pass": [
+    47917,
+    39081
+  ],
+  "defects_by_pass": [
+    2,
+    2
+  ],
+  "pass_failed": [
+    false,
+    false
+  ],
+  "overlap": 0,
+  "checkout": true,
+  "diff_bytes": 6211,
+  "diff_files": 2,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 6211,
+  "input_issue_bytes": 4348,
+  "input_pr_body_bytes": 11682,
+  "model": "claude-opus-5-5",
+  "duration_ms": 87367,
+  "posted": false
+}

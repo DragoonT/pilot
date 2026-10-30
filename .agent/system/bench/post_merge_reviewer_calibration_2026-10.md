@@ -232,3 +232,64 @@ Same 14 PRs, same rules, same scorer prompt, same hand numbering and n = 52 as r
 2. **Stop adding prompt rules.** Three prompt steps (614, 619, 622) moved structure, verdict shape and distribution; none moved the total. The reviewer finds ~18–19 of 52 hand defects per pass at ~5 files and ~70 s whatever it is told to look at.
 3. The remaining levers are budget-shaped, not rule-shaped: (a) **two passes** — a hunk pass (the run-4 prompt) and an adjacent pass (the run-5 item 2b), union the defects, de-duplicate by file:line; (b) a **per-file loop** for diffs over N files, each with its own turn budget; (c) **more turns/time** (40 → 80, 5 → 10 min) measured once to see if recall tracks budget at all. Each is one leg and one run on the same 14.
 4. The pre-PR reviewer shares the prompt, so shadow-mode evidence stays at this recall; enforce mode is not earned by a prompt change.
+
+---
+
+# Run 6 — 2026-10-30 13:35–14:13Z, v2.303.0, claude-opus-5-5, **two passes** (TASK-623 P1: hunk pass A + adjacent pass B on one checkout, union by location, verdict from the union; `pilot review-merge --passes 2`)
+
+Same 14 PRs, same rules, same scorer prompt, same hand numbering and n = 52. Raw: `run6/` (14 JSONs with `defects_by_pass`, `files_read_by_pass`, `duration_ms_by_pass`, `overlap`, `pass_failed`; `scoring.md` attributes each hand defect to the pass that found it).
+
+| Metric | Run 4 | Run 5 | **Run 6 (2 passes)** | Bar |
+|---|---|---|---|---|
+| REQUEST-CHANGES caught | 3 of 3 | 3 of 3 | **3 of 3** | ≥2 |
+| Defect recall (HIT + ½ PARTIAL) | 44.2 % | 43.3 % | **51.0 %** (22 + 4.5 / 52) | ≥ 0.5 — **MET** |
+| Plain HIT recall | 36.5 % | 34.6 % | **42.3 %** | |
+| False notes per verdict | 0.07 | 0.07 | **0.07** (same single FALSE, ui#254, now a pass-B [blocking]) | ≤ 1 |
+| REQUEST-CHANGES on human-approved PRs | 3 of 11 | 3 of 11 | **2 of 11** (pilot#5799 → AWN) | — |
+| Defect-bearing approves matched | 9 of 11 | 9 of 11 | **11 of 11** | — |
+| New valid findings | 35 | 44 | 50 (UNSURE 20) | — |
+| Format / pass failures | 0 / — | 0 / — | 0 / **1** (pilot#5868 pass A killed at its 150 s deadline, 83 KB diff) | — |
+| Mean review time | 68 s | 72 s | **162 s** (A 75 s + B 87 s; 87–273 s) | — |
+| Files read per review | 5.0 | 5.1 | **10.4** (A 4.6, B 5.8) | — |
+| Overlap (defects united across passes) | — | — | 0.64 / PR as recorded; 15 of 31 hand defects found by both | — |
+
+| PR | hand | daemon | match | hand n | HIT | PARTIAL | MISS | NEW-VALID | FALSE | UNSURE |
+|---|---|---|---|---|---|---|---|---|---|---|
+| ui#252 | RC | RC | Y | 5 | 1 | 2 | 2 | 4 | 0 | 2 |
+| ui#261 | RC | RC | Y | 3 | 2 | 1 | 0 | 5 | 0 | 2 |
+| ui#255 | RC | RC | Y | 5 | 2 | 1 | 2 | 2 | 0 | 1 |
+| ui#254 | A+defects | RC | N | 3 | 1 | 1 | 1 | 2 | 1 | 1 |
+| ui#246 | A+defects | RC | N | 4 | 4 | 0 | 0 | 5 | 0 | 2 |
+| pilot#5799 | A+defects | AWN | Y | 2 | 1 | 0 | 1 | 5 | 0 | 1 |
+| pilot#5822 | A+defects | AWN | Y | 3 | 2 | 0 | 1 | 3 | 0 | 4 |
+| pilot#5868 | AWN | AWN | Y | 5 | 1 | 1 | 3 | 4 | 0 | 1 |
+| pilot#5874 | AWN | AWN | Y | 5 | 0 | 1 | 4 | 5 | 0 | 2 |
+| pilot#5870 | A+notes | AWN | Y | 6 | 1 | 0 | 5 | 1 | 0 | 2 |
+| pilot#5871 | AWN | AWN | Y | 1 | 1 | 0 | 0 | 4 | 0 | 0 |
+| pilot#5872 | AWN | AWN | Y | 1 | 1 | 0 | 0 | 2 | 0 | 1 |
+| pilot#5875 | AWN | AWN | Y | 2 | 1 | 1 | 0 | 5 | 0 | 1 |
+| console#427 | A+notes | AWN | Y | 7 | 4 | 1 | 2 | 3 | 0 | 0 |
+| **total** | | | 12/14 | 52 | 22 | 9 | 21 | 50 | 1 | 20 |
+
+## Per-pass recall (same JSONs)
+| | defects found | recall |
+|---|---|---|
+| Pass A (hunk prompt = run 4's) | 21 (15 HIT + 6 PARTIAL) | 34.6 % |
+| Pass B (adjacent prompt = run 5's) | 25 (19 HIT + 6 PARTIAL) | 42.3 % |
+| Union | 31 (22 HIT + 9 PARTIAL) | **51.0 %** |
+| Found by both | 15 of 31 | A-only 6 · B-only 10 |
+
+## Fixtures (the eight run-4 misses): 0 HIT · 2 PARTIAL · 6 MISS = 1.0/8 (run 5: 3.5/8)
+All three run-5 fixture HITs flipped back (neither pass opened `ratelimit.go`; `curErr == nil` quoted by both passes and judged safe; pass A dead on 5868). Pass B alone scores 42.3 % with the same prompt that scored 43.3 % in run 5 — **recall per pass is stable, which adjacent items it picks is not**. The `curErr == nil` swallow is a reading-rule miss, not a reach miss.
+
+## Reading
+- **The bar is met by the union, not by either pass.** Two reading orders with low overlap (15 of 31 shared) add ~8 points. Run 5's in-hunk losses came back (5 of 7 HIT again) — and 3 of those 5 returned via pass B, so "the sibling read displaces the hunk read" was finding-budget variance that the union absorbs, not a pass property.
+- **Cost**: 72 → 162 s and 5 → 10 files per review for +7.7 points. Verdict shape unchanged (5 RC vs 3 hand, 12/14 match, 1 FALSE); the three over-strict RCs are now two.
+- **Union mechanics are the weak part** — four gaps the reviewers already flagged on PR#5978 plus two from this run: (1) the per-pass deadline is half the review timeout, so pass A died on the 83 KB pilot#5868 diff (150 s) and D4/D5 were lost — each pass needs the full timeout; (2) 17 same-finding pairs were not united because pass A's `file` field often carries claim text and `:589` ≠ `:589-590` — normalise the location and tolerate ranges; (3) NOT-VERIFIED union uncapped (6 entries vs 3); (4) one usable pass returns its own model verdict without the union rule; (5) a [blocking] from a no-files pass keeps its severity; (6) `defectKey` only recognises `:\d+`.
+- Nine verified NEW-VALIDs worth follow-ups: external-merge drain never reaches the post-merge review (`controller.go:10669` vs the only call at `:6217`); pasted mutation line numbers do not match the merged tests (pilot#5868/#5874); generic "rate limit" error text pauses the fleet via `rateLimitedSignatures` (pilot#5874); GH-5867 runner test sets `SkipQualityGates = true` so reuse wiring is untested through `Execute` (pilot#5875); catch-up channel-key mismatch `"telegram"` vs `telegram:<chat>` (pilot#5822); mobile Median tile hardcodes `—` (ui#252); "Researching…" hides on the first sub-agent event (ui#246).
+
+## Decision inputs after six runs
+1. **Bar status: RC 3/3 ✓ · false 0.07 ✓ · recall 51.0 % ✓ — all three met with two passes.** The margin is one point; the union mechanics above can only add to it (17 un-united pairs are agreement, not loss; the dead pass on 5868 cost two hits).
+2. Before the box switches to `passes: 2`: fix the six mechanics gaps in one leg (full timeout per pass; location normalisation + range tolerance; NOT-VERIFIED cap; union-rule verdict for one usable pass; no-files blocking demotion; line regex). Then `post_merge_review.passes: 2` and `executor.pre_pr_review.passes: 2` on the box; expect ~160 s per review, pre-PR budget 6 m holds, daily cap 20 unchanged.
+3. Policy after the switch (founder): with recall ≥ 0.5 earned, APPROVE-WITH-NOTES from the post-merge reviewer can stand as "no human needed" for non-tier-1 merges (already the policy) and the pre-PR reviewer has the same recall for the enforce-mode decision (TASK-620 exit criteria).
+4. Run 7 = same 14 after the mechanics fix, `--passes 2`, to confirm ≥ 0.5 holds with the dead-pass and dedupe fixes in.

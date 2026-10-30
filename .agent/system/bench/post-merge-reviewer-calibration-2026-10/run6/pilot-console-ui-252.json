@@ -1,0 +1,143 @@
+{
+  "repo": "qf-studio/pilot-console-ui",
+  "pr": 252,
+  "issue": 249,
+  "merge_commit": "61aa3b94d34be3eb84ba50a196927e078aa46189",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/httpAdapter.ts",
+      "line": "1046",
+      "claim": "`orgName` is bound on WireDashboard but nothing in the checkout produces it. In production the header's org name will always show '—'",
+      "evidence": "Grep for `orgName` finds no producer in mockAdapter `buildDashboard`. The dashboard return at src/lib/api/mockAdapter.ts:1066 is `stats: { shipped: …, needsYou: … }, activity, projects`. The org name already exists client-side as `auth.org?.name` (src/design-system/components/AppHeader.vue:151 `const orgName = computed(() =\u003e auth.org?.name ?? '')`), and the diff ignores it."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/httpAdapter.ts",
+      "line": "1048",
+      "claim": "`poolPercentUsed` has no producer, so \"Pool %\" is permanently hidden",
+      "evidence": "the issue's `percent_used` comes from the allowance contract (src/lib/api/httpAdapter.ts:342 `percent_used?: number`, mapped at :422 `percentUsed:`, loaded by src/stores/session.ts:65 `allowance.value = await getAdapter().getAllowance()`). It is not on the C16 dashboard payload. The diff invents a dashboard key that neither the mock nor any fixture sends."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/httpAdapter.ts",
+      "line": "1047",
+      "claim": "`lastShippedAt` has no producer, so the header always reads \"Last shipped —\"",
+      "evidence": "nothing produces it in mockAdapter.ts:1066. The same data is already derivable from `projects[].cards[].doneAt`, which DashboardView.vue:157 sorts for `latestShipped`."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/httpAdapter.ts",
+      "line": "1016",
+      "claim": "`stats.timeToPrMinutes` has no producer. Time to PR can only ever show '—'",
+      "evidence": "mockAdapter.ts:1066 emits only `shipped` and `needsYou`. The mock and fixtures were not moved in lockstep, which CLAUDE.md requires (\"Adapter/mock/fixtures move in lockstep\")."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/views/__tests__/DashboardView.spec.ts",
+      "line": "478",
+      "claim": "the header test injects the four fields by stubbing `mockAdapter.getDashboard` with `makeDashboard({ orgName, lastShippedAt, poolPercentUsed })`. It never exercises `toDashboard` or any producer, so it proves nothing about the wire contract that is at risk. No httpAdapter.spec case covers the new keys either. Grep for those keys in src/lib/api/__tests__ returns nothing."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/views/__tests__/DashboardView.spec.ts",
+      "line": "476",
+      "claim": "the issue requires the no-'$'/no-'tokens' assertion \"on a platform-key tenant\". The test never sets up a platform-key tenant: there is no `getAllowance` spy with `keySource: 'platform'` and no session/platform_key setup. The assertion is vacuous for the stated condition."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/DashboardView.vue",
+      "line": "307",
+      "claim": "the link target `/board?lane=needs-you` has no consumer. Nothing reads a `lane` query (Grep for `route.query` in src shows no BoardView hit), so the link just lands on the plain board."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/DashboardView.vue",
+      "line": "305",
+      "claim": "the \"/100\" secondary renders even when the value is absent, which gives \"—/100\". The numerator also loses the green split styling because the default slot overrides the `numerator`/`denominator` variant (StatCard.vue:62–64). \"100\" is a hardcoded denominator with no data source."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/mockAdapter.ts",
+      "line": "1064",
+      "claim": "The four new Dashboard fields (`orgName`, `lastShippedAt`, `poolPercentUsed`, `stats.timeToPrMinutes`) have no producer. The only producer in the repo is `buildDashboard`, and it returns just `window`, `stats: { shipped: …, needsYou: … }`, `activity` and `projects` (lines 1064–1069). That breaks the CLAUDE.md rule \"Adapter/mock/fixtures move in lockstep\". Nothing in the repo shows that the C16 endpoint (`httpAdapter.ts:1724` \"Console C16 dashboard aggregate (console PR#116)\") sends them. In practice the header always reads \"— … Last shipped —\", Pool is always hidden and Time to PR is always \"—\"."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/views/DashboardView.vue",
+      "line": "89",
+      "claim": "The issue asks for \"Pool \u003cpercent_used\u003e%\". `percent_used` already exists on the allowance wire type (`httpAdapter.ts:342` \"percent_used?: number\", mapped to `percentUsed` at :422). The PR does not use it. It makes up a new dashboard wire field, `poolPercentUsed`, that nothing produces, so the Pool segment can never render. Likewise the org name is already in `auth.org?.name` (`AppHeader.vue:151`) but the view reads `dashboard.value?.orgName ?? '—'`, which is never set."
+    },
+    {
+      "severity": "minor",
+      "file": "src/lib/api/__tests__/httpAdapter.spec.ts",
+      "line": "2030",
+      "claim": "No adapter test covers the new `toDashboard` mappings (`httpAdapter.ts:1077-1083`). Every GH-249 view test stubs the adapter with `vi.spyOn(mockAdapter, 'getDashboard').mockResolvedValue(...)`, so the wire shape for these fields is untested."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/__tests__/DashboardView.spec.ts",
+      "line": "293",
+      "claim": "The 502 degrade test now passes because of the Time to PR footer note, which is always shown when `timeToPrMinutes` is absent. It no longer tests the cost-metrics degrade path it was written for."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/DashboardView.vue",
+      "line": "348",
+      "claim": "The mobile \"Median → PR\" tile still hardcodes `—` and ignores the new `timeToPr` computed, so mobile and desktop disagree once the field arrives."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/BoardView.vue",
+      "line": "66",
+      "claim": "BoardView never reads a `lane` query parameter (a grep for `lane|query` finds only comments), so `/board?lane=needs-you` opens the board without filtering."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/DashboardView.vue",
+      "line": "36",
+      "claim": "The older GH-139 docblock text still lists the tiles as \"Delivered / Needs You / Cost-per-Shipped / Median\", which contradicts the GH-249 paragraph below it."
+    }
+  ],
+  "not_verified": [
+    "Design conformance of the header row and the 4-up grid against design/dashboard-v4.html: not traced (design file not opened).",
+    "PR body has no Evidence block with build, test or lint output, so whether the gates pass could not be checked.",
+    "6. Tests: label order, the /100 split and the link target are met (spec lines 465–475). The platform-key-tenant assertion is not met. — not traced",
+    "Whether the backend C16 `/api/v1/dashboard` response includes `orgName`, `lastShippedAt`, `poolPercentUsed` or `stats.timeToPrMinutes`. The counterpart is pilot-console, which isn't in this checkout.",
+    "The design files don't show where the header row goes or what it contains. A grep of `design/` for \"Last shipped\", \"Pool\" and \"Time to PR\" found nothing, so the header layout can't be checked against the design.",
+    "Build, test and lint results: the PR body has no Evidence block."
+  ],
+  "notes": "[pass A (hunk)]\n1. Four StatCards in order: met at src/views/DashboardView.vue:304,308,312,316. The order is fixed in the template, so no payload state can reorder it.\n2. Missing field shows '—': met in the view at DashboardView.vue:83 (`dash`), :84 and :87. In practice every new field is always missing because none has a producer (see defects).\n3. Review needed links to /board?lane=needs-you: met at DashboardView.vue:307. The test asserts the href, but nothing on the board reads `lane`.\n4. Header row with org left, \"Last shipped · Pool %\" right, Pool hidden when absent: the markup is met at DashboardView.vue:298–300. The requirement to source values is not met, because org, last-shipped and pool are bound to fields nobody sends.\n5. Honest-degrade kept: met at DashboardView.vue:314. `DEGRADED_METRIC_NOTE` renders whenever `timeToPr` is null. The cost tile moved to mobile only, and its note is gated on `costTile`.\n7. Docblock cites design/dashboard-v4.html and dashboard-v4-spec.md and records trims: met at DashboardView.vue:48–56.\n[pass B (adjacent)]\n- Four labels in order: met at `DashboardView.vue:304-316`, and the test at spec:463 checks `labels` equals `['Delivered','Review needed','Time to PR','Projects']`. A RouterLink wrapper can't reorder them because each card renders exactly one `data-stat-label` (`StatCard.vue:57`).\n- Missing field → '—': met at `DashboardView.vue:83` (`v === undefined ? '—'`) and `:316` (`dashboard ? projects.length : '—'`). `shipped` and `needsYou` are required numbers, so 0 renders as \"0\", not '—'.\n- N/100 split spans: met at `DashboardView.vue:305`, with `StatCard.vue:75` rendering `data-stat-secondary` whenever the secondary slot is present. The denominator is a literal (see defects).\n- Review needed link to `/board?lane=needs-you`: met at `DashboardView.vue:307` and tested via `href` at spec:470. BoardView ignores the query (minor defect).\n- Header row with org left and \"Last shipped · Pool\" right, Pool hidden when absent: the markup is at `DashboardView.vue:297-301`. The requirement isn't really met because no producer supplies the fields (blocking).\n- Honest degrade: still in place. `DEGRADED_METRIC_NOTE` renders at `DashboardView.vue:314` when `timeToPr` is null, and `costTile` stays null on failure (`:212`). The desktop Cost card was removed, and the docblock records that as a trim.\n- Docblock cites `design/dashboard-v4.html` + `dashboard-v4-spec.md` and records the trims: met at `DashboardView.vue:48-56`.\n- Out of scope: no rail, dark-mode or docs changes. Removing the desktop Cost/Shipped card falls under the issue's \"replace the current stat tiles\".\n- Migrations: none in this diff.",
+  "files_read": 9,
+  "passes": 2,
+  "files_read_by_pass": [
+    4,
+    5
+  ],
+  "duration_ms_by_pass": [
+    58182,
+    63168
+  ],
+  "defects_by_pass": [
+    9,
+    9
+  ],
+  "pass_failed": [
+    false,
+    false
+  ],
+  "overlap": 2,
+  "checkout": true,
+  "diff_bytes": 14773,
+  "diff_files": 4,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 14773,
+  "input_issue_bytes": 1217,
+  "input_pr_body_bytes": 892,
+  "model": "claude-opus-5-5",
+  "duration_ms": 121564,
+  "posted": false
+}

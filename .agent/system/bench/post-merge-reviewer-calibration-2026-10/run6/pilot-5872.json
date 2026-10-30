@@ -1,0 +1,75 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5872,
+  "issue": 5803,
+  "merge_commit": "bfa013cbc9a4867743dca7454ad1b56fa8f7f7f8",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "internal/approval/github.go",
+      "line": "426",
+      "claim": "On a write error other than \"already decided\", the GitHub poller still stops, so no \"next poll tick\" ever retries. The issue says to keep the Manager entry \"so the next poll tick can retry the write\", but checkApproval has already deleted h.pending at github.go:407 and resolvePending deletes the persisted row before the write (github.go:151 `h.deletePersisted(resp.RequestID, \"decision\")`). checkApproval then returns true, and pollForApproval exits at github.go:359/370. On a fresh request, the Manager waiter retries once at manager.go:392 (`m.stateWriter.SetApprovalDecision(context.Background(), ...)`). On a rehydrated request there is no Manager waiter, so the decision is lost for good and the row is gone, so a restart cannot bring it back."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/approval/manager.go",
+      "line": "517",
+      "claim": "sql.ErrNoRows now counts as a \"persistence failure\", so the entry stays pending and its waiter keeps running. Before this change it was cleaned up. The store documents ErrNoRows as permanent (\"Returns sql.ErrNoRows if no row is linked to requestID at all\", internal/memory/store.go:1977), so retrying it can never succeed. The gateway still treats it as resolved (internal/gateway/approvals.go:294-301 \"still resolve the request — matching how Telegram/Slack treat this exact failure\"). For HTTP, Telegram and Slack decisions on unlinked requests, the Manager waiter and the channel's pending entry now stay alive until the timeout. That is a behaviour change on paths the issue scoped as unchanged, although the change comes from the issue's own wording of the error split."
+    },
+    {
+      "severity": "minor",
+      "file": "PR body Evidence",
+      "claim": "The pasted `go test -race ./internal/approval/` output is a `(cached)` result, not a fresh run. The two mutation bullets were not run either (\"freeform mutation, run manually\")."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/approval/github.go",
+      "line": "151",
+      "claim": "On the poll path a persistence failure still cannot be retried by \"the next poll tick\". checkApproval already ran `delete(h.pending, requestID)` (github.go:407) and returns true, which ends pollForApproval (`if h.checkApproval(ctx, requestID) { return }`, github.go:359). resolvePending also runs `h.deletePersisted(resp.RequestID, \"decision\")` before the recorder call. For a fresh request the only retry is the Manager waiter's `SetApprovalDecision(context.Background(), …)` at manager.go:392. For a rehydrated request no Manager waiter exists, so a failed write is still lost with no retry and no persisted row left."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/approval/github_test.go",
+      "line": "878",
+      "claim": "The GitHub tests use a fake recorder (ctxCheckingRecorder) instead of Manager plus a store writer. The fake does mimic SetApprovalDecision's ctx check, but the full chain checkApproval → Manager.RecordDecision → stateWriter on the detached ctx is never run."
+    }
+  ],
+  "not_verified": [
+    "Mutation bullets (revert to the poll ctx, delete on a plain error) were not run, because the review can't execute commands. Reading the code, ctxCheckingRecorder at github_test.go:833-836 would fatal on a cancelled ctx, and manager_test.go:1335 would catch a deleted entry, so both tests should fail as the issue requires.",
+    "github_test fresh-path test: met. It is at github_test.go TestCheckApproval_RecordsDecisionOnDetachedContext and uses the real checkApproval with cancelPoll wired as CancelFn. The fake recorder returns ctx.Err(), and the test asserts the decision is approved/alice and that the waiter gets the Response. — not traced",
+    "The two mutation bullets (revert writeCtx to ctx; delete pending on a plain error) were not run, because I cannot run code here and the PR lists both under \"Not verified\". Reading the code, both tests would fail under those mutations: github_test.go asserts `rec.ctxErr != nil` → Fatal, and manager_test.go asserts `n != 1` → Error."
+  ],
+  "notes": "[pass A (hunk)]\n- Detached write context: met. github.go:417 builds `context.WithTimeout(context.WithoutCancel(ctx), approvalWriteTimeout)` with a 10 s constant at github.go:17, and github.go:419 passes writeCtx to resolvePending. CancelFn at :412 cancels pollCtx, but WithoutCancel strips that cancellation, so the recorder's ExecContext (store.go:1984) no longer sees context canceled.\n- Same fix on both poll paths, with no second copy: met. SendApprovalRequest (github.go:348) and Rehydrate (github.go:242) both start pollForApproval, which calls the single checkApproval at :359/:370. The webhook path (github.go:494) still passes the caller's ctx, unchanged.\n- RecordDecision split: met. manager.go:517-523 logs WARN \"failed to persist approval decision\", returns early and leaves m.pending alone for any error that is not ErrApprovalAlreadyDecided. The \"race lost\" INFO line at :538 is now reached only by ErrApprovalAlreadyDecided, because the early return at :523 catches every other error.\n- Rehydrated-path test: met. It runs the real Rehydrate (github.go:225-242) to build the entry, then chains the entry's CancelFn to cancel the test pollCtx. The real poll goroutine is parked with pollInterval=1h after its first check returned false, so it cannot race the test's call.\n- Manager tests: met. TestRecordDecision_PersistenceErrorKeepsPending checks that 1 entry stays pending, a WARN line is logged and \"race lost\" is absent. TestRecordDecision_AlreadyDecidedRemovesPendingAndLogsRaceLost checks 0 pending and the race-lost line. The existing GH-4777 test now uses the real sentinel (manager_test.go:792), so it still covers cleanup.\n- Wire fields: the only stored field touched is approval_decision through SetApprovalDecision. Its producer is store.go:1984-1990 and its consumer is controller.go:5438. Neither changed.\n- Tests use fake DecisionRecorder/PRStateWriter mocks, as the issue asked. The SQL contract itself did not change.\n- Out of scope: the poll interval, timeout, default_action, the persistence format from #5764, and the Slack/Telegram handler files were not touched. The ErrNoRows side effect above is the only spill-over.\n- Migrations: none.\n- Project-memory pitfalls (CI conclusion trust, releasing-stage guard, hasMergedWork branch fallback): this diff repeats none of them.\n[pass B (adjacent)]\n- Detached, bounded write ctx in checkApproval: met. github.go:417 `context.WithTimeout(context.WithoutCancel(ctx), approvalWriteTimeout)` with a 10 s constant at github.go:17. `pending.CancelFn()` at github.go:412 cancels pollCtx, but WithoutCancel removes that cancellation, so the recorder gets a live ctx. Only a store write slower than 10 s would fail it.\n- No second copy: met. The only resolvePending callers are github.go:419 (poll), 494 (review webhook) and 534 (changes-requested webhook). Fresh (github.go:348) and rehydrated (github.go:242) polls both go through pollForApproval → checkApproval.\n- RecordDecision tells a lost race from a write failure: met. manager.go:517 returns early with a WARN on any error that is not ErrApprovalAlreadyDecided and leaves m.pending alone. A wrapped error still matches, because manager.go:510 wraps with `%w`. The \"race lost\" INFO at manager.go:538 is now reached only for ErrApprovalAlreadyDecided.\n- Webhook/cancel paths unchanged: met. github.go:494/534 still pass the caller's ctx, and CancelRequest (github.go:433) is untouched. Side effects on Slack/Telegram/gateway come only through the shared Manager change (see the second defect). Telegram's own handling at telegram.go:650-658 is unchanged.\n- Acceptance tests: the fresh-path test is met (github_test.go TestCheckApproval_RecordsDecisionOnDetachedContext). The rehydrated-path test is met: it builds the entry through the real `h.Rehydrate` (github.go:179) and then wraps CancelFn. The Manager tests are met (TestRecordDecision_PersistenceErrorKeepsPending checks WARN, a kept entry and no \"race lost\"; the AlreadyDecided test checks removal and \"race lost\"). The existing GH-4777 test was correctly switched to `memory.ErrApprovalAlreadyDecided` (manager_test.go:792).\n- Out of scope: the poll interval, timeouts, default_action and #5764 persistence are untouched.\n- Project-memory pitfalls (CI conclusion trust, StageReleasing guard, hasMergedWork branch fallback): none of them is repeated. The diff touches only internal/approval.",
+  "files_read": 10,
+  "passes": 2,
+  "files_read_by_pass": [
+    6,
+    4
+  ],
+  "duration_ms_by_pass": [
+    92559,
+    105718
+  ],
+  "defects_by_pass": [
+    3,
+    4
+  ],
+  "pass_failed": [
+    false,
+    false
+  ],
+  "overlap": 2,
+  "checkout": true,
+  "diff_bytes": 10847,
+  "diff_files": 4,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 10847,
+  "input_issue_bytes": 4654,
+  "input_pr_body_bytes": 5327,
+  "model": "claude-opus-5-5",
+  "duration_ms": 198637,
+  "posted": false
+}

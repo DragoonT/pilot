@@ -1,0 +1,98 @@
+{
+  "repo": "qf-studio/pilot-console",
+  "pr": 427,
+  "issue": 423,
+  "merge_commit": "b823a0d3c92619b4a5d4837e9b88db634cdd10c8",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "internal/usageapi/routes.go",
+      "line": "239",
+      "claim": "`reportedUsdCents` changed from always-present (null when unreported) to `omitempty`, so own-key tenants now lose the key entirely on rows the daemon did not price; the issue says \"When `own`, keep USD fields as today\"",
+      "evidence": "producer `internal/fleet/ledger_store.go:44` \"ReportedUSDCents is nil when the daemon did not report a cost.\""
+    },
+    {
+      "severity": "minor",
+      "file": "internal/allowanceapi/routes_test.go",
+      "line": "661",
+      "claim": "the top-level `key_source` assertion is an OR whose second clause `\"key_source\":\"\u003csrc\u003e\"` also matches the nested `usage.key_source` emitted at internal/allowanceapi/routes.go:279, so the check would pass even if the new top-level field at routes.go:288 were removed"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/usageapi/routes_test.go",
+      "line": "138",
+      "claim": "every usageapi test mocks `KeySourceResolver` with `fakeKeys`, and the real `(*Service).KeySourceForOrg` at internal/allowance/status.go:352 (its period check `state.PeriodStart.Equal(org.EffectiveBillingPeriod(now.UTC()).Start)` at :368) has no test of its own; Grep for KeySourceForOrg found only the fake",
+      "evidence": "Grep for `KeySourceForOrg` finds only its definition, the interface, the call at routes.go:347 and the fake. That leaves untested the case where a tenant with a platform key was switched to own this period, and whether usage agrees with the allowance endpoint."
+    },
+    {
+      "severity": "minor",
+      "file": "PR Body",
+      "claim": "the acceptance bullet asking for pasted `make build`/`make test`/`make lint` output is not met: the body pastes none and says only \"CI on fresh Postgres is the evidence\""
+    },
+    {
+      "severity": "minor",
+      "file": "README.md",
+      "line": "399",
+      "claim": "the allowance response doc still lists `usd_cents`/`remaining_usd_cents` as always present and does not mention `percent_used`, top-level `key_source` or the platform-key USD gate"
+    },
+    {
+      "severity": "minor",
+      "file": "PR #427 body",
+      "claim": "the acceptance bullet asking for pasted `make build`/`make test`/`make lint` output is not met",
+      "evidence": "the PR body has no \"## Evidence\" block and pastes no gate output; it only says \"CI on fresh Postgres is the evidence\" and mentions an earlier failed box `make test` (\"testdb: migrate pilot_test_secrets\")."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/allowance/status.go",
+      "line": "352",
+      "claim": "the key-source rule now exists in three copies",
+      "evidence": "StatusForOrg (status.go:345), the new KeySourceForOrg, and Gate.keySource (gate.go:128 `hasKey := true ... switched = state.SwitchedToOwnAt != nil \u0026\u0026 state.PeriodStart.Equal(period.Start)`). They agree today, but nothing keeps them in step."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/proxy/proxy.go",
+      "line": "49",
+      "claim": "the instance passthrough still forwards the daemon's `metrics`/`history`/`tasks` to platform-key tenants with no gate",
+      "evidence": "the daemon's metrics carry `TotalCostUSD float64 \\`json:\"totalCostUSD\"\\`` (internal/fleet/usagepoller.go:64). This is outside the issue's named endpoints but goes against its premise that a platform-key tenant is never shown cost."
+    }
+  ],
+  "not_verified": [
+    "SPA consumer of `percent_used`, `key_source` and the newly optional `costUsd`/`totalCostUsd`/`estimatedUsdCents`/`included_usd_cents`/`usd_percent` is not in this checkout (Glob `**/*.{ts,tsx,js}` returned no files), so client handling of absent fields is not traced",
+    "The allowanceapi test fakes (`newFakeOrgStore`, `platformKeys` map, `fakeScope`): not traced. The platform case assumes the fake's `PlatformKeyForOrg` returns the assigned key and returns ErrNotFound otherwise.",
+    "Whether the SPA or any other consumer relies on `reportedUsdCents: null` or on USD fields always being present: there is no consumer in this repo.",
+    "Tests for 0/mid/over-cap and USD absent or present on all three endpoints: met. allowanceapi/routes_test.go has TestAllowanceWireContract_PercentUsed (zero, mid, over-cap) and TestAllowanceWireContract_USDGate, which run the real allowance.Service. usageapi/routes_test.go has TestUSDGate_ByKeySource, which uses a fake resolver as noted in DEFECTS. — not traced"
+  ],
+  "notes": "[pass A (hunk)]\n- `percent_used` (0–100, capped): met. internal/allowance/status.go:380 `return max(0, min(100, max(ticketPercent, usdPercent)))` is emitted at internal/allowanceapi/routes.go:287. An over-use input such as 130 tickets of 100 gives TicketPercent 130 (status.go:389, not capped there), and the outer `min(100, …)` clamps it to 100. A negative input is clamped by `max(0, …)`.\n- `key_source` (`platform`/`own`) at top level: met. internal/allowanceapi/routes.go:288 `KeySource: st.KeySource` is produced by internal/allowance/status.go:345 through `KeySource(...)` at :395–399, which only ever returns KeySourcePlatform or KeySourceOwn.\n- USD hidden on platform for the allowance endpoint: met. internal/allowanceapi/routes.go:261 sets all four USD pointers only when `st.KeySource != allowance.KeySourcePlatform`, and each field has `omitempty` (:120, :130, :137, :196). An own-key tenant with 0 cents still gets the key, because the pointer to 0 is non-nil.\n- USD hidden on platform for `/api/v1/usage`: met. internal/usageapi/routes.go:200–202 calls `resp.hideUSD()`, which nils TotalCostUSD and every Series CostUSD (:357–362). A key-source lookup error returns 500 before any data is read (:347–351), so a failing lookup cannot leak cost.\n- USD hidden on platform for `/api/v1/usage/ledger`: met. internal/usageapi/routes.go:326–329 sets `est, rep = nil, nil` when hide is true. `\u0026l.EstimatedUSDCents` on the loop variable is safe under Go 1.25's per-iteration loop variables.\n- Usage and allowance endpoints agree on key source: met. main.go:1130–1134 builds the usage resolver with `State: orgStore`, matching main.go:1164 `State: orgStore` for allowanceapi. KeySourceForOrg's rule at status.go:367–368 mirrors `StateIsCurrent() \u0026\u0026 SwitchedToOwnAt != nil` at status.go:230 and :345.\n- Counts, durations and ticket numbers kept: met. Tokens, tasks, taskId, startedAt and completedAt are unchanged and not gated at internal/usageapi/routes.go:330–337.\n- Dashboard gate \"if it carries cost fields\": met as not applicable. internal/dashboardapi/dto.go:40–43 statsDTO carries only `shipped` and `needsYou`, and :37 says costPerShipped is \"deliberately absent\".\n- Tests for percent at 0/mid/over-cap: met. internal/allowanceapi/routes_test.go:613–617 goes through the real allowance.Service, built at internal/allowanceapi/routes.go:100, with fake stores.\n- Tests for USD absent on platform and present on own: met for allowance (routes_test.go:642) and for usage plus ledger (internal/usageapi/routes_test.go:563). The dashboard has no cost fields to test.\n- Migrations and RLS: no migration in this diff.\n- Out of scope: the issue has no out-of-scope section. The boardapi hunk at main.go:1050 is gofmt alignment only.\n[pass B (adjacent)]\n- percent_used (0–100, capped): met. internal/allowanceapi/routes.go:287 `PercentUsed: allowance.PoolPercent(st.TicketPercent, st.USDPercent)` with internal/allowance/status.go:380 `max(0, min(100, max(ticketPercent, usdPercent)))`. Usage above the allowance (130 tickets of 100 gives TicketPercent 130) is clamped by the `min(100, …)`. A zero included figure gives 0 through Percent's `if included \u003c= 0 { return 0 }` (status.go:386).\n- key_source top level: met. routes.go:288 `KeySource: st.KeySource`, which comes from status.go:345. A current-period switched-to-own state turns platform into own through `KeySource` at status.go:396.\n- Allowance USD omitted for platform: met. routes.go:261 `if st.KeySource != allowance.KeySourcePlatform` is the only place the four pointers get set, and all four fields use `omitempty` (routes.go:120,130,137,196). The own branch keeps the values from before.\n- /usage USD omitted for platform: met. routes.go:170 `hide, ok := h.hideUSD(w, r, org)` runs after the org lookup and before any data read, and routes.go:201 `resp.hideUSD()` clears the total and every series cost. Earlier returns (disabled, no principal, no org) send no data. A failed key lookup returns 500 (routes.go:348) instead of leaking cost.\n- /usage/ledger USD omitted for platform: met. routes.go:298 checks before the ledger query, and routes.go:327 `if hide { est, rep = nil, nil }` applies to every row. The validation returns at routes.go:263–283 come before any data read.\n- Production wiring: met. main.go:1130 passes `allowance.New(...)` with PlatformKeys and State set. `disabled()` (usageapi/routes.go:109) returns 503 when the resolver is nil, and TestUSDGate_NilResolverDisablesRoutes covers that.\n- Dashboard gate: met as a no-op. internal/dashboardapi/dto.go:40–43 `statsDTO{Shipped, NeedsYou}` has no cost fields, and dto.go:37 says \"deliveryRate/costPerShipped … are deliberately absent\".\n- Migrations: none in the diff.\n- Out-of-scope section: the issue has none. The main.go:1050–1056 hunk only realigns whitespace.",
+  "files_read": 13,
+  "passes": 2,
+  "files_read_by_pass": [
+    5,
+    8
+  ],
+  "duration_ms_by_pass": [
+    58778,
+    83791
+  ],
+  "defects_by_pass": [
+    5,
+    5
+  ],
+  "pass_failed": [
+    false,
+    false
+  ],
+  "overlap": 2,
+  "checkout": true,
+  "diff_bytes": 29679,
+  "diff_files": 6,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 29679,
+  "input_issue_bytes": 1020,
+  "input_pr_body_bytes": 520,
+  "model": "claude-opus-5-5",
+  "duration_ms": 142833,
+  "posted": false
+}

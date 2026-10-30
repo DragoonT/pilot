@@ -1,0 +1,101 @@
+{
+  "repo": "qf-studio/pilot-console-ui",
+  "pr": 255,
+  "issue": 243,
+  "merge_commit": "c05dbd11b039898701b81df285a25223a10c8998",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "severity": "blocking",
+      "file": "PR Body:Evidence",
+      "claim": "the acceptance bullet \"The PR body lists every field that fell back to `—` and which endpoint would need to supply it\" is not met; the PR body has no \"Needs API\" section",
+      "evidence": "the body holds only Summary, Changes (a copy of the issue) and Evidence (build, test and lint output). The fields that fall back to `—` are listed only in the code docblock at src/design-system/components/ContextPanel.vue:11-15, and that docblock names no endpoint that would supply them. The fields are Docs \"Created this week\" and \"Read by Pilot this week\", every Memory value, and Graph health, Nodes, Edges and Last updated."
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/ContextPanel.vue",
+      "line": "74",
+      "claim": "the Docs header value `docs.entries.length` and the \"Updated this week\" count at :33 are counted from `entries` on the client, which the type contract warns against",
+      "evidence": "src/lib/api/types.ts:644-645 says \"never client-recount `entries`, the tree response may cap/paginate individual entries independently of these totals\". Once the server caps the tree, both numbers come out too low and nothing on screen says so."
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/ContextPanel.vue",
+      "line": "14-15",
+      "claim": "the Healthy/Drift/Stale thresholds (≤7d, ≤30d) are made up on the client; the docblock itself says \"assumed — no backend definition exists yet\". The issue says \"do not invent values\". No caller passes `graph` (src/views/DashboardView.vue:367 `\u003cContextPanel :docs=\"contextDocs\" /\u003e`), so in production this shows `—` and nothing visible changes today."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/DashboardView.vue",
+      "line": "246-256",
+      "claim": "no test covers how the dashboard loads `loadContextDocs` or passes the result to `ContextPanel`; Grep finds no `getDocsTree` or `data-context-card` in src/views/__tests__/DashboardView.spec.ts. Only the component is tested, with fixed props."
+    },
+    {
+      "severity": "blocking",
+      "file": "PR Body:\"## Evidence\"",
+      "claim": "Acceptance bullet 2 is not met. The issue says \"list the missing fields in the PR body under 'Needs API'\" and requires the body to list \"every field that fell back to `—` and which endpoint would need to supply it\". The PR body has no \"Needs API\" section. It only has Summary, Changes (a copy of the issue) and Evidence. The fallback fields (Docs Created/Read this week, the Memory header and all three Memory rows, Graph Nodes/Edges/Last updated/health) are listed only in the `src/design-system/components/ContextPanel.vue:11-15` docblock, and no endpoint is named for any of them."
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/ContextPanel.vue",
+      "line": "72",
+      "claim": "The Docs header value and \"Updated this week\" (`ContextPanel.vue:33`) are counted from `docs.entries` on the client, which the documented contract says is capped. `src/lib/api/types.ts:644-645` says \"never client-recount `entries`, the tree response may cap/paginate individual entries independently of these totals\". The mock also slices entries when `limit` is set (`mockAdapter.ts:1724`). If the server caps the tree, both numbers come out too low and look authoritative."
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/ContextPanel.vue",
+      "line": "82",
+      "claim": "The Memory header is hardcoded to `—` even though the same tree response has server-authoritative knowledge counts: `counts: DocsCounts` with `patterns`, `pitfalls`, `learnings`, `decisions` (`types.ts:646-657`), and `type === 'knowledge'` entries that carry `modifiedAt` (`types.ts:634`). The docblock says \"There is no memory or graph endpoint\" and never explains why the knowledge counts don't count as memories."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/__tests__/DashboardView.spec.ts",
+      "claim": "Nothing tests the DashboardView wiring. A grep of the spec for `getDocsTree|Context|loadInstances` finds nothing. The new `loadContextDocs` path (`DashboardView.vue:248-256`) and the third grid column are untested. `ContextPanel.spec.ts` mounts the component alone with hand-built props."
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/ContextPanel.vue",
+      "line": "66",
+      "claim": "The component uses no `\u003cscript setup\u003e` design citation. It is marked \"no mock — vocabulary extension\", but the issue refers to a \"2026-10 design\" with three panel cards. The docblock doesn't say which frame or node it follows. Compare DashboardView's citation of Figma node `13-994`."
+    }
+  ],
+  "not_verified": [
+    "Not reviewed: the middle of the `make test` output (the PR body cut \"... 1627 lines omitted ...\"); the summary shows \"Test Files 69 passed (69) / Tests 954 passed (954)\".",
+    "The 2026-10 design for the Context panel: no design file under design/ covers it, so its layout, 16px padding and 13px rows were not checked against a mock.",
+    "Width of the main column at the 1280px `xl` breakpoint once the 400px and 270px columns sit beside the 68px rail and the 350px chat panel: not traced, AppShell layout not opened.",
+    "Whether the \"2026-10 design\" actually has a Context frame that conflicts with the \"no mock\" claim: the design file was not opened.",
+    "1 requirements marked met without a path:line citation: not traced"
+  ],
+  "notes": "[pass A (hunk)]\n- Right column, 270px at ≥1280px, stacked below that: met. src/views/DashboardView.vue:324 `xl:grid-cols-[minmax(0,1fr)_400px_270px]`, and ContextPanel is the third grid child at :367. Below xl the grid has a single column, so the panel sits after the main column and the by-project section. theme.css overrides no `--breakpoint`, so `xl` stays at the default 1280px. Like the rest of the desktop grid, the panel is hidden below `md`, where the separate mobile glance at :373 takes over.\n- \"Context\" header and three cards with 16px padding and 13px rows: met. ContextPanel.vue:68 `\u003ch2 ...\u003eContext\u003c/h2\u003e`; :70/:81/:92 `p-4`; rows `text-[13px]` at :75/:86/:97. The tokens `text-success`, `text-needs-you`, `text-error`, `text-text-2` and `border-hairline` all exist (theme.css:21, :27, :23, :13, :8).\n- Docs card labels: met at ContextPanel.vue:36-40. \"Updated this week\" reads the wire field `modifiedAt`; its producer is src/lib/api/httpAdapter.ts:519 `modifiedAt: wire.modifiedAt`, with the mock at mockAdapter.ts:271. A `null` tree (no instance, or a not-running DocsError caught at DashboardView.vue:253-254) shows `—` instead of throwing.\n- Memory card: header and all three rows show `—` (ContextPanel.vue:42-46, :82). No memory endpoint exists in src/lib/api/types.ts. `ChatEvent.memoriesRead` at types.ts:445 counts per chat turn, not per week.\n- Graph card: health word with a rule tooltip at ContextPanel.vue:93 (`:title=\"HEALTH_RULE\"`); Nodes, Edges and Last updated at :60-64; `formatRelativeTime(iso, now)` matches the signature at src/lib/relativeTime.ts:7. No bare percentage is rendered, and ContextPanel.spec.ts:24 checks `not.toMatch(/\\d+%/)`.\n- Data source: met. DashboardView.vue:249 `session.instances[0]?.id` uses the same instance as DocsView.vue:95 `session.instances[0]?.id ?? null`. `getDocsTree` is served by both adapters (httpAdapter.ts:1743-1747, mockAdapter.ts:1716-1725).\n- Unit test for the labels and the `—` fallback: met at ContextPanel.spec.ts:17-25. The test mounts the real component with typed props and needs no adapter, so it does not stand in for a wire contract.\n- make build / test / lint: the pasted output in the PR body shows the build ending \"✓ built in 6.20s\", 954 of 954 tests passing, and `vue-tsc --noEmit` exiting clean.\n- Out of scope: the diff adds no Docs rail icon and no theme toggle, and does not build `/docs`.\n[pass B (adjacent)]\n- Right column, 270px at ≥1280px and stacked below that: met. `src/views/DashboardView.vue:324` uses `xl:grid-cols-[minmax(0,1fr)_400px_270px]`, and below xl the bare `md:grid` is one column, so `\u003cContextPanel\u003e` at `:367` stacks under the main column. Below md the whole grid is `hidden` and the mobile block (`:373`) has no Context panel, which matches mobile-v1, where it doesn't appear.\n- \"Context\" header and three cards with 16px padding and 13px rows: met. `ContextPanel.vue:68` is `\u003ch2 ...\u003eContext\u003c/h2\u003e`; `:70`, `:81` and `:92` are `p-4` sections; the rows are `text-[13px]`. Any props input still renders all three cards because none of them is behind a `v-if`.\n- Docs rows and header: labels are met (`ContextPanel.vue:37-39`). The values come from a capped entry list (see the [minor] defect on line 72 above).\n- Memory header and rows: the labels are met (`ContextPanel.vue:42-46`). Every value is `—`.\n- Graph health word, tooltip and Nodes/Edges/Last updated: met. `ContextPanel.vue:95` binds `:title=\"HEALTH_RULE\"`. When there's no `updatedAt`, `health` is null and `—` shows, so the panel never shows a percentage. The test checks `not.toMatch(/\\d+%/)`.\n- Data source is the existing docs endpoint and failures fall back to `—`: met. `DashboardView.vue:252` calls `getAdapter().getDocsTree(id)` and the catch at `:253-254` sets null, the same as `DocsView.vue:111`. Having no instance returns early at `:250`. If `session.loadInstances` rejects (`session.ts:73`), the `.then` at `:261` never runs and the panel stays `—`, which is consistent with the requirement.\n- Unit test for the labels and the `—` fallback: met. `ContextPanel.spec.ts:17-25` mounts the real component, not a mocked adapter. It doesn't touch the adapter contract.\n- PR body \"Needs API\" list: not met (see the blocking defect).\n- Migrations: none in the diff.\n- Out of scope: the issue has no out-of-scope section, and the diff adds no Docs rail icon or dark-mode toggle.",
+  "files_read": 10,
+  "passes": 2,
+  "files_read_by_pass": [
+    5,
+    5
+  ],
+  "duration_ms_by_pass": [
+    68523,
+    45768
+  ],
+  "defects_by_pass": [
+    4,
+    5
+  ],
+  "pass_failed": [
+    false,
+    false
+  ],
+  "overlap": 0,
+  "checkout": true,
+  "diff_bytes": 10956,
+  "diff_files": 3,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 10956,
+  "input_issue_bytes": 1713,
+  "input_pr_body_bytes": 15974,
+  "model": "claude-opus-5-5",
+  "duration_ms": 114346,
+  "posted": false
+}
