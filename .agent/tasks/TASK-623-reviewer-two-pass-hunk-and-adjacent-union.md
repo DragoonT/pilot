@@ -1,6 +1,6 @@
 # TASK-623: Reviewer two passes — a hunk pass and an adjacent pass, defects united by location, verdict from the union
 
-**Status**: 📋 PLANNED 2026-10-30 (founder "two passes" after calibration run 5). One leg, not dispatched. Measure = run 6 on the same 14 PRs with `--passes 2`; pass bar unchanged (RC 3/3 · recall ≥ 0.5 · false ≤ 1); also report pass-A-only and pass-B-only recall from the same JSONs.
+**Status**: 🚀 P1 DISPATCHED 2026-10-30 → pilot#5977 (`pilot`+`no-decompose`). Was: 📋 PLANNED 2026-10-30 (founder "two passes" after calibration run 5). Measure = run 6 on the same 14 PRs with `--passes 2`; pass bar unchanged (RC 3/3 · recall ≥ 0.5 · false ≤ 1); also report pass-A-only and pass-B-only recall from the same JSONs.
 **Origin**: runs 4 and 5 (`system/bench/post_merge_reviewer_calibration_2026-10.md`): one pass finds 18–19 of 52 hand defects at ~5 files and ~70 s whatever the prompt tells it to look at. Run 5's adjacent-code item moved 5 misses to hits and 7 hits to misses (in-hunk items displaced): a fixed finding budget redistributed. The union of run 4 and run 5 outputs would have hit 24 + the partials — that is the number this task buys with a second pass.
 **Spec refs**: `internal/executor/post_merge_reviewer.go` (`Review`, `PostMergeReview`, `PostMergeDefect{Severity, Location, Claim, Evidence}`, `parsePostMergeReview`, `enforcePostMergeCitations`, `downgradePostMergeNoFilesRead`, `postMergeChecklistItemAdjacent`, `SetMaxDiffChars` setter idiom, `postMergeReviewMaxTurns`), callers `internal/autopilot/post_merge_review.go` (daemon), `internal/executor/pre_pr_review.go` (pre-PR), `cmd/pilot/review_merge.go` (CLI JSON: `verdict`, `defects`, `not_verified`, `notes`, `files_read`, `duration_ms`), config `internal/autopilot/types.go` (`PostMergeReviewConfig`), `internal/executor/backend.go` (`PrePRReviewConfig`), `internal/config/config.go` (`validatePrePRReview`).
 
@@ -59,3 +59,7 @@ The reviewer in `internal/executor/post_merge_reviewer.go` runs one claude invoc
 2. Pass bar: RC 3/3 · recall ≥ 0.5 · false ≤ 1. Expected from the run-4/run-5 union: about 24 HIT + partials ≈ 50–52 %.
 3. If the union clears the bar: box `post_merge_review.passes: 2` and `executor.pre_pr_review.passes: 2`, then watch mean time (expect ~140 s; cap 20/day unchanged) and the pre-PR 6 m budget.
 4. If the union does not clear the bar: the remaining misses are two hops out or in notes-only hand reviews; that is a different class and not another pass.
+
+## Refs
+
+- P1 → https://github.com/qf-studio/pilot/issues/5977
