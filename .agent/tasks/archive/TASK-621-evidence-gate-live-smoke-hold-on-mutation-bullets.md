@@ -1,6 +1,6 @@
 # TASK-621: Evidence gate — a mutation acceptance bullet that names "live smoke" is held as a live-service check
 
-**Status**: 🚀 DISPATCHED 2026-10-29 — one leg (see Refs). Found on PR#5969 (TASK-620 L7): the live-smoke hold fired on a mutation bullet whose text contains "live-smoke append"; founder approved by hand after 21 minutes.
+**Status**: ✅ MERGED 2026-10-29 — E1 #5971 → PR#5973 merged 20:36Z-ish (in v2.302.0, box 10-30 11:03Z); mutation-form bullets no longer trip the live-smoke hold. Archived 10-30. Was: 🚀 DISPATCHED 2026-10-29 — one leg (see Refs). Found on PR#5969 (TASK-620 L7): the live-smoke hold fired on a mutation bullet whose text contains "live-smoke append"; founder approved by hand after 21 minutes.
 **Origin**: PR#5969 escalation 19:32Z, reason `Not verified list names a key-gated / live-service check: restore the pre-PR append after the live-smoke append and drop the step-2 cut -> TestHandleCIPassed_PreReviewAndLiveSmoke fails`.
 
 ## Why
