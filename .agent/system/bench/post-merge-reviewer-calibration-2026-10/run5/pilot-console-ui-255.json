@@ -1,0 +1,62 @@
+{
+  "repo": "qf-studio/pilot-console-ui",
+  "pr": 255,
+  "issue": 243,
+  "merge_commit": "c05dbd11b039898701b81df285a25223a10c8998",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "severity": "blocking",
+      "file": "PR body (## Evidence / ## Changes)",
+      "claim": "The second acceptance bullet asks the PR body to list every field that falls back to `—` and the endpoint that would supply it. The PR body has no \"Needs API\" section. It only repeats the issue text and pastes the build, test and lint output. The fields that render `—` are listed only in a code docblock (src/design-system/components/ContextPanel.vue:11-15): Docs created and read counts, all Memory values and all Graph values. So this requirement is not met."
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/ContextPanel.vue",
+      "line": "71",
+      "claim": "The Docs header value is a client recount (`docs.entries.length`), and docsUpdated at :30-34 filters the same `entries`. The type contract forbids this. src/lib/api/types.ts:644-645 says \"never client-recount `entries`, the tree response may cap/paginate individual entries independently of these totals\". The mock already slices entries on `limit` (src/lib/api/mockAdapter.ts:1724), so a capped tree would undercount the header and \"Updated this week\"."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/DashboardView.vue",
+      "line": "324",
+      "claim": "The panel sits inside the `hidden … md:grid` container, so it never renders below the md breakpoint. The issue says \"stacked under the main column below that\", but the mobile glance block (DashboardView.vue:373) has no Context panel."
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/ContextPanel.vue",
+      "line": "73-76",
+      "claim": "Rows show only one value. The \"count left of a muted secondary number\" anatomy is not built, and no trim is written in the docblock. The issue says \"where available\", so this is minor."
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/ContextPanel.vue",
+      "line": "55",
+      "claim": "`Drift` is coloured `text-needs-you`, the Review-needed accent token (src/design-system/theme.css:27 `--color-needs-you: #b04a92`), not a warning tone. That reuses a token for a different meaning."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/__tests__",
+      "claim": "No DashboardView test checks that `loadContextDocs` calls `getDocsTree` or that `ContextPanel` gets mounted. A grep for `getDocsTree|ContextPanel` in src/views/__tests__ finds only DocsView.spec.ts. The spec covers the component in isolation, not the wiring at DashboardView.vue:246-261."
+    }
+  ],
+  "not_verified": [
+    "Not reviewed: the middle of the pasted `make test` output (\"... 1627 lines omitted ...\"). The summary shows \"Test Files 69 passed (69)\" and ContextPanel.spec.ts (3 tests) passing.",
+    "Graph health rule (≤7d Healthy, ≤30d Drift, older Stale) at ContextPanel.vue:47-52 is invented here, as its own docblock says (\"assumed — no backend definition exists yet\"). No backend counterpart exists in the checkout to confirm it.",
+    "Build, test and lint output pasted: met. Build ends \"✓ built in 6.20s\", tests show \"69 passed (69)\", and lint (`vue-tsc --noEmit`) prints no errors. — not traced"
+  ],
+  "notes": "- Right column 270px at ≥1280px: met. DashboardView.vue:324 `xl:grid-cols-[minmax(0,1fr)_400px_270px]` puts ContextPanel (DashboardView.vue:367) in the third track. Between md and xl the grid has a single column, so the panel stacks below. Below md it is hidden (see defect).\n- \"Context\" header and three cards with 16px padding and 13px rows: met. ContextPanel.vue:67 `\u003ch2 …\u003eContext\u003c/h2\u003e`, and cards at :69/:80/:91 use `p-4` with rows `text-[13px]`.\n- Docs rows, labels Created / Updated / Read by Pilot this week: met at ContextPanel.vue:36-40. Only \"Updated\" is computed, from `modifiedAt`, which the wire supplies (src/lib/api/httpAdapter.ts:268 `modifiedAt: string`, mapped at :519). This fails if the tree is capped (see defect).\n- Memory card, total plus the same three rows: met as all `—` (ContextPanel.vue:41-45, :83). No memory endpoint exists. The only memory fields are per-chat-turn `memoriesRead/memoriesCreated` (types.ts:445-446), which are not weekly totals.\n- Graph health word with tooltip, plus Nodes / Edges / Last updated: met at ContextPanel.vue:93 (`:title=\"HEALTH_RULE\"`) and :59-63. With no graph endpoint (no \"graph\" match in types.ts), the `graph` prop is never passed (DashboardView.vue:367), so production always shows `—`. That is the honest outcome.\n- No bare `98%`: met. The panel has no percentage, and the spec asserts this (ContextPanel.spec.ts:24). The header `Pool …%` at DashboardView.vue:329 is labeled and predates this PR.\n- Data source is the endpoint DocsView uses: met. DashboardView.vue:249-252 uses `session.instances[0]?.id` and `getDocsTree(id)`, the same as DocsView.vue:95 and :111. Producer: httpAdapter.ts:1746 `/api/v1/instances/${instanceId}/pilot/docs/tree`. Mock: mockAdapter.ts:1716-1725.\n- Unit test asserts labels and the `—` fallback: met at ContextPanel.spec.ts:17-25.\n- PR body lists the `—` fields under \"Needs API\": not met (blocking defect).\n- Migrations: none in this diff. Out-of-scope: the issue has no such section, and no rail or dark-mode trap was touched.",
+  "files_read": 5,
+  "checkout": true,
+  "diff_bytes": 10956,
+  "diff_files": 3,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 10956,
+  "input_issue_bytes": 1713,
+  "input_pr_body_bytes": 15974,
+  "model": "claude-opus-5-5",
+  "duration_ms": 49455,
+  "posted": false
+}

@@ -1,0 +1,56 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5874,
+  "issue": 5862,
+  "merge_commit": "076bb48f488b1f6538bcf3f8c682f50f54e5d39c",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/commands.go",
+      "line": "309",
+      "claim": "`fetchAdmissionPauseLine` sends no bearer token, so on a daemon with gateway auth configured `pilot status` silently omits the \"admission paused\" line",
+      "evidence": "`/api/v1/` is wrapped in `s.auth.Middleware(apiMux)` (internal/gateway/server.go:309) whenever `GatewayAuthConfig()` returns non-nil (internal/config/config.go:1517 `if c.Auth == nil || c.Auth.Type != gateway.AuthTypeAPIToken || c.Auth.Token == \"\"`); on a 401 the code returns `\"\"` at `if resp.StatusCode != http.StatusOK`, even though `cfg.Auth.Token` is available in that command"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/usage_limit_pause.go",
+      "line": "100",
+      "claim": "a reset time that has just passed (for example a \"resets 2pm\" message read at 2:01pm) rolls over to tomorrow and holds admission for the full max_pause (6h) instead of about 5 minutes",
+      "evidence": "internal/executor/ratelimit.go:96 `if resetTime.Before(now) { resetTime = resetTime.Add(24 * time.Hour) }`; the rollover itself is older code that the Scheduler re-queue shares, but the new pause turns it into a fleet-wide 6h hold"
+    },
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/main.go",
+      "line": "3414",
+      "claim": "the new GH-5862 block sits between the GH-4412 comment (main.go:3409-3413) and the `SetDispatcherLiveness` loop that comment describes, so that comment now labels the wrong code",
+      "evidence": "main.go:3415 `if gwServer != nil \u0026\u0026 dispatcher != nil {` comes before main.go:3419 `if dispatcher != nil {`"
+    },
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/status_admission_test.go",
+      "line": "33",
+      "claim": "`TestFetchAdmissionPauseLine` decodes a hand-written JSON string, not output from the real `handleStatus`",
+      "evidence": "the key names do match the producer exactly (server.go `resp[\"admission_paused\"]`, `resp[\"admission_pause_owners\"]`, `resp[\"admission_resumes_at\"]` against the json tags at commands.go:289-291), so the test is weaker than it looks rather than wrong"
+    }
+  ],
+  "not_verified": [
+    "Production wording: in the test the backend returns the usage-limit text in `BackendResult.Error` with a nil error. I did not trace whether the real Claude backend fails the same way. If it returns a non-nil `execErr` instead, `Classify` sets `ExecStatusFailed` (internal/executor/lifecycle.go:289) and the pause never arms.",
+    "Gateway evidence: the pasted `go test -race ./internal/gateway/` output reads `(cached)`, so it does not show a fresh run.",
+    "2 more requirements marked met without a path:line citation: not traced"
+  ],
+  "notes": "- Config knob met: `UsageLimitPauseConfig` is defined in internal/executor/backend.go and wired at `UsageLimitPause *UsageLimitPauseConfig yaml:\"usage_limit_pause,omitempty\"`. It is validated at internal/config/config.go:1343 and documented in configs/pilot.example.yaml. A nil config reports enabled with 6h/30m via `IsEnabled`/`EffectiveMaxPause`/`EffectiveFallbackPause`, so a missing block still gets the defaults. Production gets the knob through the runner: `runner.config = config` (internal/executor/runner.go:1435) is what `usageLimitPauseConfig()` reads.\n- Hook met: internal/executor/dispatcher.go:3967 calls `w.onRateLimited` when `outcome.Status == ExecStatusRateLimited`, before `Persist` at :3973. Wiring is at dispatcher.go:2981 in `ensureWorker`. Admission is then blocked at the top of the loop (dispatcher.go:3473 `if w.admissionPaused != nil \u0026\u0026 w.admissionPaused.Load() { return }`), so the worker's next pickup does not happen.\n- Extend and no stacking met: `PauseAdmissionFor` keys a map by owner (dispatcher.go:3138 `d.admissionPauseOwners[owner] = true`). A later resume replaces the timer and bumps the generation. A stale timer is ignored at usage_limit_pause.go:153 `if gen != d.usageLimitGen`.\n- RetryBuffer met: the pause uses `DefaultSchedulerConfig().RetryBuffer`, the same config the poller's scheduler is built with (cmd/pilot/poller_github.go:751 `executor.NewScheduler(executor.DefaultSchedulerConfig(), nil)`). The single-task re-queue at poller_github.go:327-330 is unchanged.\n- Other owners coexist: the platform breaker (internal/autopilot/controller.go:1709/1711) and self-upgrade (main.go:4185-4239) each resume only their own owner key, and nothing clears the owner map wholesale.\n- Lock order: `releaseUsageLimitPause` holds `usageLimitMu` while `ResumeAdmissionFor` takes `admissionPauseMu` and then `d.mu.RLock` (dispatcher.go:3167). No path takes `usageLimitMu` while holding either of those, and `Stop` calls `stopUsageLimitPauseTimer` before `d.mu.Lock`.\n- Status met: server.go `handleStatus` emits all three fields. Wiring is in both modes: main.go:1418 (gateway) and main.go:3416 (polling, with `gwServer` declared at main.go:2861 in the same function).\n- Alert met: one alert per episode, gated by `!extended`. It travels the bridge in internal/alerts/adapter.go:23 `Type: EventType(event.Type)` to engine.go `case EventTypeUsageLimitPause`. The PR's claim that the platform breaker has no engine rule checks out: controller.go:1715 emits `alerts.EventType(\"platform_breaker_open\")`, and no `handleEvent` case or default rule matches it.\n- Out of scope respected: there is no CLI pause/resume, no persisted pause, no threshold, no change to `pilot stop`, and the re-queue is unchanged.\n- Project memory pitfalls: none repeated. The diff does not touch claim reconciliation, auto-preserve push, the dashboard stage strip or poller labels, and held rows stay queued per the comment at dispatcher.go:3471.",
+  "files_read": 6,
+  "checkout": true,
+  "diff_bytes": 52411,
+  "diff_files": 19,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 52411,
+  "input_issue_bytes": 4918,
+  "input_pr_body_bytes": 3285,
+  "model": "claude-opus-5-5",
+  "duration_ms": 96845,
+  "posted": false
+}

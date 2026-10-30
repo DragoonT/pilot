@@ -1,0 +1,52 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5872,
+  "issue": 5803,
+  "merge_commit": "bfa013cbc9a4867743dca7454ad1b56fa8f7f7f8",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "internal/approval/manager.go",
+      "line": "517",
+      "claim": "Manager.RecordDecision now treats sql.ErrNoRows as a persistence failure and returns early without deleting the entry or calling pr.CancelFn. The gateway's unlinked-request branch relied on that cleanup and now leaves the manager waiter and GitHub poll running until the dispatch timeout",
+      "evidence": "internal/gateway/approvals.go:294-298 reads \"Warn and still resolve the request … rather than 500ing forever\", and Controller.SetApprovalDecision returns that error type at internal/autopilot/controller.go:5446-5456. The issue asked for exactly this split (anything other than ErrApprovalAlreadyDecided), so this is minor."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/approval/github.go",
+      "line": "151",
+      "claim": "After a persistence failure on the rehydrated path nothing retries the write. resolvePending deletes the persisted row first (`h.deletePersisted(resp.RequestID, \"decision\")`). checkApproval has already deleted the handler entry and stopped the poll (github.go:407, :412), so the \"next poll tick\" retry the issue describes cannot happen. The only retry is the manager's async goroutine (manager.go:391-392, `if wasPending \u0026\u0026 m.stateWriter != nil`), and after a restart there is no such goroutine for a rehydrated request."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/approval/github_test.go",
+      "line": "926",
+      "claim": "The rehydrated test swaps p.CancelFn for a wrapper and runs checkApproval on a ctx it creates itself, not on the pollCtx Rehydrate makes at github.go:225 (`pollCtx, cancelFn := context.WithCancel(ctx)`). It still pins the shared checkApproval but does not exercise the real rehydrated ctx wiring."
+    },
+    {
+      "severity": "minor",
+      "file": "PR body Evidence",
+      "claim": "the pasted `go test -race ./internal/approval/` output says `ok … (cached)`, which does not show a fresh run of the new tests."
+    }
+  ],
+  "not_verified": [
+    "Both mutation bullets (revert to the poll ctx; delete the entry on a plain error) were not run, and the PR lists them as \"run manually\". From reading the code, each test would fail under its mutation: the recorder would record ctxErr in the first case (github_test.go `if err := ctx.Err(); err != nil`), and the entry count would be 0 in the second.",
+    "Test on the fresh path (TestCheckApproval_RecordsDecisionOnDetachedContext): met. driveCheckApproval sets CancelFn to the cancel of the pollCtx it passes in, and assertDetachedApproval checks ctxErr == nil, the recorded DecisionApproved by alice, and the waiter's response. — not traced",
+    "2 more requirements marked met without a path:line citation: not traced"
+  ],
+  "notes": "- Detached write context: met. At github.go:417, `context.WithTimeout(context.WithoutCancel(ctx), approvalWriteTimeout)` with `approvalWriteTimeout = 10 * time.Second` at github.go:17, and CancelFn is still called at :412. The write would fail if writeCtx were derived from the poll ctx after CancelFn ran. WithoutCancel drops the parent's cancellation, so the cancel at :412 cannot reach it.\n- Single call site: met. checkApproval is called only from pollForApproval (github.go:359, :370), which both SendApprovalRequest (:348) and Rehydrate (:242) launch. The other resolvePending calls are the webhook handlers at :494 and :534, which still pass the caller's ctx, so the webhook path is unchanged.\n- RecordDecision split: met. At manager.go:517-524 a non-ErrApprovalAlreadyDecided error logs a WARN \"failed to persist approval decision\" and returns before the delete at :529. The race-lost INFO at :538 is now reached only for the sentinel. errors.Is still matches through the `%w` wrap at :510, because the store returns the bare sentinel (memory/store.go:2018) and the controller passes merr through unchanged (controller.go:5456).\n- Wire fields: the diff adds none. The only persistence call is SetApprovalDecision (types.go:117 → controller.go:5438 → memory/store.go:1979), and its signature did not change.\n- Out of scope: the diff does not touch the poll interval, timeout, default_action, pending persistence, slack.go or telegram.go.\n- Project memories: none of the three listed pitfalls (CI failure classification, StageReleasing guard, hasMergedWork branch fallback) is touched or repeated.",
+  "files_read": 6,
+  "checkout": true,
+  "diff_bytes": 10847,
+  "diff_files": 4,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 10847,
+  "input_issue_bytes": 4654,
+  "input_pr_body_bytes": 5327,
+  "model": "claude-opus-5-5",
+  "duration_ms": 90023,
+  "posted": false
+}

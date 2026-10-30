@@ -1,0 +1,58 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5822,
+  "issue": 5792,
+  "merge_commit": "b8fa43099badcefcbf2b57ee6f8c6c798e13399b",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "internal/briefs/scheduler.go",
+      "line": "108",
+      "claim": "The weekly catch-up can send the weekly brief on a day other than Monday. If the daemon was down during the Monday slot and restarts any time in the next 8 days (lookback `8*24*time.Hour`, scheduler.go:361), `run()` fires at once (scheduler.go:392). That conflicts with \"fires on Monday only\" for the restart path. The window also ends at `time.Now()` (scheduler.go:233), not at the missed slot."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/briefs/scheduler.go",
+      "line": "336",
+      "claim": "Weekly catch-up only looks at `GetLastBriefSent(\"telegram\", briefType)`. Combined with `requirePrior \u0026\u0026 lastRecord == nil` (scheduler.go:376), a tenant with only Slack or email channels never has a record, so its missed weekly brief is never caught up."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/briefs/weekly.go",
+      "line": "29",
+      "claim": "With the default daily schedule `0 9 * * 1-5`, the daily and weekly cron entries both fire at 09:00 Monday. Both store a payload, and GET /api/v1/briefs/latest returns `rows[0]` (internal/gateway/briefs.go:58). So \"latest\" on Monday is whichever finished last."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/memory/store.go",
+      "line": "5392",
+      "claim": "`earliestStageOccurrences(StagePRCreated)` reads every pr_created row in the whole ledger with no time window. Each weekly brief and each weekly payload build scans the full history."
+    },
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/tunnel.go",
+      "line": "205",
+      "claim": "The pasted `make lint` fails with 3 SA4023 findings in cmd/pilot/tunnel.go (lines 205, 351, 433). The diff does not touch that file, so this is a pre-existing problem in package cmd/pilot, not one this PR caused."
+    }
+  ],
+  "not_verified": [
+    "`make test` ends in `FAIL` / `Error 1`, but the failing package is inside the 36099 omitted lines. I cannot tell whether internal/briefs, internal/config or internal/memory (all changed by the diff) is the one failing.",
+    "Not traced: whether `SaveExecution` stores `CompletedAt` in the same text format as `CURRENT_TIMESTAMP`. The fixture test depends on it (weekly_test.go:165), and I did not open SaveExecution.",
+    "3 more requirements marked met without a path:line citation: not traced"
+  ],
+  "notes": "- Monday schedule at the daily hour and timezone, with `weekly_day` defaulting to monday: met. weekly.go:29 builds `fields[0] fields[1] * * dow` from the daily spec. The weekly entry is added to the same `cron.New(cron.WithLocation(loc))` (scheduler.go:46, 81). The default is set at config.go `WeeklyDay: \"monday\"`, and empty also maps to Monday (weekly.go:36). It is wired through main.go:3977 and commands.go:1716. A descriptor schedule such as `@daily` cannot be converted, so only the weekly brief is skipped and the daily one stays scheduled (scheduler.go:79–80, tested). A bad `weekly_day` is rejected by `validateWeeklyDay`.\n- Shipped runs are completed rows windowed on completed_at, with canaries excluded (store.go:2402).\n- Time to PR runs from start to the pr_created event. pr_created is produced at runner.go:7199 `r.recordExecutionEvent(..., memory.StagePRCreated, \"pr created: \"+prURL)`. When the event is missing it falls back to completion. Negative intervals are dropped (weekly.go:79).\n- Merged is counted from the `merged` events produced at controller.go:10726 `c.recordExecutionEvent(prState, previousStage, memory.StageMerged, ...)`. It does not read autopilot_pr_state, because `c.removePR(prState.PRNumber)` (controller.go:10738) deletes that row once the PR is finished. This is a reasoned departure from the issue's wording.\n- Event timestamps are written as `time.Now().UTC()` (store.go:1300) and compared as `.UTC()` bounds, so the formats match.\n- Duplicate merged events count once because the query uses DISTINCT.\n- Top 3 shipped runs by diff: met. weekly.go:111 does a stable sort on added+removed, keeps 3, and always returns a non-nil slice.\n- Console: the StructuredBrief `json:\"kind\"` field (types.go) is served unchanged by gateway/briefs.go:58 and :85. The weekly payload is chosen at scheduler.go:285 when `kind == KindWeekly`.\n- Email: `\u003cmeta name=\"pilot-brief-kind\"\u003e` appears in both Format and FormatStructured.\n- The brief type is recorded as `string(brief.Kind)` (scheduler.go:263).\n- The Monday-only test walks 5 weeks of cron fires across the DST change. It covers the cron spec, not the catch-up path above.\n- The fixture-ledger and empty-week tests use a real SQLite `memory.NewStore` (scheduler_test.go:21), not a mock.\n- The fixture's expected values check out: tickets 4, median 20, merged 3 (a, b, f; the canary g and out-of-window events are excluded).\n- make test / make lint passing with pasted output: not met. Both pasted outputs end in failure. This is minor under the severity rule (see the defects and NOT-VERIFIED above).\n- Migrations: none in the diff. Out-of-scope: the issue has no out-of-scope section.\n- Memory pitfall \"top-level autopilot YAML binds to nothing\": the diff does not repeat it. It reads merged events, not autopilot_pr_state. But if autopilot isn't running, no controller merged events are written and merged_count quietly drops toward 0; only runner.go:2717 still records merges in that case.\n- Memory pitfall \"GitHub rate limit\": not applicable, the diff makes no GitHub calls.\n- Memory learning \"project_path is an absolute path\": the diff's `e.project_path IN (...)` filter (weekly_proof.go:55) matches on the same values as the existing GetExecutionsForReceipts (store.go:2423). It doesn't create a new mismatch.",
+  "files_read": 5,
+  "checkout": true,
+  "diff_bytes": 51095,
+  "diff_files": 18,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 51095,
+  "input_issue_bytes": 1027,
+  "input_pr_body_bytes": 7100,
+  "model": "claude-opus-5-5",
+  "duration_ms": 103413,
+  "posted": false
+}

@@ -1,0 +1,44 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5870,
+  "issue": 5829,
+  "merge_commit": "c69964797e24b5d779515a2e764f258839963d76",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "internal/executor/git.go",
+      "line": "190",
+      "claim": "If GetCurrentBranch fails, the error is ignored and the code goes on to DeleteBranch. On a checked-out branch the operator then gets git's \"cannot delete branch\" message again instead of the new \"checked out in the clone, refusing\" text",
+      "evidence": "`if curErr == nil \u0026\u0026 current == branchName {` (git.go:191). GetCurrentBranch only fails when `git branch --show-current` itself fails (git.go:1343-1347), so this rarely happens."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/git.go",
+      "line": "191",
+      "claim": "A stale branch that is checked out in a different linked worktree (not this clone) still reaches `git branch -D` and fails with git's message. The check only compares against this clone's HEAD (`git branch --show-current`, git.go:1343). The issue only asked about the clone's own HEAD, so this is not a requirement gap."
+    },
+    {
+      "severity": "minor",
+      "file": "PR Body \"## Evidence\"",
+      "claim": "The PR rewrote the issue's sixth acceptance bullet (\"Do not re-run make build, make test or make lint as evidence\") into \"`make build`, `make test`, `make lint` pass\" and ran all three, which is what the issue told it not to do. The pasted `make lint` output fails with SA4023 at cmd/pilot/tunnel.go:205/351/433. That failure is in the unrelated package cmd/pilot, not in code this diff changed."
+    }
+  ],
+  "not_verified": [
+    "Mutation bullet (remove the GetCurrentBranch check -\u003e TestEnsureBranchFromOrigin_StaleCheckedOutBranchIsRecreated fails): the PR body lists it as \"Not verified\" (never run), and I cannot run tests here. I checked it by reasoning only (see NOTES)."
+  ],
+  "notes": "1. Scope, GetCurrentBranch check before DeleteBranch: met at internal/executor/git.go:190-202, and it runs before `g.DeleteBranch` at git.go:204. It sits after the `if !stale` early return at git.go:178-183, so only the stale path is affected, as the issue asked. Failure case: a non-stale branch never reaches this code, which is the intended behaviour.\n2. Scope, dirty tree returns an error that contains \"checked out in the clone, refusing\" and names the branch: met at git.go:197 (`\"stale branch %s is checked out in the clone, refusing to recreate it...\"`). HasUncommittedChanges uses `git status --porcelain` (git.go:1398), so untracked files also count as dirty. That means the test's untracked dirty.txt triggers the refusal rather than slipping through.\n3. Scope, clean tree detaches HEAD at baseRef then deletes and recreates: met at git.go:199 and git.go:214-222 (`git checkout --detach ref`), then git.go:204/207. baseRef is `origin/\u003cbase\u003e` or the local base (git.go:620-625), so the detach target is always a valid ref.\n4. Scope, branches that are not checked out keep today's behaviour: met. When `current != branchName` the code goes straight to git.go:204, the same as before.\n5. Scope, stale decision unchanged; worktree mode, CreateOrResetBranchFromOrigin and the repick cap untouched: met. branchIsBehind (git.go:243-255) and CreateOrResetBranchFromOrigin (git.go:118-128) are not in the diff. The only caller is runner.go:4652, inside the direct-mode guard `!useWorktree` at runner.go:4626.\n6. Acceptance, checked-out clean case: met at git_test.go:2263 (table row) with assertions at git_test.go:2311-2323. The test uses a real bare origin (runner_git_test.go:28) and a real second-clone push (runner_git_test.go:86-102), so no adapter is mocked. Stale detection holds because the branch is cut from local main before origin advances.\n7. Acceptance, dirty case leaves the branch and the file untouched: met at git_test.go:2291-2309, which checks the error text, the branch name, the current branch, the branch SHA and the dirty file's content.\n8. Acceptance, not-checked-out case: met at git_test.go:2265, with `runGit(t, local, \"checkout\", \"main\")` beforehand.\n9. Acceptance, mutation bullet: holds by reasoning. Without the check, the clean row reaches `git branch -D` (git.go:1681) on the checked-out branch, which git refuses, and the test hits `t.Fatalf(\"EnsureBranchFromOrigin: %v\", err)`.\n10. Acceptance, `go test -race ... -run TestEnsureBranchFromOrigin`: the output is pasted in the PR body (`ok ... 2.300s`).\n11. Wire fields: none. The diff reads or emits no JSON/YAML keys, headers or DB columns.\n12. Migrations: none.\n13. Out of scope: the diff adds no reset to the default branch at the end of a task and does not touch the worktree lease or the failure threshold.\n14. Project memories: none of the four (repick-cap re-arm, identical-failure streak, dead-owner claim, stalled row loop) is repeated. The diff removes the deterministic identical failure that fed the streak described in the second memory.",
+  "files_read": 3,
+  "checkout": true,
+  "diff_bytes": 6211,
+  "diff_files": 2,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 6211,
+  "input_issue_bytes": 4348,
+  "input_pr_body_bytes": 11682,
+  "model": "claude-opus-5-5",
+  "duration_ms": 37305,
+  "posted": false
+}

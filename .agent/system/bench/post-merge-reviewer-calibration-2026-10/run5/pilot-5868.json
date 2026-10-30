@@ -1,0 +1,60 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5868,
+  "issue": 5861,
+  "merge_commit": "018e450d0e48ff63552c2a401b65aa9b03ddcd61",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "internal/autopilot/post_merge_review.go:212 — The reviewer is given the pre-merge CI status and never the post-merge CI result. The review starts before handleMerged sets `prState.Stage = StagePostMergeCI` (controller.go:6246)",
+      "claim": "and the issue's placement makes that unavoidable. The reviewer sees the pre-merge CI conclusion labeled \"CI status at merge time\" instead."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/autopilot/post_merge_review.go:381 — The production diff path `localMergedDiff` (git rev-parse",
+      "claim": "fetch",
+      "evidence": "diff `sha^1 sha`) has no test. Every controller test replaces it with `c.postMergeDiff`, so the diff the reviewer gets in production is never exercised."
+    },
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/post_merge_reviewer.go:55 — The startup log prints `pmr.Model`",
+      "claim": "which is empty when the model comes from `executor.default_model`. The log shows `model=\"\"` even though the line above it resolves the model with `cfg.Executor.ResolveModel(\"\")`."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/autopilot/controller.go:6127 — The deploy early return `return fmt.Errorf(\"deploy failed: %w\"",
+      "claim": "err)` runs before `maybeStartPostMergeReview` (6217). If a deploy fails and the PR does not come back to StageMerged",
+      "evidence": "the PR is never reviewed."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/autopilot/post_merge_review_test.go:463 — The cap test checks that the 21st review is skipped but does not check the \"logged once\" part of that acceptance bullet. The log path is `firstDenial` at post_merge_review.go:139.",
+      "claim": ""
+    },
+    {
+      "severity": "minor",
+      "file": "PR Body — The acceptance asks for `go test -race ./internal/autopilot/ -run PostMergeReview` and `./internal/executor/ -run PostMergeReview` output in the PR body. The body has no `## Evidence` block and no output.",
+      "claim": ""
+    }
+  ],
+  "not_verified": [
+    "Wire fields `merge_commit_sha`, `body` and comment `id` on the studio-sdk GitHub client: the module is not in the checkout. The in-tree twin has internal/adapters/github/types.go:290 `MergeCommitSHA string \\`json:\"merge_commit_sha,omitempty\"\\``, but the studio-sdk tag could not be quoted.",
+    "Whether the daemon's shutdown waits for in-flight review goroutines: `waitPostMergeReviews` is only called from tests, and reviews run on `context.WithoutCancel`. Shutdown behavior was not traced.",
+    "Budget:** met. The budget is an in-memory counter per UTC day, separate from `DailyCapGate`. The test checks that `CountDistinctTasksInWindow` does not change. — not traced"
+  ],
+  "notes": "- **Knob:** met. `PostMergeReview *PostMergeReviewConfig \\`yaml:\"post_merge_review\"\\`` is on autopilot.Config (types.go) and defaults to off (nil). `EffectiveDailyCap` defaults to 20. The model falls back to `ResolveModel(\"\")` (backend.go:614–618), which returns DefaultModel or \"\", so an unset executor gives no model flag rather than a panic. Validation is at config.go:1372–1380, and the example YAML is nested under `orchestrator:` (302) › `autopilot:` (365) › `post_merge_review:` (611). The second memory pitfall (top-level `autopilot:` YAML binding to nothing) is not repeated: the knob is read from `cfg.Orchestrator.Autopilot`.\n- **Trigger:** met. controller.go:6217 sits after the learning loop (6133) and before `SkipPostMergeCI` (6219). The flag is set and saved before the goroutine starts (post_merge_review.go:145–146). It persists through the ALTER at state_store.go:252, which runs at 276 before the repo-scoping rebuild at 314, and through the rebuild lists 549/570/586, save 737/783/799, and scans 821/852/880/1142. A restarted daemon sees `true`, and `if prState.PostMergeReviewPosted { return }` skips the PR.\n- **Reviewer:** met. It reuses the IntentJudge runner, which sends the prompt on stdin (intent_judge.go:190 `extractStdinPrompt`, :201 `cmd.Stdin`). It truncates with `buildJudgeDiffPayload` (intent_judge.go:437) and pulls the evidence block with `ExtractPRBodyEvidence`. The output contract is parsed, and malformed output becomes `PostMergeUnknown`.\n- **Posting:** met. `AddComment` posts the comment. REQUEST-CHANGES files the follow-up through `ghissue.CreatePilotIssue` with the configured labels plus `post-merge-review`. The title `fix(#N): …` passes `conventionalCommitRE` (ghissue/create.go:21, scope `\\([^)]+\\)`). Dedup uses `findExistingFixIssue`, which matches the exact title among issues carrying `f.issueLabels` (feedback_loop.go:511–520). The title leads with the type and puts the PR number in the scope rather than at the very start. The test asserts the prefix `fix(#42)`, and the deviation is documented.\n- **Ledger:** met. `UpsertPRReview` (memory/pr_review.go:93) stores reviewer `post-merge-reviewer` with a negated comment id, which cannot collide with GitHub's positive review ids in the `review_id INTEGER PRIMARY KEY` column (store.go:541). The bench joins on `execution_id` (pr_review.go:210), which is filled from `GetLatestExecutionByTaskID(\"GH-N\")`.\n- **Observability:** met. `pilot_post_merge_reviews_total{verdict}` is exported from the snapshot (prometheus.go:151 `e.metricsSource.Snapshot()`), and there is one log line per review with pr, verdict, defect count and duration.\n- **Tests:** the controller tests drive the real studio-sdk client against an httptest server and the real StateStore, and the reviewer itself is a fake. Removing the guard would make the second `handleMerged` call the reviewer again, so `TestHandleMerged_PostMergeReviewRunsOnce` would fail.\n- **Migrations:** the only migration is one additive SQLite column with default 0. There is no down path, consistent with the existing ALTER list. No data is lost, and RLS does not apply to SQLite.\n- **Out of scope:** nothing reverts or re-opens the PR, and only controller-tracked PRs with an issue number are reviewed.\n- **Memory pitfall 1** (`handleCIFailed` trusting CI conclusions): not touched by this diff.",
+  "files_read": 5,
+  "checkout": true,
+  "diff_bytes": 82850,
+  "diff_files": 17,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 82850,
+  "input_issue_bytes": 4865,
+  "input_pr_body_bytes": 758,
+  "model": "claude-opus-5-5",
+  "duration_ms": 119989,
+  "posted": false
+}

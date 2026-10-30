@@ -1,0 +1,62 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5875,
+  "issue": 5867,
+  "merge_commit": "57e9356223af656f8d80c56391a24bb4b15ce675",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "internal/executor/runner.go",
+      "line": "3570",
+      "claim": "the GH-5346 salvage path calls appendAcceptanceEvidence with nil gates, so a paste-output command that matches a passed gate is run again there",
+      "evidence": "runner.go:3157 sets `result.QualityGates = r.buildQualityGatesResult(outcome, 0)` right before `r.pushAndCreatePRAfterTimeout(finCtx, ...)` at :3163, but the diff passes `prBody, nil)` at :3570 and never uses result.QualityGates on that path"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/runner_gh5867_test.go",
+      "line": "77",
+      "claim": "the runner test only covers the shared PRCreator branch (`task.SourceAdapter = \"linear\"`), so the gh CLI branch at runner.go:7312 (the `git.CreatePR` path that failed in production) and the SDK branch at :7236 get no test",
+      "evidence": "pr_creator_resolve.go:62 `if r.prCreator != nil \u0026\u0026 task.SourceAdapter != \"\" \u0026\u0026 task.SourceAdapter != \"github\" { return r.prCreator, prCreatorKindShared }`"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/runner.go",
+      "line": "349",
+      "claim": "the window re-derived before CreatePR is fresh only when the deadline has already passed; a task ctx that is still alive with a few milliseconds left is passed through as `context.WithCancel(ctx)` (:352), so CreatePR can still get a ctx that is about to die",
+      "evidence": "`if ctx.Err() == context.DeadlineExceeded { return context.WithTimeout(context.WithoutCancel(ctx), budget) }`; this behaviour predates the diff"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/acceptance_evidence_run.go",
+      "line": "842",
+      "claim": "the issue asks for one WARN line, but the code emits a WARN for every reused command plus one for budget exhaustion, so one item with three reused gate commands logs three lines",
+      "evidence": "`for _, c := range res.Commands { if c.FromQualityGate { emit(evidenceEventReused, i+1) } }`"
+    },
+    {
+      "severity": "minor",
+      "file": "PR Body \"## Not verified\"",
+      "claim": "all three mutation acceptance bullets (removing the re-derivation, budget ctx or argv match makes the test fail) are listed as \"freeform mutation, run manually\", so nobody has shown that any of the tests fails when its guarded line is removed",
+      "evidence": "PR body Not verified section"
+    }
+  ],
+  "not_verified": [
+    "The mutation claims for the three tests were not run, because tests cannot be executed in this checkout; the reasoning that each would fail without its guarded line is in NOTES",
+    "Whether the gate Output that gets reused is already truncated or redacted before finalizeEvidenceOutput was not traced past quality/runner.go:181 (`result.Output = output`)",
+    "No make build/test/lint bullet was added: met. — not traced"
+  ],
+  "notes": "- Re-derive the finalize window before PR/MR create: met. See runner.go:7236, :7276 and :7312 (main path), :2617 (epic) and :3575 (salvage). All are placed after appendAcceptanceEvidence. An inner ctx shadows the outer one, so CreatePR at :7240/:7283/:7318 and formatGitStepFailureWithRecovery at :7256/:7299/:7334 receive the fresh ctx. A ctx that is context.Canceled falls to `context.WithCancel(ctx)` at :352 and is still dead, which keeps the GH-5342 rule.\n- Re-derive inside formatGitStepFailureWithRecovery: met at runner.go:400 (`ctx, cancel := finalizeCtx(ctx, finalizeGitTimeout)`), before CreateRecoveryRef at :402. An expired ctx gets a new 5-minute window (:318). A cancelled ctx is not extended, and runner_gh5867_test.go:135 checks this.\n- evidenceBudgetCtx is built from WithoutCancel plus the knob: met at acceptance_evidence_run.go:566. The AfterFunc there cancels only when the error is `context.Canceled`, so an expired task deadline does not cut evidence short, but a real stop still does.\n- The knob defaults to 15m, is validated and documented: met. Default at backend.go:1265, via config.go:715 `Executor: executor.DefaultBackendConfig()`. Negative values are rejected at config.go:1347. Documented at pilot.example.yaml:812. The runner gets the value through cmd/pilot/commands.go:785 `executor.NewRunnerWithConfig(cfg.Executor)`.\n- Budget exhaustion marks remaining items \"Not verified\" and the PR still gets the block: met. Remaining items are caught at acceptance_evidence_run.go:822 (`if ctx.Err() != nil`). A command killed by the budget is relabelled by the prefix check against te.Error() `\"timed out after %s\"` (:206). Rendering then continues to PR creation.\n- Quality-gate output is reused on an exact argv match: met. The allowlist check runs first (:306). The lookup is at :315 and the index comes from passed gates with exit code 0 (newEvidenceGateOutputs). The gate Command producer is quality/runner.go:143 `result.Command = command`, the Output producer is :181, and both pass through runner.go:9238/:9240. The main path passes `result.QualityGates` (runner.go:7231/:7271/:7307), which is set at :6524.\n- WARN logging: met, but with more than one line (see the defect above). task_id, item_index and elapsed are logged at acceptance_evidence_run.go:588.\n- Runner, evidence, reuse and config tests: present. The runner test checks `creator.ctxErr`. Without the re-derivation at :7276, the push ctx made at :6907 from WithCancel of the 3-second task ctx would already be dead, so the test would fail. The budget test checks for exactly 1 call and 2 budget-exhausted reasons. The reuse test checks that the runner never gets `make test`.\n- Pasted `go test -race` output for the three evidence bullets: present in the PR body \"## Evidence\", all `ok`.\n- Out of scope: nothing changes the allowlist, the complexity timeouts or the re-pick lease.\n- Project memories (Jev classifier): this diff does not touch the classifiers, so neither pitfall applies.",
+  "files_read": 4,
+  "checkout": true,
+  "diff_bytes": 46902,
+  "diff_files": 15,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 46902,
+  "input_issue_bytes": 5154,
+  "input_pr_body_bytes": 7143,
+  "model": "claude-opus-5-5",
+  "duration_ms": 108227,
+  "posted": false
+}

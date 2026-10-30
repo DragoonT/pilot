@@ -1,0 +1,73 @@
+{
+  "repo": "qf-studio/pilot-console-ui",
+  "pr": 246,
+  "issue": 244,
+  "merge_commit": "8b14c8e954e3ed27fd4816e57240f155c5b8fba0",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/httpAdapter.ts:897 — The adapter binds `durationMs`",
+      "claim": "`docsRead`",
+      "evidence": "`memoriesRead` and `memoriesCreated`, but nothing in the checkout ever sends them. The only events the mock produces are at src/lib/api/mockAdapter.ts:2005 (`type: 'progress'`), :2023 (`type: 'confirmation'`) and :2037 (`type: 'text'`). No `subagent` or `context` events exist anywhere. The diff admits this itself at src/lib/api/types.ts:437: \"ASSUMED wire contract — not yet confirmed by the daemon\". CLAUDE.md says \"Adapter/mock/fixtures move in lockstep\", and the mock was not updated."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/httpAdapter.ts:1649 — The diff sends a new `mode` key in the POST body",
+      "claim": "but nothing reads it. src/lib/api/mockAdapter.ts:1994 only reads `options?.projectId`. The issue said to use \"existing chat modes; keep their current semantics\"",
+      "evidence": "but no chat mode existed before this diff: the only `ChatMode` definition is the new src/lib/api/types.ts:467. So the RESEARCH/DOCS pills are a new wire field with no confirmed consumer."
+    },
+    {
+      "severity": "blocking",
+      "file": "PR Body — The issue says that when the events don't carry the counts",
+      "claim": "the panel shows `—` and the PR body must \"list the missing event fields\". The `—` fallback is there",
+      "evidence": "but the PR body has only Summary, Changes and Evidence and lists no missing fields. The code calls the contract \"ASSUMED\" (src/views/ChatView.vue:20), so those fields were never confirmed and the list was required."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/design-system/components/ChatWindow.vue:196 — `onUnmounted(() =\u003e chat.stopPolling())` is an existing path that defeats the Research page. ChatView starts the shared poll loop (src/views/ChatView.vue:75). If the user then closes the Operator panel",
+      "claim": "ChatWindow unmounts and stops polling for everyone",
+      "evidence": "so the sub-agent rows and report never arrive. ChatView only guards its own unmount (src/views/ChatView.vue:85)."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/views/__tests__/ChatView.spec.ts:43 — The tests prove nothing about the wire contract. Every case sets `chat.messages` directly or spies on `chat.send`",
+      "claim": "so neither `toChatEvent` nor the `mode` body is exercised. The only chat-messages check in src/lib/api/__tests__/httpAdapter.spec.ts:1860 is the URL. No test covers `durationMs`",
+      "evidence": "`memoriesCreated` or `mode`."
+    },
+    {
+      "severity": "minor",
+      "file": "src/layouts/AppShell.vue:24 — The comment says desktop \"never actually renders this route\". The dashboard now pushes to `chat` on desktop (src/views/DashboardView.vue:116)",
+      "claim": "so the comment is out of date. ChatView's own `p-4` also stacks on the `md:px-[26px] md:py-[22px]` padding from src/layouts/AppShell.vue:40."
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/ResearchComposer.vue:42 — Several places use the opacity dialect (`text-ds-text/60`)",
+      "claim": "including src/views/ChatView.vue:91. CLAUDE.md says to prefer `text-text-2`/`text-muted` when touching a file."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/ChatView.vue:20 — The docblock cites only the Figma node. It has no `design/\u003cfile\u003e.html` citation and no `no mock — vocabulary extension` marker",
+      "claim": "which CLAUDE.md rules 2 and 4 require."
+    }
+  ],
+  "not_verified": [
+    "Real daemon producer for `subagent`/`context` events and the `mode` field: the backend repo is not in this checkout, and CLAUDE.md forbids reading sibling repos.",
+    "The test output in the PR body is cut (\"1584 lines omitted\"), so the new ChatView.spec and DashboardView.spec results are not shown individually. Only the overall total (939 passed) is visible.",
+    "No `Create tickets` action: met (none in the diff). — not traced"
+  ],
+  "notes": "- Title \"Research\" at 15px with the question under it at 60%: met. src/views/ChatView.vue:90-91. The question line is hidden when there is no user message, which is the expected behaviour.\n- Tree header with the count right-aligned: met. src/views/ChatView.vue:97-98 uses the SectionHeader `#action` slot.\n- One ListRow per sub-agent (id, DONE chip, title, duration-only meta): met in the UI. src/views/ChatView.vue:100-104, with ListRow slots at src/design-system/components/ListRow.vue:22-25 and `done` variant at src/design-system/components/Chip.vue:12. Rows are keyed by `taskId ?? id`, so a later `running`→`done` event for the same agent replaces the earlier one. The data source has no producer (see the first defect).\n- Report rendered as markdown: met. src/lib/reportMarkdown.ts:5 uses `html: false`, so raw HTML is escaped (tested at ChatView.spec.ts:69).\n- Composer placeholder, RESEARCH/DOCS pills, send on Enter: met in the UI. src/design-system/components/ResearchComposer.vue:14, :18-21 and :43. Mode semantics are invented, not existing (see the second defect).\n- Dashboard input navigates with `q` and `mode`, and the Research page starts the turn: met. src/views/DashboardView.vue:116 and src/views/ChatView.vue:76-81.\n- Context panel shows `Read N docs · M memories` and `Created K memories`, with `—` when no event carries a count: met in the UI. src/views/ChatView.vue:58-64. No judge name or version is shown.\n- Test asserting no `token` or `$` in sub-agent rows: met. ChatView.spec.ts:61-67.\n- Build, test and lint output pasted: present. The test summary shows 67 files and 939 tests passed. However, the issue's bullet \"one line names the adapter used\" is not met, because no line in the PR body names the adapter.",
+  "files_read": 7,
+  "checkout": true,
+  "diff_bytes": 25745,
+  "diff_files": 9,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 25745,
+  "input_issue_bytes": 2021,
+  "input_pr_body_bytes": 15932,
+  "model": "claude-opus-5-5",
+  "duration_ms": 51837,
+  "posted": false
+}

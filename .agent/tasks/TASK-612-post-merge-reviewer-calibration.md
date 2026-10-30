@@ -1,5 +1,7 @@
 # TASK-612: post-merge reviewer calibration — an offline `pilot review-merge` command, then a scored run against 14 hand-reviewed merges
 
+**Run 5 (2026-10-30 11:22Z, v2.302.0, TASK-622 adjacent-code item): recall 43.3 % (flat), fixtures 3.5/8, 7 in-hunk HIT→MISS flips — prompt rules redistribute a fixed finding budget; next lever is budget-shaped (two passes / per-file loop / more turns). Report + `run5/scoring.md`.**
+
 **Run 4 (2026-10-29 20:58Z, v2.301.0, Opus + TASK-618/619): RC 3/3 · recall 44.2 % (best; bar 0.5 not met) · false 0.07 · 0 format failures · over-escalation 5→3 · files_read 5.0 mean. Report + `run4/scoring.md`.**
 
 **Status**: 📊 CALIBRATION RUN DONE 2026-10-28 14:53Z (K1 merged as PR#5912, v2.297.0 on the box). **RC caught 2/3 PASS · recall 39.4 % FAIL (threshold 0.5) · false notes 0.14/verdict PASS · 44 new valid findings · 16 hedges.** Report: `.agent/system/bench/post_merge_reviewer_calibration_2026-10.md`. Rule applied: below threshold → M2 (checkout+tools, TASK-613) gate MET (miss class = code outside the diff) + prompt/parser tuning (TASK-614 candidate). Was: Founder "calibrate" after six live verdicts (pilot PR#5902/#5904/#5905/#5907, studio-sdk PR#150/#151) were all APPROVE-WITH-NOTES with zero defects, while hand reviews on 10-22 found 3 REQUEST-CHANGES and 26 follow-ups on 10 merges.

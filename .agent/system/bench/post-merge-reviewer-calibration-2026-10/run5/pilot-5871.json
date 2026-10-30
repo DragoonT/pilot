@@ -1,0 +1,53 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5871,
+  "issue": 5849,
+  "merge_commit": "62fdf98ca4d2de6181ae5eb2e35690fa28e338c9",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/handlers.go",
+      "line": "1296",
+      "claim": "the GH-5072-style strip decision still reads the stale snapshot after this change, so the \"task's Labels and backstop read live labels\" intent is applied unevenly in the same function",
+      "evidence": "`if shouldStripPilotAfterTerminalDrops(claimLostDrops, issueState, ev.Labels, pilotLabel) {` still passes `ev.Labels` even though `liveLabels` is in scope (handlers.go:1000). If the trigger label was removed during the slot wait, the strip path can still try to remove it."
+    },
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/handlers.go",
+      "line": "1037",
+      "claim": "each new live-gate skip calls `repickBackoff.recordClaimLostDrop(backoffKey)`, which increments `claimLostDrops` (repick_backoff.go:245 `e.claimLostDrops++`). The GH-5300 strip gate reads that same counter against `terminalDropPilotStripThreshold = 3` (handlers.go:1549, 1564). So two admission skips (for example pilot-blocked, later cleared by the stalled re-arm) plus one later claim-lost drop are enough to strip the pilot label. This matches the issue's \"exactly like GH-5072\" parity, but it now covers more skip reasons."
+    },
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/handlers.go",
+      "line": "955",
+      "claim": "when the backoff is armed by a closed, trigger-removed, blocked or clarification skip, the next re-pick is refused by the pre-check with the hard-coded `SkipReason: skipReasonNeedsHuman`. The debug line also says \"for needs-human park\", so a re-pick refused after a closed-issue skip reports the wrong reason."
+    },
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/gh5072_needs_human_repick_backoff_test.go",
+      "line": "325",
+      "claim": "the fetch-error case only asserts \"not a live-gate skip\" and then `return`s. It never checks that dispatch proceeds with `ev.Labels`, which the acceptance bullet asks for: nothing inspects the task's Labels or confirms the backstop ran on the snapshot."
+    }
+  ],
+  "not_verified": [
+    "studio-sdk `githubSDK.Issue` JSON tags (`state`, `labels[].name`, `user.login`) and `LabelBlocked`/`LabelNeedsClarification` values: the sdk module is not in the checkout (no vendor dir). The PR's passing test run only implies the decode works.",
+    "Mutation bullets (remove trigger-label check, remove recordClaimLostDrop): the PR body marks them \"run manually\". From reading the code, both mutations would make the test fail: the \"bug\"-only case would proceed into the spec guard and write, and `allow(backoffKey)` would return true. But they were not executed.",
+    "2 more requirements marked met without a path:line citation: not traced"
+  ],
+  "notes": "- Live labels after a successful fetch: met. handlers.go:1012-1015 builds `liveLabels` from `realIssue.Labels`. A fetch failure returns nil (handlers.go:1426), which leaves `liveLabels := ev.Labels` (handlers.go:1000), so it fails open as the scope requires. The needs-human backstop (handlers.go:1056), the spec labels (handlers.go:1114) and the task's Labels (handlers.go:1205) all use `liveLabels`.\n- Admission check before side effects: met. handlers.go:1026-1041 runs before the spec guard (1113), the label write (1178) and task construction (1193). The only thing before it is the fetch (no side effect), and the only early return before it is the backoff pre-check (951).\n- Trigger label read from config: met. handlers.go:1027-1030 reads `cfg.Adapters.GitHub.PilotLabel` and defaults to \"pilot\", matching the poller's own `TriggerLabel: pilotLabel` (poller_github.go:580-592), so the two cannot disagree.\n- Closed, trigger removed, needs-human, blocked, clarification: met. Each has its own SkipReason (handlers.go:1379-1391). One INFO line with task_id and reason is logged (handlers.go:1032-1035). `Success:false, Skipped:true` is returned at handlers.go:1039. `recordClaimLostDrop` is called on the same `backoffKey` as the needs-human path (handlers.go:950, 1037, 1069). Both callers (poller_github.go:153 retry, poller_github.go:609 primary) go through this path. The retry path builds `ev` from a fresh GetIssue, so the gate is redundant there but harmless.\n- Out of scope: no studio-sdk change, and no other adapters touched.\n- Memory pitfalls:\n- The pilot-in-progress wedge is not repeated: the skip returns before `applyGithubInProgressLabelSDK` (handlers.go:1178).\n- The stale-body pitfall is not repeated: `specBody = realIssue.Body` is kept (handlers.go:1011).\n- The HasTerminalCompletion/re-arm pitfall does not apply: no terminal status was added.",
+  "files_read": 3,
+  "checkout": true,
+  "diff_bytes": 18610,
+  "diff_files": 3,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 18610,
+  "input_issue_bytes": 4231,
+  "input_pr_body_bytes": 4931,
+  "model": "claude-opus-5-5",
+  "duration_ms": 61875,
+  "posted": false
+}

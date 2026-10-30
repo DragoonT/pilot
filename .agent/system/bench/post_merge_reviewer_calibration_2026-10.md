@@ -173,3 +173,62 @@ Same 14 PRs, same rules, same scorer prompt. Raw: `run4/` (14 JSONs + `scoring.m
 ## Run 5 recipe
 
 Same 14 PRs, same scorer rules, compare against run 4 (recall 44.2 %, false 0.07, over-escalation 3). Prompt under test: checklist item 2b (adjacent code — sibling functions in the changed file, untouched branches and preflights beside each hunk, one named pre-existing path per requirement) and the "met" rule that needs one sentence naming the input or state under which the cited line would fail; `--max-turns` 40, review timeout unchanged at 5 min (GH-5974). Also record mean review time; above 120 s is a finding.
+
+---
+
+# Run 5 — 2026-10-30 11:05–11:22Z, v2.302.0, claude-opus-5-5 (TASK-622 R1: sibling-function + untouched-branch read, "met" must name the breaking input, max-turns 40)
+
+Same 14 PRs, same rules, same scorer prompt, same hand numbering and n = 52 as run 4. Raw: `run5/` (14 JSONs + `scoring.md`, each hand-defect bullet carries its run-4 result in brackets).
+
+| Metric | Run 4 | **Run 5** | Bar |
+|---|---|---|---|
+| REQUEST-CHANGES caught | 3 of 3 | **3 of 3** | ≥2 |
+| Defect recall (HIT + ½ PARTIAL) | 44.2 % | **43.3 %** (18 + 4.5 / 52) | ≥ 0.5 — FAIL, flat |
+| Plain HIT recall | 36.5 % | 34.6 % | |
+| False notes per verdict | 0.07 | **0.07** (same single FALSE, ui#254) | ≤ 1 |
+| REQUEST-CHANGES on human-approved PRs | 3 of 11 | **3 of 11** (same three) | — |
+| Defect-bearing approves matched | 9 of 11 | 9 of 11 (5871, 5875 missed) | — |
+| New valid findings | 35 | 44 (UNSURE 18; 15 of the 44 are hand *notes*) | — |
+| Format failures | 0 | **0** | — |
+| Mean review time | 68 s | 72 s (37–120 s) | — |
+| Files read per review | 5.0 | 5.1 (3–7) | — |
+
+| PR | hand | daemon | match | hand n | HIT | PARTIAL | MISS | NEW-VALID | FALSE | UNSURE |
+|---|---|---|---|---|---|---|---|---|---|---|
+| ui#252 | RC | RC | Y | 5 | 1 | 2 | 2 | 2 | 0 | 2 |
+| ui#261 | RC | RC | Y | 3 | 2 | 1 | 0 | 4 | 0 | 2 |
+| ui#255 | RC | RC | Y | 5 | 1 | 1 | 3 | 2 | 0 | 3 |
+| ui#254 | A+defects | RC | N | 3 | 1 | 1 | 1 | 4 | 1 | 0 |
+| ui#246 | A+defects | RC | N | 4 | 3 | 0 | 1 | 3 | 0 | 2 |
+| pilot#5799 | A+defects | RC | N | 2 | 1 | 0 | 1 | 5 | 0 | 1 |
+| pilot#5822 | A+defects | AWN | Y | 3 | 2 | 1 | 0 | 2 | 0 | 1 |
+| pilot#5868 | AWN | AWN | Y | 5 | 2 | 0 | 3 | 4 | 0 | 1 |
+| pilot#5874 | AWN | AWN | Y | 5 | 1 | 1 | 3 | 2 | 0 | 2 |
+| pilot#5870 | A+notes | AWN | Y | 6 | 2 | 0 | 4 | 0 | 0 | 2 |
+| pilot#5871 | AWN | AWN | Y | 1 | 0 | 0 | 1 | 5 | 0 | 0 |
+| pilot#5872 | AWN | AWN | Y | 1 | 1 | 0 | 0 | 4 | 0 | 0 |
+| pilot#5875 | AWN | AWN | Y | 2 | 0 | 0 | 2 | 4 | 0 | 1 |
+| console#427 | A+notes | AWN | Y | 7 | 1 | 2 | 4 | 3 | 0 | 1 |
+| **total** | | | 11/14 | 52 | 18 | 9 | 25 | 44 | 1 | 18 |
+
+## Fixtures (the eight run-4 misses TASK-622 named): 3 HIT · 1 PARTIAL · 4 MISS (run 4: 0/8)
+- HIT: pilot#5874 D1 `ratelimit.go` +24h roll (names the breaking input "resets 2pm read at 2:01pm") · pilot#5870 D2 `GetCurrentBranch` error swallowed · pilot#5868 D4 `CIResult` is pre-merge (tied to `StagePostMergeCI` at controller.go:6246).
+- PARTIAL: pilot#5822 D2 `merged_count` (autopilot-off half only, as a note).
+- MISS: pilot#5874 D3 `Stop()` leaves state (discussed only for lock order) · pilot#5874 D2 two alerts ("one alert per episode: met") · pilot#5870 D4 `git_clean` preflight (caller chain stops one hop short) · pilot#5875 D2 reuse not pinned to HEAD ("Reuse: met").
+
+## Deltas vs run 4 — 12 defects changed state, net zero
+- MISS → HIT (5): 5868 D4, 5868 D5, 5874 D1, 5870 D2, 427 D7. MISS → PARTIAL (3): 5822 D2, 5874 D5, 427 D2. PARTIAL → HIT (1): 5822 D1.
+- **HIT → MISS (7)**: ui#255 D2, ui#254 D3, ui#246 D1, 5868 D1 ("Budget: met"), 5868 D3, 5875 D1, 427 D1. PARTIAL → MISS (1): 5870 D5. Five of the seven are in-hunk items run 4 caught: the sibling-function read displaced the hunk read (ui#246: `ChatWindow.vue` opened as a sibling, yielded a real NEW-VALID, its confirmation renderer — hand D1 — not seen).
+
+## Reading
+- **The prompt step moved *which* defects are found, not how many.** Same model, same files_read (5), same time (+5 s): a fixed finding budget per review was redistributed from the hunk to one hop out. Recall 44 → 43 is noise; the fixture score 0 → 3.5 of 8 is real but paid for in-hunk.
+- The adjacent-code class moves only where the adjacent code is **one hop and called from the hunk** (`ratelimit.go` roll, `StagePostMergeCI`, the proxy allowlist, the branch swallow). Two hops or another subsystem (runner alert, `git_clean` preflight, self-review commits after gates, `Stop()`/`Start()` state) did not move.
+- The "name the breaking input" rule produced trivial failure cases in notes ("if a card were conditionally rendered"), never a `Stop()`-then-`Start()` or HEAD-moved input. It is not a lever by itself.
+- 15 of 44 NEW-VALID are hand *notes* (5871 5/5, 5872 3/4, 5875 3/4): step 3 reads the lines the human's notes came from more than the lines the human's defects came from.
+- Verified NEW-VALID worth a look: `ChatWindow` unmount stops Research-page polling (ui#246) · mock emits no `pr_merged` (ui#254) · `USDGate` has no switched-to-own case (console#427) · `LoadPendingApprovals` unfiltered by project and `/latest` 404 with the daily brief off (pilot#5799) · deploy failure skips the post-merge review (pilot#5868).
+
+## Decision inputs after five runs
+1. **Bar status unchanged**: RC 3/3 ✓ · false 0.07 ✓ · recall 43 % ✗. Policy unchanged.
+2. **Stop adding prompt rules.** Three prompt steps (614, 619, 622) moved structure, verdict shape and distribution; none moved the total. The reviewer finds ~18–19 of 52 hand defects per pass at ~5 files and ~70 s whatever it is told to look at.
+3. The remaining levers are budget-shaped, not rule-shaped: (a) **two passes** — a hunk pass (the run-4 prompt) and an adjacent pass (the run-5 item 2b), union the defects, de-duplicate by file:line; (b) a **per-file loop** for diffs over N files, each with its own turn budget; (c) **more turns/time** (40 → 80, 5 → 10 min) measured once to see if recall tracks budget at all. Each is one leg and one run on the same 14.
+4. The pre-PR reviewer shares the prompt, so shadow-mode evidence stays at this recall; enforce mode is not earned by a prompt change.
