@@ -1,6 +1,6 @@
 # TASK-622: Reviewer prompt step 3 — adjacent-code tracing and a failure-case rule for "met"
 
-**Status**: 📋 PLANNED 2026-10-30 (founder "plan it" after calibration run 4). One leg, not dispatched. Measure = run 5 on the same 14 PRs; pass bar unchanged (RC 3/3 · recall ≥ 0.5 · false ≤ 1).
+**Status**: 🚀 R1 DISPATCHED 2026-10-30 → pilot#5974 (`pilot`+`no-decompose`). Was: 📋 PLANNED 2026-10-30 (founder "plan it" after calibration run 4). Measure = run 5 on the same 14 PRs; pass bar unchanged (RC 3/3 · recall ≥ 0.5 · false ≤ 1).
 **Origin**: run 4 (`system/bench/post_merge_reviewer_calibration_2026-10.md`): recall 44.2 % on 52 hand defects. 25 misses: ~18 are behaviour in code the diff did not touch, ~4 are in-hunk lines quoted verbatim as "met". Recall does not track files_read (5874: 7 files, 0/5). TASK-619's rule sends the extra reads to producers/consumers of wire fields — that is where run 4's new HITs came from — not to sibling functions or the pre-existing branch next to the hunk.
 **Spec refs**: `internal/executor/post_merge_reviewer.go` (system prompt: checklist items 1–5, `postMergeChecklistItem2` = TASK-619 tracing, severity paragraph, `postMergeReviewMaxTurns`), `internal/executor/post_merge_citation_test.go` (`TestPostMergeReviewCitation_PromptCarriesTracingRules` pins rule sentences), `internal/executor/post_merge_reviewer_test.go` (`TestPostMergeReviewer_PromptContract`, `TestPostMergeReviewerPrompt_PreMergeVariant`), the "met" demotion in `post_merge_reviewer.go` (`postMetClaimRe`, Untraced).
 
@@ -22,7 +22,7 @@
 probe: present qf-studio/pilot const postMergeChecklistItem2
 probe: present qf-studio/pilot func TestPostMergeReviewCitation_PromptCarriesTracingRules\(
 probe: present qf-studio/pilot postMergeReviewMaxTurns
-probe: absent  qf-studio/pilot const postMergeChecklistItemAdjacent
+probe: absent  qf-studio/pilot ^const postMergeChecklistItemAdjacent\b
 
 ## Context
 
@@ -61,3 +61,7 @@ Calibration run 4 of the post-merge reviewer (same 14 hand-reviewed PRs, Opus, v
 1. Run 5 on the box: `~/calibration-v4/calib.sh` copied to `~/calibration-v5/` (sed the path), same 14 PRs, pull the JSONs (`/tmp/pull3.sh` idiom, 3 per SSM call), score with the run-4 scorer prompt verbatim, append to the bench report with files_read and mean time.
 2. Pass bar: RC 3/3 · recall ≥ 0.5 · false ≤ 1. Also report recall on the seven fixtures above by name.
 3. If recall is still under 0.5 with the fixtures mostly hit, the remaining misses are cross-repo contracts and notes-only hand reviews (5870, 427); treat those as a different class, not another prompt step.
+
+## Refs
+
+- R1 → https://github.com/qf-studio/pilot/issues/5974
