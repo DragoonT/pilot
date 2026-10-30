@@ -1,0 +1,87 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5874,
+  "issue": 5862,
+  "merge_commit": "076bb48f488b1f6538bcf3f8c682f50f54e5d39c",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/commands.go",
+      "line": "310",
+      "claim": "s.handleStatus)`)",
+      "evidence": "and that mux returns 401 without a bearer token (`internal/config/gateway_auth_test.go:104` `if statusResp.StatusCode != http.StatusUnauthorized`). The `resp.StatusCode != http.StatusOK` branch then returns \"\" without logging anything."
+    },
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/main.go",
+      "line": "3414",
+      "claim": "\"wire the always-on Dispatcher liveness signal into every autopilot controller\") and the `if dispatcher != nil { ... SetDispatcherLiveness` code it describes. That comment now sits above the wrong statement."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/usage_limit_pause.go",
+      "line": "176",
+      "claim": "`SetAlertProcessor` is called only on the polling-mode runner (`cmd/pilot/main.go:3365` `runner.SetAlertProcessor(alertProcessor)`)",
+      "evidence": "and none of the `gwRunner.Set*` calls attach one. The gap predates this PR, but it means the \"one alert on pause\" requirement only holds in polling mode."
+    },
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/commands.go",
+      "line": "309",
+      "claim": "and internal/gateway/auth.go:60 returns `missing authorization token`. The 401 then takes the `resp.StatusCode != http.StatusOK` path and returns \"\"",
+      "evidence": "so the pause is hidden from the operator without any message."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/usage_limit_pause.go",
+      "line": "131",
+      "claim": "where the issue asks for one of each. armUsageLimitPause logs its own Info line and then calls PauseAdmissionFor",
+      "evidence": "which also logs `d.log.Info(\"dispatcher admission paused\", \"owner\", owner)` (dispatcher.go:3146). On the resume side, ResumeAdmissionFor logs `d.log.Info(\"dispatcher admission resumed\")` (dispatcher.go:3165) and then releaseUsageLimitPause logs its own line."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/usage_limit_pause.go",
+      "line": "100",
+      "claim": "the pause holds admission for the full max_pause (6h by default) when it should end at about 14:05. The parser rolls any past reset to tomorrow (`if resetTime.Before(now) { resetTime = resetTime.Add(24 * time.Hour) }`",
+      "evidence": "ratelimit.go:96), so the `candidate.After(now)` guard never fires and the 23h result is clipped to max_pause. The parser behaviour already existed; this feature makes its effect much larger."
+    }
+  ],
+  "not_verified": [
+    "The race-free claim for the new mutex ordering (`usageLimitMu` → `admissionPauseMu` / `d.mu.RLock` in `ResumeAdmissionFor`) was traced by reading the code only. I could not run `-race`, so the pasted executor test output is the only runtime evidence.",
+    "The pasted gateway evidence is `(cached)` with no `-v` output, so it does not show that `TestStatusEndpoint_AdmissionPause` itself ran in that run.",
+    "3 more items the passes could not verify (capped at 3)"
+  ],
+  "notes": "[pass A (hunk)]\n- Knob `executor.usage_limit_pause` (enabled/max_pause/fallback_pause) is met. Defaults are in `internal/executor/backend.go` `IsEnabled`/`EffectiveMaxPause`/`EffectiveFallbackPause`, validation is called at `internal/config/config.go:1343`, and it is documented in `configs/pilot.example.yaml:688`. It reaches the runner through `cmd/pilot/main.go:783` `executor.NewRunnerWithConfig(cfg.Executor)`. A negative duration or a fallback larger than max fails validation instead of being used silently.\n- Hook on rate_limited finalization is met. `internal/executor/dispatcher.go:3967` fires before `Persist` at :3973, and the next loop iteration stops at `dispatcher.go:3473` `if w.admissionPaused != nil \u0026\u0026 w.admissionPaused.Load() { return }`. `outcome.Error` carries the raw backend error (`internal/executor/lifecycle.go:293` `outcome.Error = result.Error`), so \"resets 2pm\" reaches the parser. The one case where it would not is when a PR exists: then `lifecycle.go:312` promotes the outcome to completed, which is correct.\n- Resume at reset + RetryBuffer is met: `usage_limit_pause.go:101` uses `DefaultSchedulerConfig().RetryBuffer`. This is the same config the poller's Scheduler is built from (`cmd/pilot/poller_github.go:751` `executor.NewScheduler(executor.DefaultSchedulerConfig(), nil)`), so the two cannot drift apart.\n- Extending on a second hit without stacking owners is met. The pause is keyed on a single owner, `PauseAdmissionFor` re-asserts that key in the owner map (`dispatcher.go:3138` `d.admissionPauseOwners[owner] = true`), and a stale timer is ignored by the generation check at `usage_limit_pause.go:158`.\n- Owner constant `usage-limit` is met (`usage_limit_pause.go:14`), distinct from `internal/autopilot/controller.go:938` `\"platform-breaker\"`.\n- Status fields are met. The producer is `internal/gateway/server.go:710-720`; the consumer is `cmd/pilot/commands.go:289-291`, whose JSON tags match. Both daemon construction sites are wired (`main.go:1418`, `main.go:3416`).\n- Logging on pause and resume is met (`usage_limit_pause.go:144`, `:163`).\n- Alert severity: the PR body's claim holds. `platform_breaker_open` is emitted at `internal/autopilot/controller.go:1715`, and the alerts engine has no rule or handler for it, so warning is a reasonable choice.\n- Single-task re-queue is unchanged; the diff does not touch `scheduler.go` or `poller_github.go`.\n- Dispatcher tests use a real `Dispatcher` and store with only the backend mocked, so the admission contract is actually exercised. The gateway test mocks only the source interface, which is fine because the real `AdmissionStatus` is covered in the executor tests.\n- Both manual mutation pins (removing the pause call, removing the max_pause cap) appear in the PR body's \"Evidence (manual pins)\" section, each with a failing test run.\n- Out-of-scope items: no pause/resume CLI, no persistence, no percentage threshold, no drain on stop. None were violated.\n- Migrations: none in this diff.\n- Project-memory pitfalls (dead-owner claim, auto-preserve push, stage strip, in-progress label wedge): the diff repeats none of them.\n[pass B (adjacent)]\n- Hook: met. dispatcher.go:3967 calls `w.onRateLimited` when `outcome.Status == ExecStatusRateLimited`, and dispatcher.go:2981 wires it for every worker that ensureWorker creates. It would fail if the run returned execErr, since Classify then sets `ExecStatusFailed` (lifecycle.go:289). That is not a regression: the old code classified that case as failed too, not rate_limited.\n- Next queued task is held: met. The processQueue loop checks `w.admissionPaused.Load()` before every pickup (dispatcher.go:3473). The pause is set synchronously before Persist and before the loop comes round again, so the same worker cannot start its next task first. ResumeAdmissionFor signals every worker (dispatcher.go:3174).\n- Owner constant `usage-limit`, never stacked: met (usage_limit_pause.go:14). PauseAdmissionFor writes to a map keyed by owner (dispatcher.go:3138), so a repeat call cannot add a second owner.\n- Extend to a later reset: met. The check is `!resumeAt.After(d.usageLimitResumeAt)` returning early (usage_limit_pause.go:117), and the generation counter makes a stale timer do nothing (usage_limit_pause.go:158).\n- max_pause cap and fallback_pause: met (usage_limit_pause.go:98–109). The parser has the reset-just-passed edge case listed above.\n- RetryBuffer: met. The pause uses `DefaultSchedulerConfig().RetryBuffer`, and the Scheduler has no other config source (scheduler.go:24, the only constructor value), so both stay in step.\n- Config knob, defaults and validation: met (backend.go UsageLimitPauseConfig, config.go validateUsageLimitPause, called in Validate). In production the runner gets the config through `runner.config = config` (runner.go:1435).\n- Status fields: met (server.go handleStatus). Both daemon sites wire the dispatcher: main.go:1418 and main.go:3416. Field names match the consumer struct in cmd/pilot/commands.go.\n- Alert: met (one `usage_limit_pause` rule at warning). I confirmed the PR's reason for the severity choice: `platform_breaker_open` is only a bare `alerts.EventType(\"platform_breaker_open\")` (autopilot/controller.go:1715) with no engine rule.\n- Existing single-task re-queue unchanged: met. poller_github.go:341 `s.scheduler.QueueTask` is untouched.\n- Tests: the dispatcher tests run against a real Dispatcher, store and Runner, with only the backend faked, so they exercise the real hook. The gateway test fakes the dispatcher behind AdmissionStatusSource, which is fine because the risk there is the JSON shape. The manual pins for both required mutation checks are pasted in the PR body and fail as the issue requires.\n- Evidence: `go test -race` output is pasted for both packages. The gateway result is `(cached)`, which Go only reuses when the package sources and test inputs are unchanged.\n- Out of scope: there is no pause/resume CLI, no persisted pause, no percentage threshold and no change to stop.\n- Memory pitfalls: none repeated. The diff touches no claim or ownership, auto-preserve push, stage-strip or poller label paths.",
+  "files_read": 13,
+  "passes": 2,
+  "files_read_by_pass": [
+    5,
+    8
+  ],
+  "duration_ms_by_pass": [
+    98807,
+    97459
+  ],
+  "defects_by_pass": [
+    3,
+    3
+  ],
+  "pass_failed": [
+    false,
+    false
+  ],
+  "overlap": 0,
+  "checkout": true,
+  "diff_bytes": 52411,
+  "diff_files": 19,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 52411,
+  "input_issue_bytes": 4918,
+  "input_pr_body_bytes": 3285,
+  "model": "claude-opus-5-5",
+  "duration_ms": 196615,
+  "posted": false
+}

@@ -1,0 +1,119 @@
+{
+  "repo": "qf-studio/pilot-console-ui",
+  "pr": 246,
+  "issue": 244,
+  "merge_commit": "8b14c8e954e3ed27fd4816e57240f155c5b8fba0",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/httpAdapter.ts",
+      "line": "897",
+      "claim": "`docsRead`",
+      "evidence": "`memoriesRead` and `memoriesCreated`, but nothing in the checkout produces them. Grep for those four names finds hits only in httpAdapter.ts, types.ts, stores/chat.ts, ChatView.vue and the new spec. The mock's events contain only `progress`, `confirmation` and `text` (src/lib/api/mockAdapter.ts:2005 `type: 'progress'`, :2023 `type: 'confirmation'`, :2037 `type: 'text'`). No `subagent` or `context` event exists anywhere. The fixture src/lib/api/__tests__/fixtures/chat-events.json:22 sends `\"phase\": \"research\"`, never `done`. The diff's own comment at src/lib/api/types.ts:437 says \"ASSUMED wire contract — not yet confirmed by the daemon\"."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/httpAdapter.ts",
+      "line": "1649",
+      "claim": "so the issue's \"existing chat modes; keep their current semantics\" has nothing to bind to. The diff invents the modes and their wire key."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/views/__tests__/ChatView.spec.ts",
+      "line": "43",
+      "claim": "and the tests prove nothing about the wire contract."
+    },
+    {
+      "severity": "blocking",
+      "file": "PR body — The issue says that when the events lack the counts",
+      "claim": "the PR body must list the missing event fields. The PR body's \"## Changes\" only restates the issue and lists no missing fields",
+      "evidence": "even though the code admits the contract is assumed (ChatView.vue:20)."
+    },
+    {
+      "severity": "minor",
+      "file": "PR body Evidence — The acceptance asks for \"one line names the adapter used\". No such line appears in the pasted build",
+      "claim": "test or lint output."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/ChatView.vue",
+      "line": "1",
+      "claim": "so issue-draft `confirmation` cards (mockAdapter.ts:2023) are no longer rendered or actionable on mobile. Only the desktop panel still uses `ChatWindow`: the only caller is ChatWindow.vue:173 `await chat.send(text)`."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/ChatView.vue",
+      "line": "89",
+      "claim": ""
+    },
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/types.ts",
+      "line": "437",
+      "claim": "The `subagent`/`context` event fields (`durationMs`, `docsRead`, `memoriesRead`, `memoriesCreated`, `phase` `done`) have no producer. The issue said to use these counts only \"if those events carry such counts; otherwise `—` and list the missing event fields in the PR body\". The PR invents the contract instead, and its body lists no missing fields",
+      "evidence": "the docblock says \"ASSUMED wire contract — not yet confirmed by the daemon\", and the mock emits only `progress` and text events (mockAdapter.ts:2005 `type: 'progress'`), never `subagent` or `context`"
+    },
+    {
+      "severity": "blocking",
+      "file": "src/lib/api/types.ts",
+      "line": "467",
+      "claim": "The issue says the pills are \"existing chat modes; keep their current semantics\", but no chat mode existed before this PR. `ChatMode` is new here, and before this PR the only `'docs'`/`'research'` strings were the route name (router/index.ts:109) and a progress `phase` value. The PR sends a new `mode` wire field that no daemon is known to accept, and the mock ignores it (mockAdapter.ts:1994 records only `if (options?.projectId) conv.projectId = options.projectId`), so mock and adapter are out of step"
+    },
+    {
+      "severity": "minor",
+      "file": "src/stores/chat.ts",
+      "line": "339",
+      "claim": "`isWaitingForReply.value = false` runs on the first non-progress event, so the first `subagent` event hides the \"Researching…\" line (ChatView.vue:110) before any report has arrived"
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/ChatView.vue",
+      "line": "36",
+      "claim": "The question is shown only from local messages (chat.ts:51: \"The user's own text is therefore rendered *purely* from local optimistic state\"). After a reload `lastIndexOf('user')` returns -1, so the sub-agent tree and the Context totals cover every past run, not \"the current run\", and the question line is empty"
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/ChatView.vue",
+      "line": "14",
+      "claim": "The mobile Chat tab no longer mounts `ChatWindow`, so on mobile the confirmation cards (ChatWindow.vue:116 `await chat.decideCard(callbackId, actionId)`) and the project selector (ChatWindow.vue:213) are gone, and the docblock does not record this as a divergence"
+    }
+  ],
+  "not_verified": [
+    "Whether the daemon actually emits `subagent` / `context` events or accepts `mode`: the backend is not in this checkout.",
+    "The Figma node `13-994` layout fidelity: there is no `design/` file for it in the checkout's design table.",
+    "4 more items the passes could not verify (capped at 3)"
+  ],
+  "notes": "[pass A (hunk)]\n- Title \"Research\" 15px and the question at 15px/60%: met, ChatView.vue:91–92 (`text-[15px]`, `text-ds-text/60`). With no user message the question `\u003cp\u003e` is hidden by `v-if=\"question\"` rather than showing an empty line.\n- \"Navigator research\" header with right-aligned count: met, ChatView.vue:95–96 plus SectionHeader.vue:9 (`justify-between`). The count is shown even when 0, but the section is hidden when there are no sub-agents (`v-if=\"subAgents.length \u003e 0\"`).\n- One ListRow per sub-agent with id, DONE chip and duration-only meta: rendering is met, ChatView.vue:98–102 plus Chip.vue:8 (`uppercase`). It is fed only by the unproduced `subagent`/`durationMs` fields (blocking above), so in practice no rows render.\n- Report as markdown: met, reportMarkdown.ts:5 (`html: false`). Raw `\u003cimg onerror\u003e` is escaped, as asserted at ChatView.spec.ts:75.\n- Composer placeholder, RESEARCH/DOCS pills, send on Enter: met, ResearchComposer.vue:14, :18–21 and :42. Pill.vue:7 `uppercase` produces the RESEARCH/DOCS casing, and Shift+Enter does not send because of `.exact`. The \"existing semantics\" part is not met (blocking above).\n- Dashboard input navigates with q and mode, and the Research page starts the turn: met, DashboardView.vue:116 and ChatView.vue:76–81 (router route at src/router/index.ts:114 `name: 'chat'`). An invalid `mode` falls back to `research`, and a blank `q` returns early.\n- Context panel \"Read N docs · M memories\" / \"Created K memories\" with a `—` fallback: the `—` path is met at ChatView.vue:62–64. The counts path depends on unproduced fields. No judge name or version is present (ChatView.vue:107–111).\n- Test asserting no token or `$` in the rows: present at ChatView.spec.ts:66–67, but only against store-seeded data.\n- make build/test/lint: the pasted output shows 67 files and 939 tests passing, and lint clean.\n[pass B (adjacent)]\n- Title \"Research\" 15px plus the question at 15px/60%: met. ChatView.vue:93 and :94 render `question`, which is empty after a reload (see defect).\n- \"Navigator research\" header with right-aligned count, one ListRow per sub-agent with id, DONE chip, title and duration-only meta: met in the view (ChatView.vue:96-104; SectionHeader.vue:9 action slot; Chip.vue:8 uppercase turns \"Done\" into DONE; formatDuration at ChatView.vue:55). Rows render only from assumed events that nothing produces (blocking).\n- Report rendered as markdown: met (reportMarkdown.ts:5 `html: false`; ChatView.vue:108). Raw HTML is escaped, as the spec's escape test checks.\n- Input with placeholder `Ask your pilot…`, RESEARCH/DOCS pills and send on Enter: met (ResearchComposer.vue:14, :18-21, :42; Pill.vue:7 uppercase). The \"existing modes\" requirement is not met (blocking).\n- Dashboard input navigates with q and mode, and the Research page starts the turn: met (DashboardView.vue:116; ChatView.vue:76-81, which strips the query first so a reload does not re-ask). Tested with a real router in DashboardView.spec.ts.\n- Context `Read N docs · M memories` / `Created K memories` with `—` fallback: met in the view (ChatView.vue:58-64). Listing the missing fields in the PR body: not met (blocking). No judge name or version is shown.\n- Test asserting no `token`/`$` in sub-agent rows: met (ChatView.spec.ts:64-71), but only against store-seeded fixtures.",
+  "files_read": 12,
+  "passes": 2,
+  "files_read_by_pass": [
+    6,
+    6
+  ],
+  "duration_ms_by_pass": [
+    42114,
+    60666
+  ],
+  "defects_by_pass": [
+    7,
+    7
+  ],
+  "pass_failed": [
+    false,
+    false
+  ],
+  "overlap": 1,
+  "checkout": true,
+  "diff_bytes": 25745,
+  "diff_files": 9,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 25745,
+  "input_issue_bytes": 2021,
+  "input_pr_body_bytes": 15932,
+  "model": "claude-opus-5-5",
+  "duration_ms": 102861,
+  "posted": false
+}

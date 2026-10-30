@@ -1,0 +1,100 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5871,
+  "issue": 5849,
+  "merge_commit": "62fdf98ca4d2de6181ae5eb2e35690fa28e338c9",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/handlers.go",
+      "line": "955",
+      "claim": "after a live-gate skip arms the shared backoff key, every repick inside the window is reported as SkipReason \"needs_human\" even when the real reason was issue_closed or trigger_label_removed",
+      "evidence": "line 955 `return \u0026sdkcore.IssueResult{Success: false, Skipped: true, SkipReason: skipReasonNeedsHuman}, nil` runs before the gate at 1031, and its Debug log says \"backoff window still active for needs-human park\", so logs and metrics give the wrong reason"
+    },
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/gh5072_needs_human_repick_backoff_test.go",
+      "line": "303",
+      "claim": "the fetch-error case only checks that no live-gate SkipReason comes back. It never checks that the task proceeds with ev.Labels, which the acceptance bullet asks for",
+      "evidence": "the `if tc.wantReason == \"\" { ... return }` branch has no assertion on result.Success, the dispatched task's Labels or the error, so a fetch-error path that skipped for some other reason would still pass"
+    },
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/handlers.go",
+      "line": "1084",
+      "claim": "fix-branch resolution still reads the stale snapshot, and so do the task description and acceptance criteria (the stale-body pitfall from project memory). This is pre-existing and outside the scope bullets",
+      "evidence": "`resolveAutopilotFixBranch(ev.Labels, ev.Body)` at 1084, `taskDesc := fmt.Sprintf(... title, ev.Body)` at 1074, and `AcceptanceCriteria: github.ExtractAcceptanceCriteria(ev.Body)` in the task literal, while specBody/liveLabels use the fresh fetch"
+    },
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/handlers.go",
+      "line": "951",
+      "claim": "when a GH-5849 skip has armed the backoff, the next re-pick is caught by the pre-check, which logs \"repick backoff window still active for needs-human park\" and returns `SkipReason: skipReasonNeedsHuman` (line 955). So a closed, unlabeled or pilot-blocked issue is reported as needs_human on every tick after the first skip",
+      "evidence": "evidence: `return \u0026sdkcore.IssueResult{Success: false, Skipped: true, SkipReason: skipReasonNeedsHuman}, nil`"
+    },
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/handlers.go",
+      "line": "1037",
+      "claim": "every live-gate skip increments the persisted `claimLostDrops` counter (repick_backoff.go:245 `e.claimLostDrops++`). That counter also feeds the GH-5300 pilot-strip threshold (`terminalDropPilotStripThreshold = 3`, handlers.go:1549, read at handlers.go:1295). Remove the label and re-add it a few times and a later ordinary dispatch drop strips the pilot label sooner than intended. The counter only resets at the first real dispatch",
+      "evidence": "evidence: `_, _, claimLostDrops, _ := repickBackoff.gateDetail(backoffKey)`"
+    },
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/handlers.go",
+      "line": "1296",
+      "claim": "the strip guard still reads the stale snapshot instead of `liveLabels`",
+      "evidence": "evidence: `shouldStripPilotAfterTerminalDrops(claimLostDrops, issueState, ev.Labels, pilotLabel)`. In practice this is harmless because the live gate has already confirmed the trigger label, but it doesn't match the switch to live labels."
+    },
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/gh5072_needs_human_repick_backoff_test.go",
+      "line": "323",
+      "claim": "the fetch-error case only checks that the result is not a live-gate skip and then returns. It never checks that the task's Labels equal `ev.Labels`, so the acceptance clause \"proceeds with ev.Labels\" is shown only by handlers.go:1000 `liveLabels := ev.Labels`, not by a test."
+    },
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/gh5056_needs_human_admission_test.go",
+      "line": "86",
+      "claim": "the existing needs-human test passes `cfg` = nil, so no fetch happens and the backstop at handlers.go:1056 still runs on the `ev.Labels` fallback. When a fetch succeeds, the live gate (handlers.go:1384) now catches needs-human first, so the backstop at line 1056 is reached only on fetch failure. The \"backstop now reading live labels\" is covered only through the new table's needs-human case."
+    }
+  ],
+  "not_verified": [
+    "The consumer side of the test's stub JSON keys (\"state\", \"labels[].name\", \"user.login\") is the external studio-sdk githubSDK.Issue type, which is not in this checkout. Only the in-tree mirror was read: internal/adapters/github/client.go:250-254 `State string json:\"state\"`, `Labels []Label json:\"labels\"`, `User User json:\"user\"`, and client.go:264 `Name string json:\"name\"`.",
+    "Not reviewed: whether the studio-sdk poller writes pilot-in-progress before calling the handler, which would leave that label stuck on a live-gate skip (project-memory pitfall #4961). The SDK poller source is not in the checkout.",
+    "3 more items the passes could not verify (capped at 3)"
+  ],
+  "notes": "[pass A (hunk)]\n- Scope: liveLabels comes from realIssue.Labels on a successful fetch. Met at cmd/pilot/handlers.go:1012-1015. When the fetch fails, fetchGithubIssueForSDKTask returns nil (handlers.go:1426), so liveLabels keeps `liveLabels := ev.Labels` (handlers.go:1000) and the code fails open.\n- Scope: the needs-human backstop and the task's Labels use live labels. Met at handlers.go:1056 `githubEventHasNeedsHumanLabel(liveLabels)` and in the task literal `Labels: liveLabels`. The spec-guard labels also switched to liveLabels (handlers.go:1114-1115).\n- Scope: one admission check runs before any side effect. Met at handlers.go:1026-1041. It sits ahead of RecordBorrowedBranch (1105), the spec guard (1113) and the in-progress label write (1152). It only runs when realIssue != nil, so a failed fetch cannot cause a false skip.\n- Scope: skips on closed, missing trigger label, needs-human, pilot-blocked and needs-clarification. Met at handlers.go:1378-1392 (githubLiveAdmissionSkipReason). The trigger label comes from cfg.Adapters.GitHub.PilotLabel with a default of \"pilot\" (handlers.go:1027-1030), which matches how the poller derives it (poller_github.go:580-583 `pilotLabel := ghCfg.PilotLabel`, where ghCfg is `deps.Cfg.Adapters.GitHub` at poller_github.go:492). If PilotLabel is empty, both sides fall back to \"pilot\", so they never disagree.\n- Scope: one INFO log line with the task id and reason. Met at handlers.go:1032-1035.\n- Scope: Success false, Skipped true, a distinct SkipReason, and recordClaimLostDrop on the same backoffKey. Met at handlers.go:1036-1039. backoffKey is the one computed at handlers.go:950 and also used by the needs-human path at 1069. recordClaimLostDrop is defined at cmd/pilot/repick_backoff.go:234.\n- Callers: poller_github.go:609 (the SDK poller handler) and poller_github.go:153 (the rate-limit retry path) both pass target.repoFullName. The gate applies to both, and neither caller depends on a non-skip result.\n- Acceptance, table-driven test: met with the cases at cmd/pilot/gh5072_needs_human_repick_backoff_test.go:245-251 (closed, trigger removed, pilot-blocked, needs-clarification, plus needs-human and fetch error). The test runs the real studio-sdk client against an httptest server through githubTaskClientOpts (handlers.go:1007, main.go:336-342 `opts = append(opts, extraOpts...)`). It is not a mock of the adapter. It asserts that nothing is written (no non-GET requests), that the backoff is armed, and that ClaimLostDropCount equals 1 (internal/executor/dispatcher.go:1274).\n- Acceptance, existing needs-human test: gh5056_needs_human_admission_test.go:86 passes a nil cfg, so there is no fetch, and liveLabels equals ev.Labels, which still contains pilot-needs-human. The source guard was updated to `githubEventHasNeedsHumanLabel(liveLabels)` (test line 117).\n- Acceptance, go test -race output: the PR Evidence block contains `ok github.com/qf-studio/pilot/cmd/pilot 20.811s`.\n- Out of scope: no studio-sdk change and no change to other adapters. The diff only touches cmd/pilot.\n- Pitfall: HasTerminalCompletion was not touched, so that pitfall is not repeated.\n[pass B (adjacent)]\n- Live labels from `realIssue.Labels`, used by the backstop and the task's Labels: met. handlers.go:1012-1015 builds `liveLabels`; handlers.go:1056 `githubEventHasNeedsHumanLabel(liveLabels)` and handlers.go:1205 `Labels: liveLabels`. On fetch failure `fetchGithubIssueForSDKTask` returns nil (handlers.go:1426), so `liveLabels` keeps `ev.Labels` (handlers.go:1000) and the code fails open.\n- Admission check before any side effect: met. The gate at handlers.go:1026-1041 runs before the spec guard (1113), the label write (1178), task construction (1193) and the OnClaimed comment (1239). The fetch moved above it is a read-only GET (handlers.go:1420). It would not apply if `repoOwner`/`repoName` were unresolved; in that case `realIssue` is nil and the code fails open, as scoped.\n- Closed, trigger label missing (using `cfg.Adapters.GitHub.PilotLabel`, handlers.go:1028-1029), needs-human, pilot-blocked, pilot-needs-clarification: met at handlers.go:1380-1389. The trigger label matches the poller's own `TriggerLabel` (poller_github.go:580-592), so the two cannot disagree.\n- One INFO line with task id and reason: met at handlers.go:1032-1035.\n- Distinct SkipReason, Success false, Skipped true, `recordClaimLostDrop` on the same `backoffKey`: met at handlers.go:1037-1039. `backoffKey` comes from handlers.go:950, the same key the needs-human path uses at 1069. Nothing is armed when `dispatcher` is nil, the same as the existing path.\n- Both callers checked: the poller handler (poller_github.go:609) and the rate-limit retry (poller_github.go:153). The retry builds `ev` from a fresh GetIssue, so it is consistent with the gate.\n- Tests: the table test drives the real studio-sdk client against an httptest server through `githubTaskClientOpts` (main.go:341 `opts = append(opts, extraOpts...)`) and a real dispatcher and store. It proves the GET wire and that no write requests are sent for the four skip cases, not just a mock.\n- Migrations: none.\n- Out of scope: no studio-sdk change and no other adapter touched.\n- Pitfall \"pilot-in-progress applied before the claim and never unwound\": not repeated. The skip returns before `applyGithubInProgressLabelSDK` (handlers.go:1178).\n- Pitfall \"HasTerminalCompletion without a re-arm probe\": not touched.\n- Pitfall \"stale body\": not repeated by the diff. `specBody` uses the live body (handlers.go:1011), but `taskDesc` (handlers.go:1074) and `AcceptanceCriteria` (handlers.go:1206) still read `ev.Body`, which was already the case before this PR.",
+  "files_read": 8,
+  "passes": 2,
+  "files_read_by_pass": [
+    4,
+    4
+  ],
+  "duration_ms_by_pass": [
+    63870,
+    67074
+  ],
+  "defects_by_pass": [
+    3,
+    5
+  ],
+  "pass_failed": [
+    false,
+    false
+  ],
+  "overlap": 0,
+  "checkout": true,
+  "diff_bytes": 18610,
+  "diff_files": 3,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 18610,
+  "input_issue_bytes": 4231,
+  "input_pr_body_bytes": 4931,
+  "model": "claude-opus-5-5",
+  "duration_ms": 131322,
+  "posted": false
+}

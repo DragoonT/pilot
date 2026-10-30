@@ -293,3 +293,69 @@ All three run-5 fixture HITs flipped back (neither pass opened `ratelimit.go`; `
 2. Before the box switches to `passes: 2`: fix the six mechanics gaps in one leg (full timeout per pass; location normalisation + range tolerance; NOT-VERIFIED cap; union-rule verdict for one usable pass; no-files blocking demotion; line regex). Then `post_merge_review.passes: 2` and `executor.pre_pr_review.passes: 2` on the box; expect ~160 s per review, pre-PR budget 6 m holds, daily cap 20 unchanged.
 3. Policy after the switch (founder): with recall ≥ 0.5 earned, APPROVE-WITH-NOTES from the post-merge reviewer can stand as "no human needed" for non-tier-1 merges (already the policy) and the pre-PR reviewer has the same recall for the enforce-mode decision (TASK-620 exit criteria).
 4. Run 7 = same 14 after the mechanics fix, `--passes 2`, to confirm ≥ 0.5 holds with the dead-pass and dedupe fixes in.
+
+---
+
+# Run 7 — 2026-10-30 16:23–16:55Z, v2.304.0, claude-opus-5-5, two passes after the mechanics fix (TASK-623 P2: full timeout per pass, path+first-line keys, NOT-VERIFIED cap, derived verdict, no-files demotion)
+
+Same 14 PRs, same rules, same scorer prompt, same hand numbering and n = 52. Raw: `run7/`. **Box config switched to `passes: 2` on both reviewers at 16:21Z** (daemon log: `Pre-PR review initialized … passes=2`, `autopilot post-merge reviewer enabled … passes=2`).
+
+| Metric | Run 5 (1 pass) | Run 6 (2 passes) | **Run 7 (2 passes, fixed)** | Bar |
+|---|---|---|---|---|
+| REQUEST-CHANGES caught | 3 of 3 | 3 of 3 | **3 of 3** | ≥2 |
+| Defect recall (HIT + ½ PARTIAL) | 43.3 % | 51.0 % | **51.0 %** (22 + 4.5 / 52) | ≥ 0.5 — **MET, stable** |
+| Plain HIT recall | 34.6 % | 42.3 % | 42.3 % | |
+| False notes per verdict | 0.07 | 0.07 | **0.07** (same single FALSE, ui#254) | ≤ 1 |
+| REQUEST-CHANGES on human-approved PRs | 3 of 11 | 2 of 11 | 3 of 11 (pilot#5799 back to RC) | — |
+| Defect-bearing approves matched | 9 of 11 | 11 of 11 | 10 of 11 | — |
+| New valid findings | 44 | 50 | 45 (UNSURE 22; six verified against merge commits) | — |
+| Format / pass failures | 0 / — | 0 / 1 | **0 / 0** | — |
+| Mean review time | 72 s | 162 s | **138 s** (A 66 s + B 72 s; 98–197 s) | — |
+| Files read per review | 5.1 | 10.4 | 9.6 (A 4.9, B 4.8) | — |
+| Overlap (united across passes) | — | 0.64 | **1.29**; 19 of 31 hand defects found by both | — |
+
+| PR | hand | daemon | match | hand n | HIT | PARTIAL | MISS | NEW-VALID | FALSE | UNSURE |
+|---|---|---|---|---|---|---|---|---|---|---|
+| ui#252 | RC | RC | Y | 5 | 1 | 2 | 2 | 3 | 0 | 1 |
+| ui#261 | RC | RC | Y | 3 | 2 | 0 | 1 | 5 | 0 | 4 |
+| ui#255 | RC | RC | Y | 5 | 2 | 1 | 2 | 3 | 0 | 1 |
+| ui#254 | A+defects | RC | N | 3 | 1 | 1 | 1 | 3 | 1 | 2 |
+| ui#246 | A+defects | RC | N | 4 | 4 | 0 | 0 | 2 | 0 | 1 |
+| pilot#5799 | A+defects | RC | N | 2 | 1 | 0 | 1 | 4 | 0 | 1 |
+| pilot#5822 | A+defects | AWN | Y | 3 | 2 | 1 | 0 | 3 | 0 | 2 |
+| pilot#5868 | AWN | AWN | Y | 5 | 2 | 0 | 3 | 4 | 0 | 2 |
+| pilot#5874 | AWN | AWN | Y | 5 | 1 | 0 | 4 | 4 | 0 | 1 |
+| pilot#5870 | A+notes | AWN | Y | 6 | 1 | 1 | 4 | 0 | 0 | 3 |
+| pilot#5871 | AWN | AWN | Y | 1 | 0 | 0 | 1 | 5 | 0 | 1 |
+| pilot#5872 | AWN | AWN | Y | 1 | 1 | 0 | 0 | 3 | 0 | 1 |
+| pilot#5875 | AWN | AWN | Y | 2 | 1 | 1 | 0 | 4 | 0 | 1 |
+| console#427 | A+notes | AWN | Y | 7 | 3 | 2 | 2 | 2 | 0 | 1 |
+| **total** | | | 11/14 | 52 | 22 | 9 | 21 | 45 | 1 | 22 |
+
+## Per-pass recall
+| | hand defects found | recall | run 6 |
+|---|---|---|---|
+| Pass A (hunk) | 22 (14 HIT + 8 PARTIAL) | 34.6 % | 34.6 % |
+| Pass B (adjacent) | 28 (22 HIT + 6 PARTIAL) | 48.1 % | 42.3 % |
+| Union | 31 | **51.0 %** | 51.0 % |
+| Found by both | 19 of 31 | | 15 |
+
+## Fixtures (eight run-4 misses): 2 HIT · 3 PARTIAL · 3 MISS = 3.5/8 (run 6: 1.0/8, run 5: 3.5/8)
+HIT via B: pilot#5874 D1 (`ratelimit.go:96` roll, the unreachable `candidate.After(now)` guard) · pilot#5868 D4 (`StagePostMergeCI` at controller.go:6246). PARTIAL: pilot#5870 D4 (reaches `preflight.go:221` ahead of the guard, concludes "reachable for excluded-path dirt") · pilot#5822 D2 (heal half) · pilot#5875 D2. MISS: pilot#5874 D3 `Stop()`, D2 two alerts, pilot#5870 D2 (`curErr == nil` quoted as safe by both passes, fourth run running).
+
+## Stability (runs 6 → 7): 9 of 52 items swapped state, the total did not move
+- **Stable core: 27 defects found in both runs**, 19 of them at the same grade since run 5 — the console-ui wire-contract class (every ui PR's D1, PR-body evidence) and hunk-local pilot items (receipts fail-open, Monday cron collision, `ErrNoRows` widening, `allErrored`).
+- **Variance: 4 run-6-only, 4 run-7-only — all eight one-hop adjacent-code items.** Which of them a run picks is a draw over a fixed finding budget (pass B, same prompt: 42.3 → 48.1 %). 17 defects found in neither run: design-token rules, test-shape, notes-only hand reviews, and the `curErr == nil` reading-rule miss.
+- Run 6's bar was not an artefact of the killed pass: no pass failed, 24 s less wall time, fewer files, same 26.5/52.
+
+## Mechanics residue after P2 (none blocks the switch; one leg if the posted lists need to be clean)
+- 30 same-finding pairs still un-united (18 united): line numbers one to four apart for the same statement (`:308`/`:307`), producer-vs-consumer anchors for one claim (`httpAdapter.ts:589` vs `types.ts:298`), PR-body keys differing by case. The `file` field still carries claim text on 16 entries (13 pass A). A tolerance of ±4 lines on the same path plus a case-fold would unite most of them.
+- The NOT-VERIFIED cap of 3 eats signal: 13 of 14 lists end in "N more items"; three carry a "met — not traced" notes line in a surviving slot. Cap the *rendered* list, keep the full set in the ledger row.
+- The union arithmetic (len = a + b − overlap) fails on three console-ui PRs by one pass-B defect each — intra-pass-B key collisions in the union step; ui#246 defect 7 has an empty claim.
+
+## Decision inputs after seven runs
+1. **The reviewer meets all three bars with two passes, twice**: RC 3/3 · false 0.07 · recall 51.0 % (runs 6 and 7). Cost ~140 s and ~10 files per review; daily cap 20 unchanged; the pre-PR 6 m budget holds (max 197 s).
+2. **The box is on two passes since 16:21Z for both reviewers.** The post-merge policy already treats APPROVE-WITH-NOTES as "no human needed" for non-tier-1; this is the first time the number behind it is earned.
+3. **Pre-PR reviewer = same prompt, same budget, same 51 %.** The TASK-620 enforce decision is now a founder call on the exit criteria, not on recall.
+4. Further recall is not a prompt or pass question: the 17 never-found items are design-token/convention, test-shape, notes-only hand reviews, and one reading-rule miss. A third pass would redraw from the same budget. Stop the calibration track here; reopen only if a live miss class appears.
+5. Optional cleanliness leg (TASK-623 P3): ±4-line key tolerance, case-folded keys, location rewrite in the single-pass branch, render-cap-only for NOT-VERIFIED, the intra-pass-B collision, empty-claim guard.

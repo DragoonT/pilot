@@ -1,0 +1,107 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5822,
+  "issue": 5792,
+  "merge_commit": "b8fa43099badcefcbf2b57ee6f8c6c798e13399b",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "internal/memory/store.go",
+      "line": "5392",
+      "claim": "The weekly path reads the whole `pr_created` ledger with no time window. `GetWeeklyProofInputs` (internal/memory/weekly_proof.go) calls `earliestStageOccurrences(StagePRCreated)`, and that query is `WHERE ee.stage = ? AND COALESCE(e.is_canary, 0) = 0` (store.go:5397). It loads every execution's event ever recorded and then filters the result in Go down to the few shipped IDs, so the cost grows with the size of the whole ledger rather than the week."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/briefs/scheduler.go",
+      "line": "336",
+      "claim": "Weekly catch-up only fires for tenants who deliver to Telegram. `catchUp` calls `s.store.GetLastBriefSent(\"telegram\", briefType)`, and `maybeCatchUpWeekly` passes `requirePrior=true`. A tenant that only uses Slack or email never has a \"telegram\"/\"weekly\" record, so a missed Monday is never caught up after a restart. The daily path has the same channel assumption, but the new requirePrior gate turns it into a permanent skip.",
+      "evidence": "`lastRecord, err := s.store.GetLastBriefSent(\"telegram\", briefType)` together with `if requirePrior \u0026\u0026 lastRecord == nil {`"
+    },
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/tunnel.go",
+      "line": "205",
+      "claim": "`make lint` in the PR body shows 3 SA4023 findings (tunnel.go:205, 351, 433). That file is not in the diff, so these failures predate the change and are unrelated.",
+      "evidence": "\"3 issues: * staticcheck: 3 / make: *** [Makefile:101: lint] Error 1\""
+    },
+    {
+      "severity": "minor",
+      "file": "internal/briefs/delivery.go",
+      "line": "282",
+      "claim": "the Telegram weekly brief shows only `brief.Weekly.Summary()`, and the Slack formatter and the plain-text formatter do the same, so the top 3 shipped runs reach only the email and the console payload",
+      "evidence": "`text += \"🏁 \" + brief.Weekly.Summary() + \"\\n\\n\"`; `writeWeeklyProofHTML` is the only renderer of `TopShipped`"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/briefs/weekly.go",
+      "line": "29",
+      "claim": "the weekly spec copies the daily hour field as written, so a daily schedule like \"0 9,17 * * *\" makes the weekly brief fire twice on Monday, and \"@daily\" skips the weekly brief with only a warning (scheduler.go:80)",
+      "evidence": "`fmt.Sprintf(\"%s %s * * %d\", fields[0], fields[1], dow)`"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/gateway/briefs.go",
+      "line": "48",
+      "claim": "with the default \"0 9 * * 1-5\" the daily and weekly cron entries both fire at Monday 09:00, so which payload `/api/v1/briefs/latest` returns depends on which save finishes last",
+      "evidence": "`rows, err := bs.ListBriefPayloads(1)`"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/memory/weekly_proof.go",
+      "line": "56",
+      "claim": "the merged-count filter matches `e.project_path` against `Filters.Projects`, which repeats the project_path pitfall: if the filter holds owner/repo values, the count is 0. This is the same pattern as the existing store.go:2423",
+      "evidence": "`\" AND e.project_path IN (?\"`"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/memory/store.go",
+      "line": "3417",
+      "claim": "the historical heal writes a `StageMerged` event with `occurred_at` set to write time (store.go:1300 `time.Now().UTC()`), so a backfill sweep counts old merges in the merged_count of the week it runs",
+      "evidence": "`stage, detail = StageMerged, \"historical archaeology heal (GH-4368): merged \"+c.prURL`"
+    },
+    {
+      "severity": "minor",
+      "file": "PR Body Evidence",
+      "claim": "the pasted `make test` output ends in FAIL, so the \"make test passes\" acceptance bullet is not met",
+      "evidence": "\"FAIL / make: *** [Makefile:60: test] Error 1\""
+    }
+  ],
+  "not_verified": [
+    "`make test` ends in `FAIL` / `make: *** [Makefile:60: test] Error 1`, but 36099 lines are omitted from the pasted output. The failing package is not shown, so I cannot tell whether it is `internal/briefs`, `internal/config` or `internal/memory` (all touched by the diff) or an unrelated one.",
+    "The console client that reads `kind` / `weekly` is not in this checkout. internal/gateway/briefs.go:58 (`_, _ = w.Write(rows[0].Payload)`) passes the payload through unchanged, and a Grep for `median_time_to_pr_minutes` outside Go code matched only .agent docs, so I cannot check how the console renders the new fields.",
+    "3 more items the passes could not verify (capped at 3)"
+  ],
+  "notes": "[pass A (hunk)]\n- Where: `WeeklySchedule` builds `fmt.Sprintf(\"%s %s * * %d\", fields[0], fields[1], dow)` (internal/briefs/weekly.go:29), and the scheduler adds it to the same cron (scheduler.go:79). `WeeklyDay` is passed through at cmd/pilot/main.go:3977 and commands.go:1716, defaults to `WeeklyDay: \"monday\"` (config.go), and is validated by `validateWeeklyDay`.\n- Edge case: a descriptor schedule such as `@daily` cannot be converted to a weekly spec. In that case only the weekly brief is skipped, with a warning (scheduler.go:79–84), and the daily brief stays scheduled. The test `TestSchedulerStart_UnderivableWeeklySkipsOnlyWeekly` covers this.\n- Shipped runs come from `GetExecutionsForReceipts` (store.go:2402, filtered on `completed_at` in the window, non-canary). Time to PR uses the `pr_created` event, whose producer is internal/executor/dispatcher.go:4119 (`return memory.StagePRCreated, true`).\n- Merged runs come from `execution_events` rows with stage `merged`, produced at internal/autopilot/controller.go:10726 (`c.recordExecutionEvent(prState, previousStage, memory.StageMerged, ...)`) and controller.go:2637.\n- The diff reads this ledger instead of `autopilot_pr_state` because autopilot deletes finished PR state rows, which the diff's comment documents. Counting distinct execution IDs means duplicate merged events count once, which the fixture checks.\n- The ledger timestamps bind as UTC (store.go:1300 `time.Now().UTC()`), the same form the query bounds use.\n- Console: the `Kind` field has `json:\"kind\"` (types.go), is set in `GenerateWeeklyStructured`, and is stored via `storeStructured` at scheduler.go:286–303.\n- Email: `deliverEmail` calls `d.emailFmt.Format(brief)` (delivery.go:204), which now writes `\u003cmeta name=\"pilot-brief-kind\"\u003e`.\n- Daily briefs: an unset kind falls back to \"daily\" through `kindOrDaily`.\n- `make test` / `make lint` output pasted: both outputs are present and both fail; see DEFECTS and NOT-VERIFIED.\n- Project memory pitfalls:\n- Top-level autopilot YAML / missing `autopilot_pr_state`: not repeated, because the diff does not depend on `autopilot_pr_state`.\n- GitHub rate limit: not applicable, because the diff makes no GitHub calls.\n- project_path discriminator: the diff matches the existing receipts filter (store.go:2423); whether the filter values are absolute paths is listed under NOT-VERIFIED.\n[pass B (adjacent)]\n- Monday schedule at the daily hour in the tenant timezone: met. The cron uses the tenant timezone (scheduler.go:46 `cron.New(cron.WithLocation(loc))`) and the weekly entry is added at scheduler.go:79-85. The one input that breaks it is a descriptor or multi-hour daily schedule (see DEFECTS); the default \"0 9 * * 1-5\" derives to \"0 9 * * 1\".\n- `weekly_day` with default monday: met. The default is set in config.go DefaultConfig (`WeeklyDay: \"monday\"`), validated by validateWeeklyDay, and passed through at main.go:3977 and commands.go:1716. main.go:4016 is the only `NewScheduler` call site.\n- tickets_shipped, median_time_to_pr_minutes, merged_count: met. Inputs come from the executions ledger (store.go:2402, which excludes canaries) and from the execution_events \"merged\" stage. Production writes that stage at autopilot controller.go:10726 and runner.go:2717, so the field has a producer. Avoiding autopilot_pr_state sidesteps the pitfall about that table being missing or rows being deleted.\n- Top 3 by diff size: met in the console payload and email. The structured list is uncapped (structured.go:83), so the top 3 are not cut by MaxItemsPerSection. Telegram and Slack omit the list (see DEFECTS).\n- `kind: weekly` marker: met. It is a JSON field (types.go `json:\"kind\"`), served verbatim by gateway/briefs.go:58, and an email `\u003cmeta name=\"pilot-brief-kind\"\u003e` tag. Daily payloads carry `kind: daily`.\n- Tests: these run against a real SQLite store (setupSchedulerTestStore plus raw execution_events inserts), not a mock. The fixture ledger, the empty week returning zeros, the even-count median, and the Monday-only spec across the DST change are all covered. The \"fires on Monday only\" test checks the parsed spec and `WeeklyNextRun`, not a live cron tick.\n- Migrations: none. The `brief_history.brief_type` column is free text (store.go:276), so the \"weekly\" value needs no schema change.\n- Out of scope: the issue has no out-of-scope section. The manual `pilot brief --weekly` (commands.go:1746) now also carries the proof numbers, which is consistent with the issue.\n- Pitfall memories: autopilot_pr_state is avoided. The project_path discriminator pattern is repeated at weekly_proof.go:56, as it already is at store.go:2423. The GitHub rate-limit pitfall does not apply because no GitHub calls were added.",
+  "files_read": 12,
+  "passes": 2,
+  "files_read_by_pass": [
+    6,
+    6
+  ],
+  "duration_ms_by_pass": [
+    72267,
+    80901
+  ],
+  "defects_by_pass": [
+    3,
+    8
+  ],
+  "pass_failed": [
+    false,
+    false
+  ],
+  "overlap": 2,
+  "checkout": true,
+  "diff_bytes": 51095,
+  "diff_files": 18,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 51095,
+  "input_issue_bytes": 1027,
+  "input_pr_body_bytes": 7100,
+  "model": "claude-opus-5-5",
+  "duration_ms": 153538,
+  "posted": false
+}

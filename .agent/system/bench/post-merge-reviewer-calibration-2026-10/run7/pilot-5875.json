@@ -1,0 +1,94 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5875,
+  "issue": 5867,
+  "merge_commit": "57e9356223af656f8d80c56391a24bb4b15ce675",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "internal/executor/runner.go",
+      "line": "3570",
+      "claim": "the GH-5346 timeout salvage path passes nil gates to appendAcceptanceEvidence, so it can never reuse gate output even though the gates just ran and passed in that run",
+      "evidence": "runner.go:3157 sets `result.QualityGates = r.buildQualityGatesResult(outcome, 0)` right before runner.go:3163 calls `r.pushAndCreatePRAfterTimeout(finCtx, ...)`. On that path `make build/test/lint` evidence bullets still re-run every gate, though the evidence budget now caps how long that takes"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/runner_gh5867_test.go",
+      "line": "76",
+      "claim": "the runner test only covers the shared PRCreator branch (`task.SourceAdapter = \"linear\"`, runner.go:7260). The gh CLI branch (runner.go:7312, `git.CreatePR`), which is the GitHub path from the incident, and the SDK branch (runner.go:7236) get the same re-derivation, but no test fails if either one is removed"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/acceptance_evidence_run.go",
+      "line": "315",
+      "claim": "reuse uses the gate output captured before self-review, and self-review runs between the gates and evidence and can change code (issue timeline: \"intent judge and self-review to 17:03:03\"). In that case the \"(from the quality-gate run)\" output describes an earlier tree. The issue asks for this reuse, but the PR body gives no sign that the output may be stale"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/acceptance_evidence_run.go",
+      "line": "817",
+      "claim": "`emit(evidenceEventReused, i+1)` fires once per reused command, not once per evidence step. An item with three reused gate commands logs three WARN lines, while the issue asks for \"One WARN log line when evidence reuse or budget exhaustion happens\""
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/runner.go",
+      "line": "348",
+      "claim": "The new re-derivation before PR creation only adds time when the task deadline has already passed. If the task ctx is still alive with a few seconds left, CreatePR keeps that short deadline. The guard is `if ctx.Err() == context.DeadlineExceeded {` and every other case is `return context.WithCancel(ctx)`. So a deadline that expires during the three CreatePR attempts at runner.go:7239 still fails them; only the recovery ref is saved by the refresh at runner.go:400."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/acceptance_evidence_run.go",
+      "line": "322",
+      "claim": "If the budget runs out partway through an item that has several commands, the skipped commands are pasted inside the \"## Evidence\" code block and do not appear as \"Not verified\" lines. `allErrored = false` from an earlier command that ran or was reused leaves NotVerifiedReason empty, so the rewrite and the WARN emit at acceptance_evidence_run.go:836 and :848 never fire for that item."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/acceptance_evidence_run.go",
+      "line": "845",
+      "claim": "The issue asks for \"One WARN log line\". The loop `for _, c := range res.Commands { if c.FromQualityGate { emit(evidenceEventReused, i+1)` logs once per reused command, so the standard make build, make test, make lint bullet produces three WARN lines."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/runner_gh5867_test.go",
+      "line": "77",
+      "claim": "`task.SourceAdapter = \"linear\"` sends the runner test only through the shared-creator branch (runner.go:7276). If the re-derivation is removed from the gh CLI branch (runner.go:7312) or the SDK branch (runner.go:7236), which carry the observed GH-5864 failure, no test fails."
+    }
+  ],
+  "not_verified": [
+    "The issue says this repo's real quality-gate command strings match the evidence argv (e.g. `make test`). I only found the built-in defaults at internal/quality/types.go:185/195/205 (`Command: \"make build\"` etc.). The deployed config on the box is not in the checkout",
+    "The three mutation acceptance bullets are listed under the PR's \"## Not verified\" as \"freeform mutation, run manually\". No mutation run is pasted, so it is unconfirmed that each test fails when its guarded line is removed."
+  ],
+  "notes": "[pass A (hunk)]\n- Re-derive the finalize window before PR/MR create: met. See runner.go:7236, 7276, 7312, plus the epic path runner.go:2617 and the salvage path runner.go:3575. Each calls `finalizeCtx(ctx, r.finalizeTimeout())` after appendAcceptanceEvidence. If the task deadline blew during evidence, `ctx.Err() == context.DeadlineExceeded` at runner.go:349 produces a fresh `WithTimeout(WithoutCancel(ctx), budget)`. A context.Canceled ctx falls through to runner.go:352 `WithCancel(ctx)` and is not extended, so the GH-5342 rule is kept.\n- Recovery ref fresh window: met at runner.go:400–401 (`finalizeCtx(ctx, finalizeGitTimeout)` before `git.CreateRecoveryRef`). The callers at runner.go:7117 (push) and runner_decompose.go:576/689 also benefit. A canceled ctx stays dead, and TestExecute_PRCreateSurvivesDeadline_RecoveryRefOnExpiredCtx tests exactly that.\n- evidenceBudgetCtx with its own budget: met at acceptance_evidence_run.go:523 and :561–576. It uses WithoutCancel plus a timeout of `EffectiveAcceptanceEvidenceBudget()`. The AfterFunc forwards only `context.Canceled`, so an expired task deadline does not shorten the budget but a real stop still ends it.\n- Remaining items render \"Not verified: evidence budget exhausted\" and the task goes on to PR creation: met at acceptance_evidence_run.go:801–803 (pre-run check for both paste-output and mutation) and :810–815. The second covers a command killed mid-run: the parent deadline reaches the command's own ctx as DeadlineExceeded (acceptance_evidence_run.go:261), and the resulting \"timed out after\" reason is remapped to the budget reason.\n- Reuse by argv: met at acceptance_evidence_run.go:315 (lookup after the allowlist check at :305–310). Keys come from `splitCommandFields` (:159), and only gates with `Passed \u0026\u0026 ExitCode==0 \u0026\u0026 Command!=\"\"` qualify. Producer fields: internal/quality/runner.go:143 `result.Command = command` and :180–181 `result.ExitCode = exitCode` / `result.Output = output`. These are copied at runner.go:9238–9240 and cmd/pilot/adapters.go:340–342, then converted at runner.go:9103. On the main path, result.QualityGates is set at runner.go:6524.\n- Config knob: met. The yaml tag is at backend.go:582 and the default 15m at backend.go:1265, which reaches config through config.go:715 `Executor: executor.DefaultBackendConfig()`. Negative values are rejected at config.go:1347, the knob is documented in pilot.example.yaml, and the runner gets it through cmd/pilot/commands.go:785 `executor.NewRunnerWithConfig(cfg.Executor)`.\n- WARN log with task id, item index and elapsed: met at acceptance_evidence_run.go:580–592 (count caveat in DEFECTS).\n- Acceptance tests: TestExecute_PRCreateSurvivesDeadlineBlownDuringEvidence, TestAppendAcceptanceEvidence_BudgetExhausted, TestAppendAcceptanceEvidence_ReusesQualityGateOutput and TestAcceptanceEvidenceBudget all exist and use the real Runner.Execute and appendAcceptanceEvidence. Only the command runner and the PR creator are faked, and neither carries the contract under test.\n- Pasted `go test -race` output for all three commands is in the PR Evidence block, all ok. The PR's \"Not verified\" lists the three mutation bullets as manual. From reading the code, each removal named in the issue would make its test fail.\n- Out of scope: the diff does not touch the allowlist, the complexity timeouts or the re-pick lease.\n- Memory pitfalls: no new classifier was added and no Jev instructions changed, so neither pitfall is repeated.\n[pass B (adjacent)]\n- Re-derive the window before the PR/MR create block: met. The calls are at runner.go:7236, :7276 and :7312, plus the epic path at runner.go:2617 and the salvage path at runner.go:3576. All run right after appendAcceptanceEvidence, with nothing in between. The near-deadline gap is noted above.\n- Re-derive inside formatGitStepFailureWithRecovery: met at runner.go:400. A real Canceled is not extended, because finalizeCtx only matches DeadlineExceeded at runner.go:349. TestExecute_PRCreateSurvivesDeadline_RecoveryRefOnExpiredCtx covers both the expired and the cancelled case. Callers runner.go:7117 and runner_decompose.go:576/689 also get the fix.\n- evidenceBudgetCtx: met at acceptance_evidence_run.go:561. It wraps WithoutCancel(task ctx) in a timeout and passes through a parent Canceled via AfterFunc. The knob is read from r.config, and cmd/pilot/commands.go:785 passes `NewRunnerWithConfig(cfg.Executor)`, so the config value reaches the runner.\n- Remaining items render \"Not verified: evidence budget exhausted\": met at acceptance_evidence_run.go:827. The evidence block is still appended and PR creation follows. The partial-item case is noted above.\n- Reuse on exact argv: met. newEvidenceGateOutputs skips gates that failed, exited non-zero or have no command. The allowlist check at acceptance_evidence_run.go:306 runs before the lookup at :315, so reuse cannot bypass the allowlist. Gate Command and Output come from the real producer: cmd/pilot/adapters.go:340/342 fill them from quality/runner.go:143/181.\n- Config default 15m, negatives rejected, documented: met. The default is in executor/backend.go DefaultBackendConfig, which config.go:715 uses. Validation is at config.go:1347 and the setting is documented in configs/pilot.example.yaml.\n- Tests use a fake AcceptanceCommandRunner and a fake PRCreator. That is fine here because the risk is ctx propagation, not a wire contract. The runner test drives the real Execute with a real git repo.\n- Pasted test output: the three `go test -race` bullets show `ok` in the PR's \"## Evidence\".\n- No make build, make test, make lint evidence bullet was added.\n- Out of scope: no timeout, lease or allowlist changes.\n- Memory pitfalls: the Jev triage rule and the shared-state instruction pitfall do not apply. The diff adds no classifier and no Jev question.",
+  "files_read": 8,
+  "passes": 2,
+  "files_read_by_pass": [
+    4,
+    4
+  ],
+  "duration_ms_by_pass": [
+    93582,
+    88113
+  ],
+  "defects_by_pass": [
+    4,
+    5
+  ],
+  "pass_failed": [
+    false,
+    false
+  ],
+  "overlap": 1,
+  "checkout": true,
+  "diff_bytes": 46902,
+  "diff_files": 15,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 46902,
+  "input_issue_bytes": 5154,
+  "input_pr_body_bytes": 7143,
+  "model": "claude-opus-5-5",
+  "duration_ms": 182052,
+  "posted": false
+}

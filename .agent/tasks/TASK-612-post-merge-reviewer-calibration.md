@@ -1,5 +1,7 @@
 # TASK-612: post-merge reviewer calibration — an offline `pilot review-merge` command, then a scored run against 14 hand-reviewed merges
 
+**Run 7 (2026-10-30 16:55Z, v2.304.0, two passes after the P2 mechanics fix): recall 51.0 % — STABLE (same 22/9/21 shape, 27-defect core across runs 6–7), RC 3/3, false 0.07, 0 pass failures, 138 s. All three bars met twice; box on two passes since 16:21Z. Calibration track CLOSED here — further recall is not a prompt/pass question (report §"Decision inputs after seven runs").**
+
 **Run 6 (2026-10-30 14:13Z, v2.303.0, two passes): recall 51.0 % — BAR MET (A 34.6 / B 42.3 / union 51.0), RC 3/3, false 0.07, 162 s, 10.4 files; union mechanics need one fix leg before the box switch. Report + `run6/scoring.md`.**
 
 **Run 5 (2026-10-30 11:22Z, v2.302.0, TASK-622 adjacent-code item): recall 43.3 % (flat), fixtures 3.5/8, 7 in-hunk HIT→MISS flips — prompt rules redistribute a fixed finding budget; next lever is budget-shaped (two passes / per-file loop / more turns). Report + `run5/scoring.md`.**

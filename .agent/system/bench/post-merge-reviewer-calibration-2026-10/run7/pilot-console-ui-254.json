@@ -1,0 +1,107 @@
+{
+  "repo": "qf-studio/pilot-console-ui",
+  "pr": 254,
+  "issue": 241,
+  "merge_commit": "49b455547f427b9b4aca79880afc263b681007de",
+  "diff_source": "local checkout",
+  "verdict": "REQUEST-CHANGES",
+  "defects": [
+    {
+      "severity": "blocking",
+      "file": "src/views/DashboardView.vue",
+      "line": "236",
+      "claim": "so the PR buckets client-side",
+      "evidence": "but the PR body never says so. The issue requires that statement: \"if the endpoint has no range parameter, bucket client-side … and say so in the PR body\". The PR body has only the copied issue text and the Evidence output. The note appears only in the docblock at src/design-system/components/DashboardActivityChart.vue:10 and the code comment at DashboardView.vue:231."
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/DashboardActivityChart.vue",
+      "line": "82",
+      "claim": "but the issue asked for \"the warm accent used today in dashboardShippedColors.ts\". That file has only `CHART_COLORS = ['var(--color-chart-1)'",
+      "evidence": "…]` (dashboardShippedColors.ts:7), and `--color-needs-you: #b04a92` (theme.css:27) is a magenta, not a warm accent. The docblock records this as a deviation, but the colour choice needs design sign-off."
+    },
+    {
+      "severity": "blocking",
+      "file": "src/views/DashboardView.vue",
+      "line": "342",
+      "claim": "The issue asks to restyle DashboardShippedChart or replace its use on the dashboard and place the panel under the stat row. The diff does neither: the old \"Shipped Activity\" panel stays directly under the stat row and the new panel is added below it, so the dashboard now shows two activity charts",
+      "evidence": "`\u003cDashboardShippedChart :activity=\"filteredActivity\" :projects=\"projects\" /\u003e` is still at :339 inside the panel at :332, and `\u003cDashboardActivityChart :events=\"boardActivity\" /\u003e` follows at :342"
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/DashboardActivityChart.vue",
+      "line": "8",
+      "claim": "but `/` has a design file (`design/dashboard-v4.html` per CLAUDE.md). The rule-2 citation of that design file is missing."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/DashboardView.vue",
+      "line": "244",
+      "claim": "and `now` defaults to `new Date()` at mount time (DashboardActivityChart.vue:21). Neither refreshes",
+      "evidence": "so on a long-open dashboard the buckets go stale. Separately, a failed fetch is swallowed into an empty chart with no message, so users cannot tell a failure from a quiet period."
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/__tests__/DashboardView.spec.ts — No view test covers the new `listBoardActivity` call or the mounted `DashboardActivityChart`. The component spec only checks props",
+      "claim": "so nothing tests that the view actually connects the endpoint to the chart."
+    },
+    {
+      "severity": "blocking",
+      "file": "PR Body",
+      "claim": "The issue says \"if the endpoint has no range parameter, bucket client-side from the returned events and say so in the PR body\". The PR body is the auto template plus build, test and lint output, and it never mentions client-side bucketing. The disclosure exists only in code comments: src/design-system/components/DashboardActivityChart.vue:10 \"has NO range parameter, so the events are fetched once\" and src/views/DashboardView.vue:231"
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/DashboardActivityChart.vue",
+      "line": "75",
+      "claim": "The bar row uses `overflow-hidden` with `shrink-0` bars and fills from the left. At 30D the row needs 30×9.67 + 29×8 ≈ 522px, so in a narrower main column the newest buckets on the right are cut off with no indication"
+    },
+    {
+      "severity": "minor",
+      "file": "src/design-system/components/DashboardActivityChart.vue",
+      "line": "20",
+      "claim": "`now` defaults to `new Date()` taken once at mount, and src/views/DashboardView.vue:244 fetches activity only once. The buckets never move forward while the dashboard stays open, and changing the window pill (`selectWindow`) does not refetch activity"
+    },
+    {
+      "severity": "minor",
+      "file": "src/views/__tests__/DashboardView.spec.ts",
+      "claim": "Nothing tests the new dashboard wiring: Grep for `listBoardActivity|DashboardActivityChart|data-activity-chart` finds nothing. Neither the mount fetch at DashboardView.vue:236 nor the catch-to-empty fallback at :237 is covered"
+    }
+  ],
+  "not_verified": [
+    "Whether `GET /api/v1/board/activity` returns the full 30-day history or a capped/paginated recent slice. The producer (console `internal/boardapi`) is not in this checkout. If it is capped, the 7D/30D bars undercount without any warning.",
+    "Existing chart tests kept passing: met. `DashboardShippedChart` is unchanged and the pasted run shows `68 passed (68)`. — not traced",
+    "4 more items the passes could not verify (capped at 3)"
+  ],
+  "notes": "[pass A (hunk)]\nThree range buttons with clicking changing the bucket count: met. DashboardActivityChart.vue:25-29 defines 24/7/30 buckets, the button `@click` is at :68, and the spec asserts 7→24→30 bars. This would fail if `range` were not reactive inside `bars`, but `computed` reads `range.value` at :35.\nHighlighted/muted distinction with a test showing both classes: met. DashboardActivityChart.vue:82 binds the class, and :45 sets `shipped[i]` when `kind === 'pr_merged'`. The spec fixture puts 1 shipped and 6 muted bars in 7D. The highlight would fail if `kind` were renamed on the wire, but httpAdapter.ts:746 `case 'pr_merged':` and :750-751 produce the kind, and :729 `createdAt: wire.createdAt` produces the timestamp.\nPanel styling (12px \"Activity\" header, range switch right, 9.67px bars, 8px gap, 2px radius, height scaled to max): met. DashboardActivityChart.vue:60 uses `text-ds-label` (theme.css:60 `--text-ds-label: 12px`), :78 `gap-2`, :81 `w-[9.67px] … rounded-[2px]`, and :51 scales heights by `max`. A zero max would divide by zero, but `Math.max(1, …)` at :48 prevents it.\nRange switch re-requests the endpoint, or buckets client-side if there is no range param: client-side bucketing is met (httpAdapter.ts:1584 calls `request\u003cWireActivityEnvelope\u003e('/api/v1/board/activity')` with no query). The PR-body statement is missing (see the blocking defect).\nWire fields read: `kind` and `createdAt`, both produced at httpAdapter.ts:729 and :741-751. The mock mirrors them at mockAdapter.ts:1303 `createdAt: new Date().toISOString()`.\nTests use fixture props and do not mock the adapter. The adapter mapping itself is covered by the existing httpAdapter.spec.ts:1486. There are no migrations, and the issue has no out-of-scope section.\n[pass B (adjacent)]\n1) Panel structure (Activity label, 1D·7D·30D switch, 12px type): met at DashboardActivityChart.vue:59-73. It uses `text-ds-label`, which is `--text-ds-label: 12px` at theme.css:60. A missing token would break this; the token exists.\n2) Bar geometry (9.67px wide, 8px gap, 2px radius, scaled to the max bucket): met at DashboardActivityChart.vue:75-81 and :48-52. `Math.max(1, ...counts)` stops a division by zero when every bucket is empty.\n3) Muted bars \"white at 30%\": met through `bg-ink/30` at :82. In dark mode `--color-ink: #eceef1` (theme.css:113), which is close to white.\n4) Range changes bucket size (1D hourly ×24, 7D daily ×7, 30D daily ×30): met at DashboardActivityChart.vue:25-28 and :36-45. Events with an unparseable or out-of-window `createdAt` are skipped at :42, so the index at :43 never goes out of range.\n5) Endpoint has no range parameter, so bucketing is client-side: confirmed by httpAdapter.ts:1583 `async listBoardActivity(): Promise\u003cBoardActivityEntry[]\u003e` (no params), which matches types.ts:800. The \"say so in the PR body\" part is not met (defect above).\n6) Test for three buttons and a changing bucket count: met at DashboardActivityChart.spec.ts:15-24. It mounts the real component, and the counts 7, 24 and 30 come from the real `bars` computed.\n8) Existing chart tests: DashboardShippedChart is unchanged and still used by src/views/SettingsUsageView.vue. The pasted run shows 68 files and 951 tests passing.\n9) build, test and lint pasted: present in the PR Evidence block. Build succeeded, all tests passed, and `vue-tsc --noEmit` exited with no errors.\n10) Test adapter usage: the component tests take events as props, and the real `listBoardActivity` contract is already covered at httpAdapter.spec.ts:1486. Adjacent paths read: DashboardView.vue onMounted (:242-246), and the second activity consumer at src/stores/board.ts:31/36. Neither is changed by this diff, and no adjacent path defeats requirements 1-7.\n11) Out of scope: the issue has no out-of-scope section. Leaving DashboardShippedChart on the dashboard is the problem listed under defects.",
+  "files_read": 11,
+  "passes": 2,
+  "files_read_by_pass": [
+    5,
+    6
+  ],
+  "duration_ms_by_pass": [
+    44681,
+    60726
+  ],
+  "defects_by_pass": [
+    7,
+    7
+  ],
+  "pass_failed": [
+    false,
+    false
+  ],
+  "overlap": 3,
+  "checkout": true,
+  "diff_bytes": 8270,
+  "diff_files": 3,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 8270,
+  "input_issue_bytes": 1416,
+  "input_pr_body_bytes": 16232,
+  "model": "claude-opus-5-5",
+  "duration_ms": 105467,
+  "posted": false
+}

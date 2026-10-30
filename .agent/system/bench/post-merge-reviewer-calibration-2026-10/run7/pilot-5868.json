@@ -1,0 +1,112 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5868,
+  "issue": 5861,
+  "merge_commit": "018e450d0e48ff63552c2a401b65aa9b03ddcd61",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "internal/autopilot/feedback_loop.go",
+      "line": "450",
+      "claim": "the follow-up issue title starts with \"fix(#42)\" and not with the PR number that the Posting acceptance bullet asks for",
+      "evidence": "this is a documented deviation: internal/ghissue/create.go:21 `^(feat|fix|chore|...)(\\([^)]+\\))?: .+$` would reject a title that starts with a number. The PR number still makes the title unique, so the exact-title dedup in findExistingFixIssue (feedback_loop.go:510) still works."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/autopilot/post_merge_review_test.go",
+      "line": "400",
+      "claim": "TestPostMergeReview_DailyCapAndTicketCap checks that the 21st review is skipped, but nothing in it checks the \"cap reached\" log line that the Cap acceptance bullet requires",
+      "evidence": "the Warn is emitted at post_merge_review.go:138, but no test covers it."
+    },
+    {
+      "severity": "minor",
+      "file": "PR body",
+      "claim": "there is no \"## Evidence\" block and no pasted output from `go test -race ./internal/autopilot/ -run PostMergeReview` or `./internal/executor/ -run PostMergeReview`",
+      "evidence": "the body only says \"CI here is the first independent check of it\". Green CI is the only signal."
+    },
+    {
+      "severity": "minor",
+      "file": "cmd/pilot/post_merge_reviewer.go",
+      "line": "55",
+      "claim": "the startup log prints pmr.Model, not the resolved model, so with the default config it logs model=\"\" while the review actually runs on executor.default_model (backend.go:615 `if c != nil \u0026\u0026 c.DefaultModel != \"\" { return c.DefaultModel }`)."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/autopilot/state_store.go",
+      "line": "250",
+      "claim": "the post_merge_review_posted column has no down path",
+      "evidence": "this matches every other ALTER in that list. It is additive with DEFAULT 0, so no data is lost, and RLS does not apply to SQLite."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/autopilot/post_merge_review.go",
+      "line": "176",
+      "claim": "daily_cap is enforced per controller, not per daemon. Each controller gets its own budget, and cmd/pilot/post_merge_reviewer.go installs the one reviewer on every controller (`for _, c := range controllers { c.SetPostMergeReviewer(r) }`). A polling daemon with N projects can therefore run N×daily_cap reviews in a day.",
+      "evidence": "evidence: `c.postMergeReviewBudget = \u0026postMergeReviewBudget{cap: c.config.PostMergeReview.EffectiveDailyCap()}`, with all controllers sharing `cfg.Orchestrator.Autopilot` (cmd/pilot/main.go:2651-2653)"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/autopilot/controller.go",
+      "line": "10669",
+      "claim": "A Pilot PR merged outside autopilot (a human `gh pr merge` or the GitHub UI) is never reviewed. checkExternalMergeOrClose handles `if ghPR.Merged {` and takes the PR out of tracking without going through handleMerged. The issue scopes the trigger to handleMerged, so this is a coverage gap and not a missed requirement.",
+      "evidence": "evidence: the comment at controller.go:10799-10800 says \"An externally-merged PR never makes that transition — it is drained straight out of tracking below\""
+    },
+    {
+      "severity": "minor",
+      "file": "internal/autopilot/post_merge_review.go",
+      "line": "217",
+      "claim": "The issue asks for \"the post-merge CI result when known\". The review starts in handleMerged before `prState.Stage = StagePostMergeCI` (controller.go:6246), so the post-merge CI result is never known at that point. Only the pre-merge CIStatus is passed.",
+      "evidence": "evidence: `input.CIResult = fmt.Sprintf(\"CI status at merge time: %s\", in.ciStatus)`"
+    },
+    {
+      "severity": "minor",
+      "file": "internal/autopilot/post_merge_review_test.go",
+      "claim": "The cap acceptance bullet says the 21st review is \"skipped and logged\". TestPostMergeReview_DailyCapAndTicketCap checks the skip but not the log line (the test file never checks for a Warn or the \"daily cap reached\" message).",
+      "evidence": "evidence: the Warn sits at post_merge_review.go:138, and no test captures it"
+    },
+    {
+      "severity": "minor",
+      "file": "PR Body",
+      "claim": "The acceptance bullets for `go test -race ./internal/autopilot/ -run PostMergeReview` and `./internal/executor/ -run PostMergeReview` ask for pasted output. The PR body has no `## Evidence` block; it only says the gates passed upstream.",
+      "evidence": "evidence: the PR Body ends at \"## Review\" with no test output"
+    }
+  ],
+  "not_verified": [
+    "The studio-sdk github package (PullRequest.MergeCommitSHA / Body, Client.AddComment returning *Comment.ID) is not in the checkout. Only the parallel local adapter was seen: internal/adapters/github/types.go:290 `MergeCommitSHA string \\`json:\"merge_commit_sha,omitempty\"\\``, and the existing consumer is controller.go:9851.",
+    "Whether bench defect-rate tracking reads rows keyed on a negative review_id with reviewer post-merge-reviewer was not traced past UpsertPRReview (memory/pr_review.go:100).",
+    "3 more items the passes could not verify (capped at 3)"
+  ],
+  "notes": "[pass A (hunk)]\n- Knob: met. types.go adds PostMergeReviewConfig with yaml post_merge_review, enabled/model/daily_cap/timeout, nil-safe PostMergeReviewEnabled, and EffectiveDailyCap defaulting to 20. Validation is at config.go:1372–1379 and the knob is documented under orchestrator.autopilot in pilot.example.yaml:611. The model default comes from cfg.Executor.ResolveModel(\"\"), which is nil-safe (backend.go:615), so a nil Executor does not panic. Memory pitfall \"top-level autopilot binds to nothing\" is not repeated: the knob is read from cfg.Orchestrator.Autopilot (cmd/pilot/post_merge_reviewer.go:18).\n- Trigger: met. controller.go:6217 calls maybeStartPostMergeReview after the learning loop (6133) and the eval/parent-close steps, and before the `SkipPostMergeCI` branch at 6219. The deployer error return at 6127 skips the review for that pass, which is acceptable. The guard is set and persisted before the goroutine starts. Persistence runs through SavePRState, GetPRState, LoadAllPRStates and the migratePRStateRepoScoping rebuild lists, and is covered by TestPostMergeReviewPostedPersists.\n- Reviewer: met. It reuses IntentJudge's cmdRunner, buildJudgeDiffPayload (intent_judge.go:437, per-file truncation plus manifest) and truncatePreflightBody (intent_judge.go:302). The PR evidence heading matches its producer, acceptance_evidence.go:544 `out.WriteString(\"## Evidence\\n\\n\")`. Malformed output yields PostMergeUnknown and nothing is posted (post_merge_review.go:246; unit test in executor and the \"unknown posts nothing\" Posting case).\n- Posting: met. One AddComment goes to the PR. On REQUEST-CHANGES, CreatePostMergeReviewIssue adds the configured labels (types.go:755 `IssueLabels: []string{\"pilot\", \"autopilot-fix\"}`) plus post-merge-review and dedups through findExistingFixIssue. Nothing reopens or reverts the PR.\n- Ledger: met. recordPostMergeReview → UpsertPRReview (memory/pr_review.go:93) with Reviewer \"post-merge-reviewer\" and the verdict mapped to memory constants (pr_review.go:14–17), covered by TestPostMergeReview_LedgerRecordsVerdict. reviewLedger returns nil when the memory store is missing (review_ledger.go:103), so that case is safe.\n- Budget: met. The in-memory UTC-day counter is separate from DailyCapGate (daily_cap.go:160 `store.CountDistinctTasksInWindow`), and the test confirms the ticket count does not change.\n- Observability: met. The counter is in Metrics.PostMergeReviewVerdicts and is exported from the gateway snapshot (prometheus.go:151 `snap := e.metricsSource.Snapshot()`). There is one Info log per review with pr, verdict, defects and duration.\n- Tests: the controller tests use an httptest GitHub server and a fake reviewer. The wire risk here is the GitHub REST client, so the test does exercise the real client.\n- Out of scope: respected. Only PRs with IssueNumber \u003e 0 are reviewed, and there is no revert or reopen path. CI pitfall (controller.go:1977) is not relevant: CI status is passed in as text only.\n[pass B (adjacent)]\n- Knob (types.go Config.PostMergeReview, defaults off/20/5m, separate counter): met. `PostMergeReviewEnabled` returns false for nil config or block. EffectiveDailyCap falls back to 20 when the cap is ≤0, and config.go:1373 rejects a negative cap. Validation runs inside `if c.Orchestrator.Autopilot != nil` (config.go:1365), so a nil block cannot panic. The model falls back through `ResolveModel`, whose receiver is nil-safe (executor/backend.go:615 `if c != nil \u0026\u0026 c.DefaultModel != \"\"`). The example yaml is documented under orchestrator.autopilot, which avoids the top-level-autopilot pitfall.\n- Trigger: met. controller.go:6217 sits after the learning loop (6133) and maybeCloseParentIssue (6212), and before the SkipPostMergeCI branch (6219). Adjacent early returns: the TargetBranch guard (6113-6119) only fires for non-default bases, which are out of scope. A deploy failure (6127) returns an error before the review, the PR stays StageMerged, and the review runs on the retry. The flag is set and persisted before the goroutine starts. It is in SavePRState, GetPRState, LoadAllPRStates, the scan, migratePRStateRepoScoping and snapshot.\n- Reviewer: met. Uses IntentJudge's runner, `cmdRunner: NewIntentJudge(claudeCmd).cmdRunner`. The prompt goes over stdin because extractStdinPrompt moves the `-p` value into stdin (intent_judge.go:190,201). Per-file truncation uses buildJudgeDiffPayload (intent_judge.go:437). The checklist and output contract are fixed.\n- Posting / feedback loop: met. feedbackLoop is always built (controller.go:1067 `c.feedbackLoop = NewFeedbackLoop(...)`). Labels are issueLabels plus post-merge-review, the title is `fix(#\u003cPR\u003e)`, and findExistingFixIssue dedups by exact title. Nothing re-opens or reverts the PR.\n- Ledger: met. The reviewer id is post-merge-reviewer, written through UpsertPRReview (memory/pr_review.go:93). The negative review_id cannot collide with the collector's ids because collectPRReviews only lists GitHub reviews. Bench counting joins on execution_id (pr_review.go:210), which is resolved from GH-N the same way the collector does it (review_ledger.go:130).\n- Tests: the GitHub side uses an httptest server driving the real github.Client, and the ticket-cap check uses a real memory.Store and DailyCapGate. Removing the guard would make TestHandleMerged_PostMergeReviewRunsOnce fail, because the second pass would get budget. The reviewer fixture, malformed output and posting matrix are covered.\n- Migrations: an additive column with DEFAULT 0, no data loss, no down path (same as the sibling columns), and RLS does not apply to SQLite.\n- Out of scope: non-Pilot PRs are not reviewed (only tracked PRs with IssueNumber\u003e0), and nothing reverts or re-opens a PR.\n- Memory pitfalls: the CI-conclusion trust pitfall does not apply. The top-level-autopilot pitfall is not repeated: config lives under orchestrator.autopilot (configs/pilot.example.yaml and cmd/pilot/post_merge_reviewer.go read `cfg.Orchestrator.Autopilot`).",
+  "files_read": 7,
+  "passes": 2,
+  "files_read_by_pass": [
+    4,
+    3
+  ],
+  "duration_ms_by_pass": [
+    81598,
+    111111
+  ],
+  "defects_by_pass": [
+    5,
+    5
+  ],
+  "pass_failed": [
+    false,
+    false
+  ],
+  "overlap": 0,
+  "checkout": true,
+  "diff_bytes": 82850,
+  "diff_files": 17,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 82850,
+  "input_issue_bytes": 4865,
+  "input_pr_body_bytes": 758,
+  "model": "claude-opus-5-5",
+  "duration_ms": 193079,
+  "posted": false
+}

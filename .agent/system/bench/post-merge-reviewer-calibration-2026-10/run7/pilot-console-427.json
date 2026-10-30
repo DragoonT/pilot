@@ -1,0 +1,103 @@
+{
+  "repo": "qf-studio/pilot-console",
+  "pr": 427,
+  "issue": 423,
+  "merge_commit": "b823a0d3c92619b4a5d4837e9b88db634cdd10c8",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "PR #427 body (## PR Body)",
+      "claim": "The acceptance bullet asking for pasted `make build`/`make test`/`make lint` output is not met. The body has no Evidence block and points only to CI (\"CI on fresh Postgres is the evidence\"). No output shows a failure, so this is not blocking."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/usageapi/routes_test.go",
+      "line": "138",
+      "claim": "Every /usage and /usage/ledger gate test injects `fakeKeys`, so the real `(*Service).KeySourceForOrg` (internal/allowance/status.go:352) is never run by any test. Grepping test files for `KeySourceForOrg|PoolPercent` finds only this file. The logic matches StatusForOrg today (`st.KeySource = KeySource(st.HasPlatformKey, st.StateIsCurrent() \u0026\u0026 st.State.SwitchedToOwnAt != nil)` at status.go:345 against `state.PeriodStart.Equal(org.EffectiveBillingPeriod(now.UTC()).Start)` at status.go:368), but if the two drift apart no test would catch it."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/allowanceapi/routes_test.go (TestAllowanceWireContract_USDGate",
+      "claim": "key_source assertion) - This check does not prove that a top-level `key_source` exists. The second OR branch `\"key_source\":\"\u003csrc\u003e\"` also matches the nested `usage.key_source`",
+      "evidence": "emitted from internal/allowanceapi/routes.go:197 (`KeySource string \\`json:\"key_source\"\\``) and :279. The test would still pass if the top-level field at routes.go:142 were removed."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/usageapi/routes_test.go (TestUSDGate_NilResolverDisablesRoutes)",
+      "claim": "Only `/api/v1/usage` is checked for the 503. `/api/v1/usage/ledger` is not, even though `disabled()` gates both."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/allowance/status.go",
+      "line": "352",
+      "claim": "KeySourceForOrg is the only thing that decides whether /usage and /usage/ledger hide USD, and no test calls it. The usageapi tests swap in `fakeKeys` (internal/usageapi/routes_test.go:138 `return f.source, f.err`), so they only show that the handler obeys whatever key source it is given, not that a platform tenant is identified as platform. Reading the code, its rule matches StatusForOrg's tested rule: lines 367-368 `state.SwitchedToOwnAt != nil \u0026\u0026 state.PeriodStart.Equal(org.EffectiveBillingPeriod(now.UTC()).Start)` give the same result as status.go:345 with status.go:230 `s.HasState \u0026\u0026 s.State.PeriodStart.Equal(s.Period.Start)`. That is why this is minor and not blocking."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/usageapi/routes.go",
+      "line": "239",
+      "claim": "The issue says own-key tenants keep their USD fields as today, but adding `omitempty` to `reportedUsdCents` changes their payload. Before this change a nil `ReportedUSDCents` was sent as `\"reportedUsdCents\":null`; now the key is missing for own-key tenants too."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/allowanceapi/routes_test.go",
+      "line": "661",
+      "claim": "The check meant to prove `key_source` is a top-level field has a fallback, `!strings.Contains(body, \"\\\"key_source\\\":\\\"\"+tc.source+\"\\\"\")`. The nested `usage.key_source` (routes.go:197) also matches it, so the test passes even if the top-level `key_source` is missing."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/allowanceapi/routes.go",
+      "line": "284",
+      "claim": "Platform tenants still receive `exhausted_by:\"usd\"`, so they can tell that a dollar meter exists. It shows no amount, so it fits the letter of the issue."
+    },
+    {
+      "severity": "minor",
+      "file": "PR Body",
+      "claim": "There is no \"## Evidence\" block and no pasted output from `make build`, `make test` or `make lint`, so the second acceptance bullet is not met. It is minor because no failing output was shown."
+    },
+    {
+      "severity": "minor",
+      "file": "main.go",
+      "line": "631",
+      "claim": "The instance proxy (`proxy.Deps{Token: cfg.APIToken, Handler: h, Store: fleetStore}`) has no key_source gate. internal/dashboardapi/dto.go:38-39 says the SPA uses it to fetch costPerShipped (\"the SPA fetches them separately via the C13 instance passthrough\"), which can show cost to platform-key tenants. The issue did not name this endpoint."
+    }
+  ],
+  "not_verified": [
+    "USD outside the three endpoints: internal/dashboardapi/routes.go:7-9 says cost stats \"stay SPA-side via the existing C13 instance passthrough (internal/proxy)\". internal/proxy was not traced, so I can't confirm whether a platform-key tenant still gets daemon cost through it.",
+    "No SPA/frontend consumer of `percent_used`, `key_source`, `totalCostUsd`, `costUsd` or `estimatedUsdCents` exists in this checkout (Glob `**/*.{ts,tsx,js,jsx}` returns nothing). I can't check how the external consumer handles fields that are now missing instead of 0.",
+    "3 more items the passes could not verify (capped at 3)"
+  ],
+  "notes": "[pass A (hunk)]\n- `percent_used` 0–100 capped: met. Emitted at internal/allowanceapi/routes.go:287 via `PoolPercent` at internal/allowance/status.go:380 (`max(0, min(100, max(ticketPercent, usdPercent)))`). Over-cap input (130 % tickets, 200 % USD) or a negative input would break an uncapped value; the min/max clamp prevents that, and the \"over cap\" case checks it.\n- `key_source` top level: met. internal/allowanceapi/routes.go:142 and :288 take it from `st.KeySource` (status.go:345). This could be wrong if the state row belonged to an earlier period. It is not, because `StateIsCurrent` (status.go:230) compares the row's period start with the current one.\n- USD hidden on platform for the allowance endpoint: met. internal/allowanceapi/routes.go:260-265 leaves all four pointers nil unless the source is \"own\", and the `omitempty` tags at :120/:130/:137/:196 drop them. A zero-cent own tenant could be mistaken for a platform one, but the pointer is non-nil for own, so `0` is still emitted. TestAllowanceWireContract_USDGate uses USDCents 0 to cover exactly this.\n- USD hidden on platform for /usage: met. internal/usageapi/routes.go:170 and :201 call `resp.hideUSD()`, which nils the total and every series `CostUSD` (:357-362). An empty series can't leak anything, and the total is nilled after `toUsageResponse` sets it at :435.\n- USD hidden on platform for /usage/ledger: met. internal/usageapi/routes.go:326-329 nils `est`/`rep` per row. Rows with a nil `ReportedUSDCents` already leave the field out. The per-row `keySource` column stays, which the issue allows.\n- Fail-closed behaviour: met. internal/usageapi/routes.go:348-352 returns 500 before any rows are read, and `disabled()` (:109) adds `h.keys == nil`. main.go:1130-1134 wires a real `allowance.New` with `PlatformKeys` and `State`, which is all `KeySourceForOrg` uses.\n- Dashboard gate: not applicable. internal/dashboardapi/dto.go:40-43 (`Shipped`, `NeedsYou`) and the rest of dashboardDTO carry no cost fields.\n- Percent tests at 0/mid/over-cap: met. internal/allowanceapi/routes_test.go TestAllowanceWireContract_PercentUsed runs the real `allowance.Service` built at internal/allowanceapi/routes.go:100, with fake stores.\n- Migrations: none in the diff.\n- Out-of-scope: the main.go:1050-1056 boardapi hunk only realigns whitespace and changes no behaviour.\n[pass B (adjacent)]\n- `percent_used` (integer from 0 to 100, capped): met. internal/allowanceapi/routes.go:287 calls `allowance.PoolPercent(st.TicketPercent, st.USDPercent)`, and internal/allowance/status.go:380 is `max(0, min(100, max(ticketPercent, usdPercent)))`. With 130% of tickets used it returns 100 because of `min`, and a negative value from `Percent` would be clamped by the outer `max`.\n- `key_source` on the allowance endpoint: met at internal/allowanceapi/routes.go:288 `KeySource: st.KeySource`. It comes from status.go:345, which returns \"own\" when the org was switched this period, even if it still holds a pool key.\n- No USD on allowance for platform tenants: met at internal/allowanceapi/routes.go:261. `st.KeySource != allowance.KeySourcePlatform` decides whether the pointers are set; for platform they stay nil and `omitempty` drops all four fields. An own-key tenant with 0 cents still gets the field, because the pointer is non-nil.\n- No USD on /usage for platform tenants: met at internal/usageapi/routes.go:170 and 201-203. hideUSD runs before any data is read, and if the lookup fails it returns a 500 (routes.go:348-351) rather than leaking cost.\n- No USD on /usage/ledger for platform tenants: met at internal/usageapi/routes.go:298, and both values are set to nil on the hide path. `\u0026l.EstimatedUSDCents` is safe because go.mod:3 is `go 1.25.0` (per-iteration loop variables).\n- Dashboard gate: not needed. internal/dashboardapi/dto.go:40-43 has only `Shipped` and `NeedsYou`, with no cost fields.\n- Wiring: main.go:1130-1134 builds the resolver from the same `State: orgStore` that allowanceapi uses at main.go:1164, so the endpoints cannot disagree about the key source. A nil resolver turns the routes off (routes.go:109).\n- Tests: the 0, mid and over-cap percent cases are at routes_test.go:615-618. The USD present/absent checks for platform and own cover all three endpoints in allowanceapi and usageapi, with the limits noted above.\n- Migrations: none in this diff.\n- Out of scope: the issue has no out-of-scope section. The boardapi block in main.go is only gofmt realignment.",
+  "files_read": 9,
+  "passes": 2,
+  "files_read_by_pass": [
+    5,
+    4
+  ],
+  "duration_ms_by_pass": [
+    59185,
+    56574
+  ],
+  "defects_by_pass": [
+    4,
+    6
+  ],
+  "pass_failed": [
+    false,
+    false
+  ],
+  "overlap": 0,
+  "checkout": true,
+  "diff_bytes": 29679,
+  "diff_files": 6,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 29679,
+  "input_issue_bytes": 1020,
+  "input_pr_body_bytes": 520,
+  "model": "claude-opus-5-5",
+  "duration_ms": 115860,
+  "posted": false
+}

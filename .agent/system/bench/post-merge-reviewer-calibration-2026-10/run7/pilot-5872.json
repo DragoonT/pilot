@@ -1,0 +1,79 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5872,
+  "issue": 5803,
+  "merge_commit": "bfa013cbc9a4867743dca7454ad1b56fa8f7f7f8",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "internal/approval/github.go",
+      "line": "426",
+      "claim": "but nothing on the poll path retries. `checkApproval` has already removed the handler entry (`delete(h.pending",
+      "evidence": "requestID)` at github.go:407). `resolvePending` deletes the persisted row before it writes (`h.deletePersisted(resp.RequestID, \"decision\")` at github.go:151) and closes ResponseCh (github.go:169). The poll then returns true and stops. On a fresh request, the Manager waiter does retry with `context.Background()` (manager.go:392). A rehydrated request has no Manager waiter, so a real persistence failure there is still dropped for good."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/approval/manager.go",
+      "line": "517",
+      "claim": "which keeps the Manager entry alive until it times out. But controller.go:5382 calls ErrNoRows a race loser's typed error (\"memory.ErrApprovalAlreadyDecided or sql.ErrNoRows\"). The gateway resolves on it and deletes the row (gateway/approvals.go:294 and :307). With this diff",
+      "evidence": "so the Manager now keeps the entry and does not cancel dispatchCtx. Before this PR it cleaned up. The HTTP path (gateway/approvals.go:294-301, \"Warn and still resolve the request\") now leaves the channel's poll or button armed until timeout. Telegram and Slack now get a second write attempt through manager.go:392 instead of a cancel. The handlers' code is unchanged, so this is a side effect of following the scope text literally."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/approval/github_test.go — Both new GitHub tests use a fake `ctxCheckingRecorder`",
+      "claim": "not `Manager` plus a store writer. They show the ctx is detached. They do not run the full path to `memory.Store.SetApprovalDecision`."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/approval/github.go",
+      "line": "151",
+      "claim": "but nothing in the GitHub handler retries it. Before the write runs",
+      "evidence": "checkApproval has already done `delete(h.pending, requestID)` (github.go:407) and called `pending.CancelFn()` (github.go:412), which stops the poll. resolvePending then calls `h.deletePersisted(resp.RequestID, \"decision\")` before `h.recorder.RecordDecision`. On a fresh request the only retry is the Manager waiter's `m.stateWriter.SetApprovalDecision(context.Background(), …)` (manager.go:392). On the rehydrated path there is no Manager entry (`pr, exists := m.pending[requestID]`, manager.go:527, is false), so if the 10 s write fails, the approval is still lost for good."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/approval/manager.go",
+      "line": "397",
+      "claim": "the waiter still logs \"async approval response recorded\" at INFO. After this change that path runs on every persistence failure",
+      "evidence": "so the log is misleading. The line existed before this PR."
+    }
+  ],
+  "not_verified": [
+    "The two mutation bullets (revert to the poll ctx; delete the pending entry on a plain error). The PR says they were not run (\"freeform mutation, run manually\"). Reading the code, both mutations would make the named tests fail, but no output was pasted.",
+    "GitHub fresh-path test: met. `TestCheckApproval_RecordsDecisionOnDetachedContext` wires `cancelPoll` as the entry's CancelFn and checks that the recorder saw a live ctx, the decision is approved, and the waiter got the Response. — not traced",
+    "3 more items the passes could not verify (capped at 3)"
+  ],
+  "notes": "[pass A (hunk)]\n- Detached write ctx: met. github.go:417 calls `context.WithTimeout(context.WithoutCancel(ctx), approvalWriteTimeout)` with the 10s constant at github.go:17, and `pending.CancelFn()` is kept at github.go:412. Cancelling the poll ctx no longer reaches the write. A write that hangs is cut off after 10s instead of blocking the goroutine forever.\n- No second copy: met. The only polled call site is github.go:419, and both `pollForApproval` calls go through it (github.go:359 and :370). The fresh path starts its poll at github.go:348 and the rehydrate path at github.go:242. Lines 494 and 534 are webhook paths and still use the caller's ctx, as the scope requires.\n- Manager tells a lost race apart from a write failure: met. A plain error logs at WARN and returns without deleting (manager.go:517–523). This works for real errors because the controller returns the typed error unwrapped (`return merr` at controller.go:5456, `return memory.ErrApprovalAlreadyDecided` at controller.go:5413), and the Manager wraps it with `%w` (manager.go:510), so `errors.Is` still matches. ErrApprovalAlreadyDecided still logs \"race lost\" at INFO and removes the entry (manager.go:536–542). The sentinel is defined at memory/store.go:1967.\n- Manager tests: met. `TestRecordDecision_PersistenceErrorKeepsPending` and `TestRecordDecision_AlreadyDecidedRemovesPendingAndLogsRaceLost` cover both branches. The existing cleanup test now uses the real sentinel (manager_test.go:792).\n- Out of scope: respected. Poll interval, timeouts, default_action, persistence (#5764) and the Slack/Telegram handler code are unchanged. The only Slack/Telegram effect comes through the shared Manager change described above.\n- Project memory pitfalls (CI conclusion trust, the StageReleasing guard, the studio-sdk branch fallback): this diff repeats none of them.\n[pass B (adjacent)]\n1) Detached write context: met. github.go:417 runs the write on `context.WithTimeout(context.WithoutCancel(ctx), approvalWriteTimeout)`, with the 10 s constant defined at github.go:17. The old failure (a pollCtx cancelled by CancelFn at github.go:412) cannot reach the recorder, because WithoutCancel drops the parent's cancellation. The CancelFn call is kept.\n2) Single call site: met. Both the fresh poll (github.go:348) and the rehydrated poll (github.go:242) run pollForApproval, which calls checkApproval at github.go:359/370. resolvePending is called only at github.go:419, 494 and 534, so there is no second copy in the poll goroutine. The webhook calls (github.go:494, 534) still pass the caller's ctx and are unchanged.\n3) RecordDecision split: met at manager.go:517-524. A plain error logs a WARN and returns before the delete at manager.go:529. The \"race lost\" INFO (manager.go:538) now runs only for ErrApprovalAlreadyDecided. Gaps are in the defects above.\n4) Fresh-path test: met. github_test.go:879 uses ctxCheckingRecorder, which returns ctx.Err(), and driveCheckApproval sets cancelPoll as the entry's CancelFn. If the write went back to pollCtx, the recorder would see a cancelled ctx and the test would fail, so the mutation bullet holds.\n5) Rehydrated-path test: met. github_test.go:888 builds the entry through the real Rehydrate, then chains the restored CancelFn with a cancel of the pollCtx it checks against.\n6) Manager tests: met. manager_test.go:1326 pins the kept entry and the WARN log. If a plain error deleted the entry, the pending count would drop to 0 and the test would fail, so that mutation bullet also holds. manager_test.go:1346 pins the race-lost case. The old test at manager_test.go:785 was switched to ErrApprovalAlreadyDecided, which matches the new behaviour.\n7) Tests use mocks for the recorder and the state writer, which is what the issue asked for. The real Manager to Controller to Store path is not exercised end to end.\n8) Out of scope: the poll interval, timeouts, default_action, #5764 persistence and the Slack and Telegram handler code are untouched.\n9) Project memories: none of the three listed pitfalls (CI conclusion trust, the StageReleasing guard, the studio-sdk branch fallback) concern internal/approval, and the diff repeats none of them.",
+  "files_read": 10,
+  "passes": 2,
+  "files_read_by_pass": [
+    5,
+    5
+  ],
+  "duration_ms_by_pass": [
+    99941,
+    83936
+  ],
+  "defects_by_pass": [
+    3,
+    3
+  ],
+  "pass_failed": [
+    false,
+    false
+  ],
+  "overlap": 1,
+  "checkout": true,
+  "diff_bytes": 10847,
+  "diff_files": 4,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 10847,
+  "input_issue_bytes": 4654,
+  "input_pr_body_bytes": 5327,
+  "model": "claude-opus-5-5",
+  "duration_ms": 184245,
+  "posted": false
+}

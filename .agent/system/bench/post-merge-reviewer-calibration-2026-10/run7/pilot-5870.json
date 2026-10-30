@@ -1,0 +1,74 @@
+{
+  "repo": "qf-studio/pilot",
+  "pr": 5870,
+  "issue": 5829,
+  "merge_commit": "c69964797e24b5d779515a2e764f258839963d76",
+  "diff_source": "local checkout",
+  "verdict": "APPROVE-WITH-NOTES",
+  "defects": [
+    {
+      "severity": "minor",
+      "file": "PR body \"## Evidence\" (make build / make test / make lint blocks)",
+      "claim": "the PR re-ran make build, make test and make lint as evidence, which the issue's last acceptance bullet forbids (\"Do not re-run make build, make test or make lint as evidence\"). The PR body quotes a different version of that bullet (\"`make build`, `make test`, `make lint` pass — paste the output\"), so the executor worked from an older issue text. No harm came of it here because the PR was created, but it risks the 1-hour task budget the issue warns about."
+    },
+    {
+      "severity": "minor",
+      "file": "PR body \"## Evidence\" make lint block",
+      "claim": "`make lint` exits with an error (`make: *** [Makefile:101: lint] Error 1`) on 3 staticcheck SA4023 findings. All are in `cmd/pilot/tunnel.go` (lines 205, 351, 433), which this diff does not touch, so the failure predates the PR and is unrelated to it."
+    },
+    {
+      "severity": "minor",
+      "file": "internal/executor/git.go",
+      "line": "192",
+      "claim": "the dirty check counts untracked files as uncommitted changes. `HasUncommittedChanges` runs `git status --porcelain` (git.go:1398) and returns true on any output (git.go:1404). So a stray untracked, non-ignored file left in the clone produces the same refusal on every re-pick, and the identical-failure streak (threshold 2) still parks the task. The error now names the real cause, which is what the scope asks for, but the task still gets parked.",
+      "evidence": "nil`, git.go:1404). `checkGitClean` skips excluded paths (`if isExcluded(path) { continue }`, preflight.go:221), such as `.agent/`, `.claude/` and `*.lock`. So a clone on the stale branch whose only dirt is, for example, a modified `.claude/settings.json` passes the preflight at runner.go:4093. It then gets the same \"checked out in the clone, refusing\" error on every re-pick, and the identical-failure rule parks it again. The issue asked for HasUncommittedChanges, so this is a gap in the spec rather than a missed requirement."
+    },
+    {
+      "severity": "minor",
+      "file": "PR body Evidence — The PR re-ran `make build`",
+      "claim": "`make test` and `make lint`",
+      "evidence": "which the issue's acceptance list forbids. Its own acceptance copy was rewritten to \"`make build`, `make test`, `make lint` pass\". The pasted `make lint` fails with SA4023 in cmd/pilot/tunnel.go:205/351/433. That package was not changed and the failure predates this PR."
+    },
+    {
+      "severity": "minor",
+      "file": "PR body Evidence — The `go test -race … -run TestEnsureBranchFromOrigin` output is only the package `ok` line",
+      "claim": "without `-v`. It does not show the new subtests ran by name. The pattern does match the new test and the GH-4594 tests."
+    }
+  ],
+  "not_verified": [
+    "Mutation acceptance bullet (remove the GetCurrentBranch check → TestEnsureBranchFromOrigin_StaleCheckedOutBranchIsRecreated fails): the PR lists it under \"Not verified\". I could only check it by reading the code; nobody has run it.",
+    "Scope, GetCurrentBranch before DeleteBranch:** met. — not traced",
+    "3 more items the passes could not verify (capped at 3)"
+  ],
+  "notes": "[pass A (hunk)]\n- git.go:190 `current, curErr := g.GetCurrentBranch(ctx)` runs before `g.DeleteBranch` at git.go:204, and only on the stale path (the `!stale` path returns at git.go:182).\n- If GetCurrentBranch errors, `curErr == nil \u0026\u0026 ...` is false and the code falls through to the old behaviour.\n- When HEAD is detached, `git branch --show-current` (git.go:1343) returns \"\", which does not equal branchName, so a clone on an unrelated branch is not affected.\n- **Scope, dirty tree refuses with the required text:** met. git.go:197 returns `\"stale branch %s is checked out in the clone, refusing to recreate it: ...\"`, which contains the required substring and the branch name. It returns before DeleteBranch, so neither the branch nor the files are touched.\n- git.go:199 calls `detachHeadAt`, which runs `git checkout --detach ref` (git.go:215).\n- After detaching, HEAD is no longer on branchName, so `git branch -D` (git.go:1681) is not refused. `checkoutNewBranchFrom` (git.go:229) then recreates the branch at baseRef.\n- baseRef is `origin/\u003cbase\u003e` after a fetch (git.go:615–623), so detaching to it is valid even when the local base branch is missing.\n- **Scope, branches that are not checked out keep the old behaviour:** met. The guard at git.go:191 is false for them, so the code goes straight to git.go:204–210, which is unchanged.\n- `branchIsBehind` at git.go:170 is unchanged.\n- CreateOrResetBranchFromOrigin (git.go:118–128) is unchanged.\n- The only production caller is the direct-mode path at runner.go:4652 (`git.EnsureBranchFromOrigin(ctx, task.Branch, baseBranch)`). The other callers are tests at git_gh4594_test.go:152, 189 and 232, and they still exercise the not-checked-out stale path.\n- git_test.go: the case `checkedOut: true, wantCreated: true` uses a real bare origin (runner_git_test.go:28 `git init --bare`) and advances origin with `pushExtraCommitFromSecondClone` (runner_git_test.go:86–102).\n- It asserts that `cur == branch` and that `head == rev-parse baseRef` and `head != staleSHA`.\n- Both SHAs come from untrimmed `gitOutput` (runner_git_test.go:64–72), so the comparison is consistent.\n- **Acceptance 4, mutation:** see NOT-VERIFIED. Reading the code: without git.go:190–202, the clean checked-out case reaches `git branch -D` on the HEAD branch. git refuses that, so the test hits its `t.Fatalf` and the guard is load-bearing.\n- **Tests:** they run real git against a temp bare origin, not a mock, so they exercise the actual `git branch -D` refusal this fix is about.\n- **Wire fields and migrations:** none in this diff.\n- **Out of scope:** respected. Nothing switches the clone back to the default branch after a task, and the identical-failure threshold and the needs-human sweep are untouched.\n- **Project memories:** none repeated.\n- The diff removes a deterministic identical-failure source; that streak is what the \"identical-failure streak threshold 2\" learning describes.\n- It does not mark rows stalled or touch generation or re-arm logic, so the stalled-recovery-loop and dead-owner-claim pitfalls do not apply.\n- The cap-stalled re-arm recipe is unaffected.\n[pass B (adjacent)]\n- Scope bullet, GetCurrentBranch before DeleteBranch: met at git.go:190-191. If `GetCurrentBranch` fails, `curErr != nil` and the code falls through to the old delete path. That only gives back the old git error. It is not a new failure mode.\n- Scope bullet, dirty tree refused with \"checked out in the clone, refusing\" plus the branch name: met at git.go:196-197. The error is returned before any detach or delete, so neither the branch nor the files are touched.\n- Scope bullet, clean tree detaches at baseRef and then deletes and recreates: met at git.go:199-209. `detachHeadAt` (git.go:215) runs `git checkout --detach \u003cbaseRef\u003e`. With a clean tree that checkout cannot be blocked by local changes. HEAD is then off the branch, so `branch -D` (git.go:1681) succeeds, and `checkoutNewBranchFrom` (git.go:229) recreates it from baseRef.\n- Branches that are not checked out keep the old behaviour: met. The guard only fires when `current == branchName` (git.go:191). The test row at git_test.go:2264 and the existing test at git_gh4594_test.go:176 both cover this path.\n- Stale decision unchanged: met. `branchIsBehind` (git.go:243-255) and the `!stale` early return (git.go:178-183) were not modified.\n- CreateOrResetBranchFromOrigin, worktree mode and the repick cap are untouched (git.go:118-128). The only caller, runner.go:4652, sits inside `!useWorktree` (runner.go:4626).\n- Acceptance, table test on a temp repo with a real origin: met at git_test.go:2252-2327. `setupSyncTestRepos` uses `git init --bare` (runner_git_test.go:28) and the test drives real git. Nothing is mocked. The clean checked-out row checks created, current branch and HEAD == the new base, with HEAD ≠ the stale commit (git_test.go:2314-2323). The dirty row checks the error text, the branch name, that the branch is still checked out at its old commit, and that the dirty file is preserved (git_test.go:2292-2307). The not-checked-out row checks recreation.\n- Acceptance, `go test -race` output pasted: present in the PR body, shows `ok`.\n- Out of scope: nothing switches the clone back to the default branch after a task. No changes to worktree mode or the identical-failure threshold.\n- Memory pitfalls: none are repeated. The dirty-refusal path still produces an identical error on every attempt, so the threshold-2 streak will stall the task, as the identical-failure memory describes. The issue intends this so the operator sees the real cause.",
+  "files_read": 7,
+  "passes": 2,
+  "files_read_by_pass": [
+    2,
+    5
+  ],
+  "duration_ms_by_pass": [
+    41335,
+    56148
+  ],
+  "defects_by_pass": [
+    3,
+    3
+  ],
+  "pass_failed": [
+    false,
+    false
+  ],
+  "overlap": 1,
+  "checkout": true,
+  "diff_bytes": 6211,
+  "diff_files": 2,
+  "diff_trimmed": false,
+  "trimmed_files": [],
+  "input_diff_bytes": 6211,
+  "input_issue_bytes": 4348,
+  "input_pr_body_bytes": 11682,
+  "model": "claude-opus-5-5",
+  "duration_ms": 97859,
+  "posted": false
+}
